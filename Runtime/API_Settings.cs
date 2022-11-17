@@ -11,7 +11,7 @@ public class APISettings : ScriptableObject{
 
 public class APISettingsHandler {
 
-    public static readonly string SO_LOCATION = "Assets/Feedback/Runtime/Settings/";
+    public static readonly string SO_LOCATION = "Assets/Feedback/Runtime/APISettings";
     public static readonly string SO_PREFIX = "API_Settings_SO";
     public void BuildAPISettings(string appId, string token, string baseURL, string apiKey, API_Type type) {
 

@@ -376,6 +376,22 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2372855522454421847, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2372855522454421847, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2372855522454421847, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2372855522454421847, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2870832090628154557, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
       propertyPath: m_Name
       value: FeedbackPanelCanvas
@@ -462,6 +478,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7831510118593559296, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070547037613326013, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070547037613326013, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070547037613326013, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070547037613326013, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
