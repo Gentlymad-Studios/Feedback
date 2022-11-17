@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"displayName": "Feedback Service",
 	"description": "Feedback Service by Gentlymadstudios",
-	"unity": "2022.2",
+	"unity": "2022.1",
 	"unityRelease": "16f1",
 	"dependencies": {
 	},
