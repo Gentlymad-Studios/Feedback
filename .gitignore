@@ -10,9 +10,6 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
-#Ignore api settings
-APISettings/**
-
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
@@ -73,3 +70,4 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+/Runtime/APISettings
