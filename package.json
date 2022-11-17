@@ -1,0 +1,21 @@
+{
+	"name": "com.gentlymadstudios.feedbackservice",
+	"version": "0.1.0",
+	"displayName": "Feedback Service",
+	"description": "Feedback Service by Gentlymadstudios",
+	"unity": "2022.2",
+	"unityRelease": "16f1",
+	"dependencies": {
+	},
+	"keywords": [
+		"editor",
+    "unityeditor",
+    "editorui",
+		"gentlymad"
+	],
+	"author": {
+		"name": "Gentlymad Studios",
+		"url": "https://gentlymadstudios.com",
+		"email": "team@gentlymadstudios.com"
+	}
+}
