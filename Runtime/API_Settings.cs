@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = nameof(APISettings), menuName = nameof(APISettings), order = 1)]
+[CreateAssetMenu(fileName = "API_Settings_SO", menuName = nameof(APISettings), order = 1)]
 public class APISettings : ScriptableObject{
     public string token;
     public string baseURL;
@@ -11,9 +11,10 @@ public class APISettings : ScriptableObject{
 
 public class APISettingsHandler {
 
-    public static readonly string SO_LOCATION = "Assets/Feedback/Runtime/APISettings";
-    public static readonly string SO_PREFIX = "API_Settings_SO";
-    public void BuildAPISettings(string appId, string token, string baseURL, string apiKey, API_Type type) {
+    public readonly string SO_LOCATION = "Assets/Feedback/Runtime/APISettings/";
+    public readonly string SO_PREFIX = "API_Settings_SO_";
+    public readonly string SO_SUFFIX = ".asset";
+    public void BuildAPISettings(string token, string baseURL, API_Type type) {
 
         APISettings API_SETTINGS_SO = ScriptableObject.CreateInstance<APISettings>();
         
@@ -21,7 +22,7 @@ public class APISettingsHandler {
         API_SETTINGS_SO.baseURL = baseURL;
         API_SETTINGS_SO.type = type;
 
-        string settingsPath = SO_LOCATION + SO_PREFIX + type.ToString() + ".asset";
+        string settingsPath = SO_LOCATION + SO_PREFIX + API_Type.asana.ToString() + SO_SUFFIX;
 
         AssetDatabase.CreateAsset(API_SETTINGS_SO, settingsPath);
         AssetDatabase.SaveAssets();

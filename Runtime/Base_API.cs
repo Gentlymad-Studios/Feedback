@@ -1,12 +1,12 @@
 using UnityEditor;
 
-public class APIBase {
+public class Base_API {
 
     public readonly APISettings settings;
     private IResponseHandler responseHandler;
     private IRequestHandler requestHandler;
 
-    public APIBase(APISettings settings) {
+    public Base_API(APISettings settings) {
         this.settings = settings;
     }
 
