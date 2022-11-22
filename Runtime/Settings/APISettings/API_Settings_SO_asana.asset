@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: API_Settings_SO_asana
   m_EditorClassIdentifier: FeedbackService::APISettings
-  token: 0
-  baseURL: 0
+  token: your token / api key
+  baseURL: 'your base url '
   type: 1
