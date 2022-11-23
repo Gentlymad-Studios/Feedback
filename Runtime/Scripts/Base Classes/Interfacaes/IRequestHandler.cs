@@ -1,3 +1,6 @@
 public interface IRequestHandler {
-    public void CreateClientInstance(string baseURL, string token);
+    public void CreateClientInstance();
+    public void GET(string route);
+    public void POST(API_Data data);
+
 }

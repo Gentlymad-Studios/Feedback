@@ -1,8 +1,15 @@
 using System.Net;
-using System.Net.Http;
-
-public class BaseRequestHandler : IRequestHandler {
+public abstract class BaseRequestHandler : IRequestHandler {
 
     protected WebRequest _request;
-    public virtual void CreateClientInstance(string baseURL, string token) { }
+    protected string _contentType = "application/json; charset=UTF-8";
+    public abstract void CreateClientInstance();
+    public abstract void GET(string route);
+    public abstract void POST(API_Data data);
+
+}
+
+public enum RequestMethods {
+    GET = 1,
+    POST = 2,
 }
