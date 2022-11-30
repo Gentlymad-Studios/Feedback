@@ -1,9 +1,9 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Net;
 using System.Text;
 using UnityEngine;
-
 /// <summary>
 /// Class that creates an asana client instance.
 /// </summary>
@@ -11,30 +11,26 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     private StreamReader _sr;
     private AsanaAPISettings _settings;
+    private Cookie _tokenCookie;
+    private Action _startAsanaAuthFlow;
+
+    private string redirectURL = "";
+    private string userData = "";
+
     public AsanaRequestHandler(AsanaAPISettings settings) {
         CreateClientInstance();
-        this._settings = settings;
+        _settings = settings;
     }
 
     public override void CreateClientInstance() {
         _request = default(HttpWebRequest);
     }
-
-    public override void GET(string route) {
-        _request = (HttpWebRequest)WebRequest.Create(route);
-        _request.Method = RequestMethods.GET.ToString();
-        _request = Authorization((HttpWebRequest)_request);
-        _request.ContentType = _contentType;
-        _sr = new StreamReader(_request.GetResponse().GetResponseStream());
-        Debug.Log(_sr.ReadToEnd());
-    }
-
     public override void POST(API_Data data) {
 
         string requestData = BuildTaskData(data);
         _request = (HttpWebRequest)WebRequest.Create(_settings.baseURL + _settings.taskRoute);
         _request.ContentType = _contentType;
-        _request = Authorization((HttpWebRequest)_request);
+        //_request = Authorization((HttpWebRequest)_request);
         _request.Method = RequestMethods.POST.ToString(); ;
         _request.Timeout = 5000;
 
@@ -47,13 +43,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
         _sr = new StreamReader(httpresponse21.GetResponseStream());
         Debug.Log(_sr.ReadToEnd());
     }
-
-    public HttpWebRequest Authorization(HttpWebRequest req) {
-        string authInfo = _settings.token + Convert.ToString(":");
-        req.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(authInfo)));
-        return req;
-    }
-
     private string BuildTaskData(API_Data data) {
         string projectId = "";
 
@@ -61,7 +50,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
 
         projectId = _settings.bugId;
-        if(data.dataType is DataType.feedback) { projectId = _settings.feedbackId; }
+        if (data.dataType is DataType.feedback) { projectId = _settings.feedbackId; }
 
         jsonObj["data"]["name"] = data.title;
         jsonObj["data"]["notes"] = data.text;
@@ -72,4 +61,62 @@ public class AsanaRequestHandler : BaseRequestHandler {
         return output;
     }
 
+    public override void LogIn(Action startAsanaAuthFlow) {
+        this._startAsanaAuthFlow = startAsanaAuthFlow;
+        startAsanaAuthFlow.Invoke();
+    }
+
+
+    //Asana Authentication Flow 
+    public IEnumerator AsanaOAuth() {
+        if (redirectURL.Equals(string.Empty)) {
+            ConfigureRequest(_settings.ServiceEndPoint, RequestMethods.GET);
+            redirectURL = _sr.ReadToEnd();
+            _startAsanaAuthFlow.Invoke();
+        } else {
+            ConfigureRequest(redirectURL, RequestMethods.GET);
+            Application.OpenURL(redirectURL);
+            while (userData.Contains("html") || userData.Contains(redirectURL) || userData.Equals(string.Empty)) {
+
+                //get generated token cookie
+                ConfigureRequest(_settings.ServiceCookieEndpoint, RequestMethods.GET);
+                foreach(Cookie cookie in _request.CookieContainer.GetCookies(_request.RequestUri)) {
+                    if (cookie.Name.Equals("token")) {
+                        _tokenCookie = cookie;
+                        _settings.token = _tokenCookie.Value;
+                    }
+                }
+                yield return new WaitForSeconds(1);
+
+                //get user data with access token from cookie
+                ConfigureRequest(_settings.ServiceEndPoint, RequestMethods.GET, _tokenCookie);
+                userData = _sr.ReadToEnd();
+                Debug.Log(userData + " successfully finished authorization flow");
+                yield return new WaitForSeconds(1);
+            }
+            _sr.Close();
+        }
+    }
+
+    //HttpWebRequest Configuration 
+    public void ConfigureRequest(string url, RequestMethods method) {
+        _request = (HttpWebRequest)WebRequest.Create(url);
+        _request.CookieContainer = new CookieContainer();
+        _request.ContentType = _contentType;
+        _request.Method = method.ToString();
+        _sr = new StreamReader(_request.GetResponse().GetResponseStream());
+    }
+
+    //HttpWebRequest Configuration with Cookie
+    public void ConfigureRequest(string url, RequestMethods method, Cookie cookie) {
+        _request = (HttpWebRequest)WebRequest.Create(url);
+        _request.CookieContainer = new CookieContainer();
+        _request.ContentType = _contentType;
+        _request.CookieContainer.Add(_request.RequestUri, cookie);
+        _request.Method = method.ToString();
+        _sr = new StreamReader(_request.GetResponse().GetResponseStream());
+    }
 }
+
+
+

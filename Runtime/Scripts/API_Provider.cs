@@ -1,3 +1,5 @@
+using System;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 
@@ -40,8 +42,9 @@ public class API_Provider : MonoBehaviour {
 
     public void Submit() {
         API_Data data = new API_Data(title.text, text.text, _currentDataType);
-        _apiBase.requestHandler.POST(data);
-        Debug.Log("Submit");
+        AsanaRequestHandler asanaRequestHandler = _apiBase.requestHandler as AsanaRequestHandler;
+        Action oauthStarter = () => StartCoroutine(asanaRequestHandler.AsanaOAuth()); 
+        _apiBase.requestHandler.LogIn(oauthStarter);
     }
 
     

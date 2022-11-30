@@ -6,8 +6,8 @@ using UnityEditor;
 public class Base_API {
 
     public APISettings settings;
-    public IResponseHandler responseHandler;
-    public IRequestHandler requestHandler;
+    public BaseResponseHandler responseHandler;
+    public BaseRequestHandler requestHandler;
 
     public Base_API(APISettings settings) {
         this.settings = settings;
