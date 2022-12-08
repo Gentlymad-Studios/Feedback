@@ -5,6 +5,7 @@
 	"description": "Feedback Service by Gentlymadstudios",
 	"unity": "2022.1",
 	"unityRelease": "16f1",
+	"custom_packageJsonLink": "https://raw.githubusercontent.com/Gentlymad-Studios/Feedback/master/package.json",
 	"dependencies": {
 	},
 	"keywords": [
