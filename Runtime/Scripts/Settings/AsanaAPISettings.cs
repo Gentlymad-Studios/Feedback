@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class AsanaAPISettings : APISettings {
 
     [Header("Asana API Settings")]
@@ -18,8 +17,12 @@ public class AsanaAPISettings : APISettings {
     [Header("Resources")]
     public string pathToTaskTemplate;
 
-    [Header("Authorization Service Endpoits")]
-    public string ServiceEndPoint;
-    public string ServiceCookieEndpoint;
-
+    [Header("Authorization Information")]
+    public string asanaAuthorizationEndpoint;
+    public string asanaTokenExchangeEndpoint;
+    public string clientId;
+    public string clientSecret; 
+    public string responseType;
+    public string redirectUri;
+    public string scope;
 }
