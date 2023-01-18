@@ -1,19 +1,23 @@
 /// <summary>
 /// Api class which inherits from the basic api class. It defines its own handler. 
 /// </summary>
-public class AsanaAPI : Base_API {
-    public AsanaAPI(AsanaAPISettings settings) : base(settings) {
-        base.settings = settings;
-        CreateHandler();
+public class AsanaAPI : BaseAPI {
+
+    private APISettingsHandler settingsHandler;
+    public AsanaAPISettings asanaAPISettings;
+    public AsanaAPI(){
+        settingsHandler = new APISettingsHandler();
+        CreateAPISpecificSettings();
+
+        CreateRequestHandler(new AsanaRequestHandler(this));
+        CreateResponseHandler(new AsanaResponseHandler());
     }
 
-    /// <summary>
-    /// Create the api handler.
-    /// </summary>
-    public override void CreateHandler() {
-        base.requestHandler = new AsanaRequestHandler(base.settings as AsanaAPISettings);
-        base.responseHandler = new AsanaResponseHandler();
+    public override void CreateAPISpecificSettings() {
+        asanaAPISettings = settingsHandler.FindAsanaAPISettings();
+        base.settings = asanaAPISettings;
     }
+
 }
 
 

@@ -3,14 +3,16 @@ using System.Net;
 
 public abstract class BaseRequestHandler : IRequestHandler {
 
-    public Action authenticationAction;
+    public AuthorizationUser user;
 
-    protected HttpWebRequest _request;
-    protected string _contentType = "application/json; charset=UTF-8";
-    public abstract void CreateClientInstance();
-    public abstract void POST(API_Data data);
+
+    protected HttpWebRequest request;
+    protected string contentType = "application/json; charset=UTF-8";
+    public abstract void POST(RequestData data);
     public abstract void LogIn();
     public abstract void LogOut();
+    public abstract AuthorizationUser GetUserData();
+    public abstract void TokenExchange(bool isRefresh = false);
 
 }
 

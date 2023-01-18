@@ -10,31 +10,32 @@ using UnityEngine;
 public class AsanaRequestHandler : BaseRequestHandler {
 
     private StreamReader _sr;
-    private AsanaAPISettings _settings;
+    private AsanaAPI asanaAPI;
+    private AsanaAPISettings asanaAPISettings;
     private AuthorizationInfo _authorizationInfo;
-    public AsanaRequestHandler(AsanaAPISettings settings) {
-        _settings = settings;
-        CreateClientInstance();
+    public AsanaRequestHandler(AsanaAPI asanaAPI) {
+        asanaAPISettings = asanaAPI.asanaAPISettings;
+        Debug.Log(asanaAPISettings.token);
+        this.asanaAPI = asanaAPI;
+        request = default(HttpWebRequest);
     }
 
-    public override void CreateClientInstance() {
-        _request = default(HttpWebRequest);
-    }
+    public Action OnTokenSubmit;
 
     //POST a task data object to task list
-    public override void POST(API_Data data) {
+    public override void POST(RequestData data) {
         try {
             string requestData = BuildTaskData(data);
-            string url = _settings.baseURL + _settings.taskRoute;
-
+            string url = asanaAPISettings.baseURL + asanaAPISettings.taskRoute;
+            Debug.Log(url);
             ConfigureRequest(url, RequestMethods.POST);
-            _request.Timeout = 5000;
+            request.Timeout = 5000;
 
             byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
-            using (Stream postStream = _request.GetRequestStream()) {
+            using (Stream postStream = request.GetRequestStream()) {
                 postStream.Write(dataBytes11, 0, dataBytes11.Length);
             }
-            _sr = new StreamReader(_request.GetResponse().GetResponseStream());
+            _sr = new StreamReader(request.GetResponse().GetResponseStream());
             Debug.Log("successfully post new taks to asana project");
         } catch (Exception e) {
             Debug.LogError("An error occured while posting new task: " + e.Message);
@@ -43,119 +44,106 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     //Build task data out of user inputs
-    private string BuildTaskData(API_Data data) {
-        string json = File.ReadAllText(_settings.pathToTaskTemplate);
+    private string BuildTaskData(RequestData data) {
+        string json = File.ReadAllText(asanaAPISettings.pathToTaskTemplate);
         dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
 
-        string projectId = _settings.bugId;
-        if (data.dataType is DataType.feedback) { projectId = _settings.feedbackId; }
+        string projectId = asanaAPISettings.bugId;
+        if (data.dataType is DataType.feedback) { projectId = asanaAPISettings.feedbackId; }
 
         jsonObj["data"]["name"] = data.title;
         jsonObj["data"]["notes"] = data.text;
         jsonObj["data"]["projects"] = projectId;
-        jsonObj["data"]["workspace"] = _settings.workspaceId;
+        jsonObj["data"]["workspace"] = asanaAPISettings.workspaceId;
 
         string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
         return output;
     }
 
-    public AuthorizationUser GetUserData() {
-        return _authorizationInfo.data;
-
+    public override AuthorizationUser GetUserData() {
+        return user;
     }
-    //Log in and start the asana oauth flow
-    public override void LogIn() {
-        GetAuthorizationToken();
-    }
-
-    //Log out and use PAT to access api TODO: remove access token
-    public override void LogOut() {
-        _settings.token = _settings.defaultToken;
-    }
-
+   
     //HttpWebRequest Configuration 
     public void ConfigureRequest(string url, RequestMethods method, bool streamReader = false) {
-        _request = (HttpWebRequest)WebRequest.Create(url);
-        _request.CookieContainer = new CookieContainer();
-        _request.ContentType = _contentType;
-        _request.Method = method.ToString();
+        request = (HttpWebRequest)WebRequest.Create(url);
+        request.CookieContainer = new CookieContainer();
+        request.ContentType = contentType;
+        request.Method = method.ToString();
         BearerAuthentication();
         if (streamReader) {
-            _sr = new StreamReader(_request.GetResponse().GetResponseStream());
+            _sr = new StreamReader(request.GetResponse().GetResponseStream());
         }
-    }
-
-    //Open the auth endpoint in the Asana OAtuh grant flow for nativ applications
-    public void OpenAuthorizationEndpoint() {
-        string url = string.Format("{0}?client_id={1}&response_type={2}&redirect_uri={3}&scope={4}",
-            _settings.asanaAuthorizationEndpoint, _settings.clientId, _settings.responseType, _settings.redirectUri, _settings.scope);
-        Application.OpenURL(url);
-    }
-
-    //POST request to the toke excachange endpoint 
-    private void GetAuthorizationToken() {
-
-        _request = (HttpWebRequest)WebRequest.Create(_settings.asanaTokenExchangeEndpoint);
-        _request.CookieContainer = new CookieContainer();
-        _request.Method = RequestMethods.POST.ToString();
-
-        string requestData = "grant_type=authorization_code&" +
-             "client_id=" + _settings.clientId + "&" +
-             "client_secret=" + _settings.clientSecret + "&" +
-             "redirect_uri=" + _settings.redirectUri + "&" +
-             "code=" + _settings.token;
-
-        byte[] byteArray = Encoding.UTF8.GetBytes(requestData);
-
-        _request.ContentType = "application/x-www-form-urlencoded";
-        _request.ContentLength = byteArray.Length;
-
-        using var reqStream = _request.GetRequestStream();
-        reqStream.Write(byteArray, 0, byteArray.Length);
-
-        using var response = _request.GetResponse();
-        _sr = new StreamReader(response.GetResponseStream());
-        string data = _sr.ReadToEnd();
-        AuthorizationInfo info = JsonUtility.FromJson<AuthorizationInfo>(data);
-
-        Debug.Log(((HttpWebResponse)response).StatusDescription);
-        _settings.token = info.access_token;
-        _authorizationInfo = info;
-    }
-
-    //Refresh the access token with the refresh token of your user info object
-    private void RefreshToken() {
-        _request = (HttpWebRequest)WebRequest.Create(_settings.asanaTokenExchangeEndpoint);
-        _request.CookieContainer = new CookieContainer();
-        _request.Method = RequestMethods.POST.ToString();
-
-        string requestData = "grant_type=refresh_token&" +
-             "client_id=" + _settings.clientId + "&" +
-             "client_secret=" + _settings.clientSecret + "&" +
-             "redirect_uri=" + _settings.redirectUri + "&" +
-             "refresh_token=" + _authorizationInfo.refresh_token + "&" +
-             "code=" + _settings.token;
-
-        byte[] byteArray = Encoding.UTF8.GetBytes(requestData);
-
-        _request.ContentType = "application/x-www-form-urlencoded";
-        _request.ContentLength = byteArray.Length;
-
-        using var reqStream = _request.GetRequestStream();
-        reqStream.Write(byteArray, 0, byteArray.Length);
-
-        using var response = _request.GetResponse();
-        _sr = new StreamReader(response.GetResponseStream());
-        string data = _sr.ReadToEnd();
     }
 
     //Basic authentication with bearer token
     private void BearerAuthentication(string token = null) {
         if (token == null) {
-            token = _settings.token;
+            token = asanaAPISettings.token;
         }
-        _request.Headers.Add("Authorization", "Bearer " + token);
+        request.Headers.Add("Authorization", "Bearer " + token);
     }
+
+    #region OAuth
+    //Log out and use PAT to access api TODO: remove access token
+    public override void LogOut() {
+        asanaAPISettings.token = asanaAPISettings.defaultToken;
+    }
+
+    //Open the auth endpoint in the Asana OAtuh grant flow for nativ applications
+    public override void LogIn() {
+        string url = string.Format("{0}?client_id={1}&response_type={2}&redirect_uri={3}&scope={4}",
+            asanaAPISettings.asanaAuthorizationEndpoint, asanaAPISettings.clientId, asanaAPISettings.responseType, asanaAPISettings.redirectUri, asanaAPISettings.scope);
+        Application.OpenURL(url);
+    }
+   
+
+    //POST request to the toke excachange endpoint 
+    public override void TokenExchange(bool isTokenRefresh = false) {
+        string requestData = "";
+        request = (HttpWebRequest)WebRequest.Create(asanaAPISettings.asanaTokenExchangeEndpoint);
+        request.CookieContainer = new CookieContainer();
+        request.Method = RequestMethods.POST.ToString();
+
+
+        if (isTokenRefresh) {
+            requestData = "grant_type=refresh_token&" +
+              "client_id=" + asanaAPISettings.clientId + "&" +
+              "client_secret=" + asanaAPISettings.clientSecret + "&" +
+              "redirect_uri=" + asanaAPISettings.redirectUri + "&" +
+              "refresh_token=" + _authorizationInfo.refresh_token + "&" +
+              "code=" + asanaAPISettings.token;
+        } else {
+            requestData = "grant_type=authorization_code&" +
+            "client_id=" + asanaAPISettings.clientId + "&" +
+            "client_secret=" + asanaAPISettings.clientSecret + "&" +
+            "redirect_uri=" + asanaAPISettings.redirectUri + "&" +
+            "code=" + asanaAPISettings.token;
+        }
+
+        byte[] byteArray = Encoding.UTF8.GetBytes(requestData);
+
+        request.ContentType = "application/x-www-form-urlencoded";
+        request.ContentLength = byteArray.Length;
+
+        using var reqStream = request.GetRequestStream();
+        reqStream.Write(byteArray, 0, byteArray.Length);
+
+        using var response = request.GetResponse();
+        _sr = new StreamReader(response.GetResponseStream());
+        string data = _sr.ReadToEnd();
+
+        if (!isTokenRefresh) {
+            AuthorizationInfo info = JsonUtility.FromJson<AuthorizationInfo>(data);
+
+            Debug.Log(((HttpWebResponse)response).StatusDescription);
+            asanaAPISettings.token = info.access_token;
+            _authorizationInfo = info;
+            user = info.data;
+        }
+    }
+
+    #endregion
 
 }
 

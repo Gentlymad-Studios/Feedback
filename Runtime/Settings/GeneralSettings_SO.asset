@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85e507a077e17e5499a94fac0d5b4203, type: 3}
   m_Name: GeneralSettings_SO
   m_EditorClassIdentifier: 
-  settingsPath: Assets/Feedback/Runtime/Settings/APISettings/
+  settingsPath: Settings/GeneralSettings_SO.asset
+  asanaSettingsDirectory: Settings/APISettings/API_Settings_SO_asana.asset

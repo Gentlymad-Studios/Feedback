@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[System.Serializable]
+[CreateAssetMenu(fileName = "Asana_API_Settings_SO", menuName = nameof(AsanaAPISettings), order = 1)]
 public class AsanaAPISettings : APISettings {
 
     [Header("Asana API Settings")]

@@ -2,13 +2,13 @@
 /// <summary>
 /// Generic data structure. 
 /// </summary>
-public class API_Data  {
+public class RequestData  {
 
     public string title;
     public string text;
     public DataType dataType;
 
-    public API_Data(string title, string text, DataType dataType) {
+    public RequestData(string title, string text, DataType dataType) {
         this.title = title;
         this.text = text;
         this.dataType = dataType;
