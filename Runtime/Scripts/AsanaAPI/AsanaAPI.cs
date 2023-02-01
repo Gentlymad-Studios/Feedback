@@ -10,7 +10,6 @@ public class AsanaAPI : BaseAPI {
         CreateAPISpecificSettings();
         CreateRequestHandler(new AsanaRequestHandler(this));
     }
-
     public override void CreateAPISpecificSettings() {
         asanaAPISettings = settingsHandler.FindAsanaAPISettings();
         base.settings = asanaAPISettings;

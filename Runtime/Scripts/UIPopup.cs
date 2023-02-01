@@ -21,6 +21,9 @@ public class UIPopup : UIPopUpBase {
             submitAccessToken = true;
         });
         Configure();
+        //base.GetData("https://app.asana.com/api/1.0/workspaces/1192678870065366/tasks/search?teamS.any=1192678870065368&opt_fields=projects,name,assignee,due_on,completed_at&limit=100 ");
+        //base.GetData("https://app.asana.com/api/1.0/workspaces/1192678870065366/tasks");
+        base.GetData();
     }
     public void Configure() {
         if (type.Equals(API_Type.asana)) {
@@ -108,7 +111,7 @@ public class UIPopup : UIPopUpBase {
         ResizeOnGPU(screenshot, overpaint, width, height, mode);
 
         // Update new texture
-        screenshot.Resize(width, height);
+        screenshot.Reinitialize(width, height);
         screenshot.ReadPixels(texR, 0, 0, true);
         screenshot.Apply(true);
 

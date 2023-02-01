@@ -1,12 +1,16 @@
+using Codice.Client.BaseCommands;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using UnityEngine;
-using UnityEngine.XR;
+using Debug = UnityEngine.Debug;
+using File = System.IO.File;
+
+//query builder https://developers.asana.com/reference/searchtasksforworkspace
 
 /// <summary>
 /// Class that creates an asana client instance.
@@ -19,6 +23,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private AuthorizationInfo _authorizationInfo;
     private HttpWebRequest request;
     private HttpWebResponse response;
+
+    private string paginatedCreatedBefore;
+    private string paginatedCreatedAfter;
     public AsanaRequestHandler(AsanaAPI asanaAPI) {
         asanaAPISettings = asanaAPI.asanaAPISettings;
         this.asanaAPI = asanaAPI;
@@ -27,12 +34,50 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     public Action OnTokenSubmit;
 
+    public override void GET() {
+        GetTasksWithCustomPagination();
+    }
+
+    //Get a lot asana task (may not all because there could be more than 100 tasks created in a month).
+    //Diagnostic method to measure time and file size to fetch and store up to 2500 tasks from asana api.
+    private async void GetTasksWithCustomPagination() {
+        Stopwatch sw = new Stopwatch();
+        string[] dates = new string[] { "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01",
+            "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01",
+         "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01",
+         "2023-01-01", "2023-02-01"};
+        sw.Start();
+        for (int i = 0; i < dates.Length; i++) {
+
+            paginatedCreatedAfter = dates[i];
+            if (i != dates.Length - 1) {
+                paginatedCreatedBefore = dates[i + 1];
+            } else {
+                paginatedCreatedBefore = dates[i];
+            }
+
+            var url = $"{asanaAPISettings.baseURL}{asanaAPISettings.workspaceRoute}/{asanaAPISettings.workspaceId}/tasks/search?opt_fields=created_at,name,notes&resource_subtype=default_task&" +
+                $"created_on.before={paginatedCreatedBefore}&created_on.after={paginatedCreatedAfter}&sort_by=modified_at&sort_ascending=false";
+
+            ConfigureRequest(url, RequestMethods.GET);
+            
+            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream)) {
+                string result = await reader.ReadToEndAsync();
+                WriteFile(result);
+            }
+        }
+        sw.Stop();
+        Debug.Log(sw.Elapsed);
+    }
+
     //POST a task data object to task list
     public override void POST(RequestData data) {
         try {
             string requestData = BuildTaskData(data);
             string url = asanaAPISettings.baseURL + asanaAPISettings.taskRoute;
-            
+
             ConfigureRequest(url, RequestMethods.POST);
             request.Timeout = 5000;
 
@@ -41,7 +86,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 postStream.Write(dataBytes11, 0, dataBytes11.Length);
             }
             _sr = new StreamReader(request.GetResponse().GetResponseStream());
-            response = (HttpWebResponse) request.GetResponse();
+            response = (HttpWebResponse)request.GetResponse();
             PostScreenshotAsync(response.Headers.GetValues(5)[0], data.screenshot);
 
             Debug.Log("successfully post new taks to asana project");
@@ -105,7 +150,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     //Basic authentication with bearer token
     private void BearerAuthentication() {
-        request.Headers.Add("Authorization", "Bearer " +  asanaAPISettings.token);
+        request.Headers.Add("Authorization", "Bearer " + asanaAPISettings.token);
     }
 
     //Log out and use PAT to access api TODO: remove access token
@@ -168,7 +213,25 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
 
     #endregion
+    private void WriteFile(string text) {
+        string path = Application.dataPath + "/AsanaTasks.json";
 
+        if (!File.Exists(path)) {
+
+            // Create a file to write to.
+            using (StreamWriter sw = File.CreateText(path)) {
+                sw.WriteLine(DateTime.Now.ToString() + ": " + "pagination initialised");
+            }
+        } else {
+            // This text is always added, making the file longer over time
+            // if it is not deleted.
+            using (StreamWriter sw = File.AppendText(path)) {
+                sw.WriteLine(DateTime.Now.ToString() + ": " + "____pagination iteration____");
+                sw.Write(text);
+            }
+        }
+
+    }
 
 }
 

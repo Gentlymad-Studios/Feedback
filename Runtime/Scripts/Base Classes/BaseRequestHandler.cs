@@ -7,6 +7,7 @@ public abstract class BaseRequestHandler : IRequestHandler {
     public AuthorizationUser user;
    
     protected string contentType = "application/json; charset=UTF-8";
+    public abstract void GET();
     public abstract void POST(RequestData data);
     public abstract void LogIn();
     public abstract void LogOut();

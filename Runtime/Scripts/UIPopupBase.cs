@@ -20,10 +20,10 @@ public abstract class UIPopUpBase : MonoBehaviour {
     
 
     private void Awake() {
-        //convert the login fail messages to a lookup table for fast and easy access
-        //foreach (LoginFailMessage message in loginFailMessages) {
-        //    loginFailMessagesLookup.Add(message.reason, message.message);
-        //}
+    }
+
+    protected virtual void GetData() {
+        api.requestHandler.GET();
     }
 
     protected virtual void PostData(string title, string text, Texture2D screenshot, DataType type) {
