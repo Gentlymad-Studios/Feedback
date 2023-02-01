@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using UnityEngine;
+using UnityEngine.XR;
 
 /// <summary>
 /// Class that creates an asana client instance.
@@ -13,9 +17,10 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private AsanaAPI asanaAPI;
     private AsanaAPISettings asanaAPISettings;
     private AuthorizationInfo _authorizationInfo;
+    private HttpWebRequest request;
+    private HttpWebResponse response;
     public AsanaRequestHandler(AsanaAPI asanaAPI) {
         asanaAPISettings = asanaAPI.asanaAPISettings;
-        Debug.Log(asanaAPISettings.token);
         this.asanaAPI = asanaAPI;
         request = default(HttpWebRequest);
     }
@@ -27,7 +32,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         try {
             string requestData = BuildTaskData(data);
             string url = asanaAPISettings.baseURL + asanaAPISettings.taskRoute;
-            Debug.Log(url);
+            
             ConfigureRequest(url, RequestMethods.POST);
             request.Timeout = 5000;
 
@@ -36,11 +41,13 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 postStream.Write(dataBytes11, 0, dataBytes11.Length);
             }
             _sr = new StreamReader(request.GetResponse().GetResponseStream());
+            response = (HttpWebResponse) request.GetResponse();
+            PostScreenshotAsync(response.Headers.GetValues(5)[0], data.screenshot);
+
             Debug.Log("successfully post new taks to asana project");
         } catch (Exception e) {
             Debug.LogError("An error occured while posting new task: " + e.Message);
         }
-
     }
 
     //Build task data out of user inputs
@@ -60,10 +67,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         return output;
     }
 
-    public override AuthorizationUser GetUserData() {
-        return user;
-    }
-   
+
     //HttpWebRequest Configuration 
     public void ConfigureRequest(string url, RequestMethods method, bool streamReader = false) {
         request = (HttpWebRequest)WebRequest.Create(url);
@@ -76,15 +80,34 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
     }
 
-    //Basic authentication with bearer token
-    private void BearerAuthentication(string token = null) {
-        if (token == null) {
-            token = asanaAPISettings.token;
+    //Send Image to Task, use route from response header field location
+    public async override void PostScreenshotAsync(string route, Texture2D img) {
+        try {
+            string url = "https://app.asana.com" + route + "/attachments";
+
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + asanaAPISettings.token);
+
+            byte[] imageArray = img.EncodeToPNG();
+            MultipartFormDataContent form = new MultipartFormDataContent("Upload----");
+            form.Add(new ByteArrayContent(imageArray, 0, imageArray.Length), "\"file\"", "\"example.jpg\"");
+
+            HttpResponseMessage response = await httpClient.PostAsync(url, form);
+
+            Debug.Log("successfully post image to: " + route);
+        } catch (Exception e) {
+            Debug.Log("Cant post image to task. -> " + e.Message);
         }
-        request.Headers.Add("Authorization", "Bearer " + token);
     }
 
-    #region OAuth
+    #region OAuth and Bearer Auth
+
+    //Basic authentication with bearer token
+    private void BearerAuthentication() {
+        request.Headers.Add("Authorization", "Bearer " +  asanaAPISettings.token);
+    }
+
     //Log out and use PAT to access api TODO: remove access token
     public override void LogOut() {
         asanaAPISettings.token = asanaAPISettings.defaultToken;
@@ -96,7 +119,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
             asanaAPISettings.asanaAuthorizationEndpoint, asanaAPISettings.clientId, asanaAPISettings.responseType, asanaAPISettings.redirectUri, asanaAPISettings.scope);
         Application.OpenURL(url);
     }
-   
+
 
     //POST request to the toke excachange endpoint 
     public override void TokenExchange(bool isTokenRefresh = false) {
@@ -143,7 +166,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
     }
 
+
     #endregion
+
 
 }
 

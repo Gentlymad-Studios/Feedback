@@ -16,6 +16,7 @@ public class PanelComponents : MonoBehaviour {
 
     [Header("Screenshot")]
     public RawImage screenshot;
+    public RawImage overpaint;
 
     [Header("Token exchange")]
     public GameObject tokenPanel;

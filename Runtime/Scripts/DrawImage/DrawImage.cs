@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DrawImage : MonoBehaviour {
@@ -31,13 +29,16 @@ public class DrawImage : MonoBehaviour {
     bool no_drawing_on_current_drag = false;
     bool color_changed = true;
     public delegate void Brush_Function(Vector2 world_position);
+
     // This is the function called when a left click happens
     // Pass in your own custom one to change the brush type
     // Set the default function in the Awake method
     public Brush_Function current_brush;
+
     Color32[] resetColorArray;
     Color32[] last_colors;
     Color32[] cur_colors;
+    
     float[] max_opacity;
     bool isEraser = false;
 
@@ -92,7 +93,6 @@ public class DrawImage : MonoBehaviour {
             no_drawing_on_current_drag = false;
 
             if (color_changed) {
-                Debug.Log(drawSurfaceTexture);
                 last_colors = drawSurfaceTexture.GetPixels32();
                 color_changed = false;
                 ResetMaxOpacity();

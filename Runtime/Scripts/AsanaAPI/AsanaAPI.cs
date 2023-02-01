@@ -1,5 +1,5 @@
 /// <summary>
-/// Api class which inherits from the basic api class. It defines its own handler. 
+/// Api class which inherits from the basic api class.  
 /// </summary>
 public class AsanaAPI : BaseAPI {
 
@@ -8,9 +8,7 @@ public class AsanaAPI : BaseAPI {
     public AsanaAPI(){
         settingsHandler = new APISettingsHandler();
         CreateAPISpecificSettings();
-
         CreateRequestHandler(new AsanaRequestHandler(this));
-        CreateResponseHandler(new AsanaResponseHandler());
     }
 
     public override void CreateAPISpecificSettings() {

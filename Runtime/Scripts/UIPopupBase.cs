@@ -26,8 +26,8 @@ public abstract class UIPopUpBase : MonoBehaviour {
         //}
     }
 
-    protected virtual void PostData(string title, string text, DataType type) {
-        RequestData data = new RequestData(title, text, type);
+    protected virtual void PostData(string title, string text, Texture2D screenshot, DataType type) {
+        RequestData data = new RequestData(title, text, screenshot, type);
         api.requestHandler.POST(data);
     }
 
@@ -89,7 +89,7 @@ public abstract class UIPopUpBase : MonoBehaviour {
     /// </summary>
     /// <param name="screenshot">the captured screenshot</param>
     protected virtual void OnAfterScreenshotCapture(Texture2D screenshot) {
-
+       
     }
 
 

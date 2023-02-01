@@ -2827,6 +2827,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loginFailMessages: []
   type: 1
+  drawImage: {fileID: 3184361084459177682}
 --- !u!114 &1857487093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2839,12 +2840,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea3ea26afd33a64eb8904f8e7ca28b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userInfoPanel: {fileID: 0}
+  userInfoPanel: {fileID: 2706190644911694857}
   userName: {fileID: 5022154353215833913}
   userMail: {fileID: 2623677490573499717}
   title: {fileID: 1394017450784701770}
   text: {fileID: 8175717556233960878}
   dropdown: {fileID: 1352198479}
+  screenshot: {fileID: 3184361083826427859}
   tokenPanel: {fileID: 1251141628223513699}
   tokenText: {fileID: 2637693512307495902}
   button: {fileID: 4442639257635006762}
@@ -3242,8 +3244,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3446,7 +3448,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 40
+  m_GlobalPointSize: 25
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -3475,7 +3477,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: hu
+  m_Text: Paste token from browser and click ok
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -3708,7 +3710,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "hu\u200B"
+  m_text: Paste token from browser and click ok
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3735,8 +3737,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4974,7 +4976,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4517807225383479669, guid: 01b023fc2f53cca4588bd70e2f48541b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0000038017752
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4517807225383479669, guid: 01b023fc2f53cca4588bd70e2f48541b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5072,8 +5074,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3184361083826427859 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4517807225191062566, guid: 01b023fc2f53cca4588bd70e2f48541b, type: 3}
+  m_PrefabInstance: {fileID: 1334022291968330741}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3184361084053447296 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4517807225383479669, guid: 01b023fc2f53cca4588bd70e2f48541b, type: 3}
   m_PrefabInstance: {fileID: 1334022291968330741}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3184361084459177682 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4517807224717696295, guid: 01b023fc2f53cca4588bd70e2f48541b, type: 3}
+  m_PrefabInstance: {fileID: 1334022291968330741}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 220e31b6574a08b4a8b028526fa0a63a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

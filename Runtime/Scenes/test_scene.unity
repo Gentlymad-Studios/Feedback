@@ -274,20 +274,9 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &856976193 stripped
+--- !u!114 &846263922 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3184361084459177682, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
-  m_PrefabInstance: {fileID: 1902233705597908891}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 220e31b6574a08b4a8b028526fa0a63a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1087711321 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3184361083826427859, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+  m_CorrespondingSourceObject: {fileID: 3184361084459177683, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
   m_PrefabInstance: {fileID: 1902233705597908891}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -399,9 +388,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1857487093, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
-      propertyPath: screenshot
+      propertyPath: overpaint
       value: 
-      objectReference: {fileID: 1087711321}
+      objectReference: {fileID: 846263922}
     - target: {fileID: 640123313460976994, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -518,14 +507,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FeedbackPanelCanvas
       objectReference: {fileID: 0}
-    - target: {fileID: 3184361084053447296, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3569767656966165438, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
-      propertyPath: drawImage
+    - target: {fileID: 3184361084459177683, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
+      propertyPath: m_Texture
       value: 
-      objectReference: {fileID: 856976193}
+      objectReference: {fileID: 0}
     - target: {fileID: 6385069082238581044, guid: 5976b44556de161499a0ccb475bd3408, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

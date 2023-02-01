@@ -1,4 +1,5 @@
 
+using UnityEngine;
 /// <summary>
 /// Generic data structure. 
 /// </summary>
@@ -6,11 +7,13 @@ public class RequestData  {
 
     public string title;
     public string text;
+    public Texture2D screenshot;
     public DataType dataType;
 
-    public RequestData(string title, string text, DataType dataType) {
+    public RequestData(string title, string text,Texture2D screenshot, DataType dataType) {
         this.title = title;
         this.text = text;
+        this.screenshot = screenshot;
         this.dataType = dataType;
     }
 }
