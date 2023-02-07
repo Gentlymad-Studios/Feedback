@@ -107,19 +107,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
     }
 
-    // TODO: asana API is a bit weird so for ticket creation we need to have yet another wrapper class like this
-    // this should probably go into its own file so it doesn't convolute this handler class
-    public class NewAsanaTicketRequest {
-        public class NewTicketData {
-            public string name;
-            public string notes;
-            public string projects;
-            public string workspace;
-        }
-
-        public NewTicketData data = new NewTicketData();
-    }
-
     //Build task data out of user inputs
     private string BuildTaskData(RequestData data) {
         //TODO: no need to IO here, just use a defined c# model
@@ -170,6 +157,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     //Send Image to Task, use route from response header field location
     public async override void PostScreenshotAsync(string route, Texture2D img) {
         try {
+            //TODO: can this use the baseURL from the apiSettings instead of being hardcoded?
             string url = "https://app.asana.com" + route + "/attachments";
 
             HttpClient httpClient = new HttpClient();
@@ -206,7 +194,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
             asanaAPISettings.asanaAuthorizationEndpoint, asanaAPISettings.clientId, asanaAPISettings.responseType, asanaAPISettings.redirectUri, asanaAPISettings.scope);
         Application.OpenURL(url);
     }
-
 
     //POST request to the toke excachange endpoint 
     public override void TokenExchange(bool isTokenRefresh = false) {
@@ -272,8 +259,23 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
 }
 
+#region Request objects
+// TODO: asana API is a bit weird so for ticket creation we need to have yet another wrapper class like this
+// this should probably go into its own file so it doesn't convolute this handler class
+public class NewAsanaTicketRequest {
+    public class NewTicketData {
+        public string name;
+        public string notes;
+        public string projects;
+        public string workspace;
+    }
+
+    public NewTicketData data = new NewTicketData();
+}
+#endregion
+
 #region Response objects 
-[System.Serializable]
+[System.Serializable] //TODO: does this really need to be serializable? Newtonsoft.Json does not need this to deserialize...
 public class AuthorizationInfo {
     public string access_token;
     public string token_type;
@@ -284,12 +286,11 @@ public class AuthorizationInfo {
 }
 
 
-[System.Serializable]
+[System.Serializable] //TODO: does this really need to be serializable? Newtonsoft.Json does not need this to deserialize...
 public class AuthorizationUser {
     public string id;
     public string gid;
     public string name;
     public string email;
 }
-
 #endregion
