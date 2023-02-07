@@ -1,14 +1,6 @@
 using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Windows;
-using Debug = UnityEngine.Debug;
 using File = System.IO.File;
 
 public class TicketBrowser : MonoBehaviour {
@@ -23,7 +15,7 @@ public class TicketBrowser : MonoBehaviour {
 
     void Start() {
         FormatFile();
-        SearchTicketFromString(searchString);
+       
     }
 
     private void SearchTicketFromString(string searchString) {
@@ -47,12 +39,23 @@ public class TicketBrowser : MonoBehaviour {
         preview.ticketName.text = name;
     }
     public void FormatFile() {
-        jsonFile = File.ReadAllText("Assets/Feedback/Runtime/Resources/AsanaTasks.json");
-        jsonFile.Replace("]}{\"data\":[", ",").Replace("{\"data\":[{", "[{")
-            .Replace("{[", "{").Replace("]}", "}").Replace("}}", "}").Replace("{{", "{");
-        if(!jsonFile.EndsWith("]")) {
+        if(Resources.Load<TextAsset>("AsanaTasks")== null) {
+            return;
+        }
+        jsonFile = Resources.Load<TextAsset>("AsanaTasks").ToString();
+        jsonFile = jsonFile.Replace("]}{\"data\":[", ",");
+        jsonFile = jsonFile.Replace("{\"data\":[{", "[{");
+        jsonFile = jsonFile.Replace("{[", "{");
+        jsonFile = jsonFile.Replace("]}", "}");
+        jsonFile = jsonFile.Replace("}}", "}");
+        jsonFile = jsonFile.Replace("{{", "{");
+        jsonFile = jsonFile.Replace("][", ",");
+
+        if (!jsonFile.EndsWith("]")) {
             jsonFile = jsonFile + "]";
         }
+
         File.WriteAllText("Assets/Feedback/Runtime/Resources/AsanaTasks.json", jsonFile);
+        SearchTicketFromString(searchString);
     }
 }

@@ -21,7 +21,10 @@ public class UIPopup : UIPopUpBase {
             submitAccessToken = true;
         });
         Configure();
-        //base.GetData();
+        if(Resources.Load<TextAsset>("AsanaTasks")!= null) {
+            return;
+        }
+        base.GetData();
     }
     public void Configure() {
         if (type.Equals(API_Type.asana)) {
