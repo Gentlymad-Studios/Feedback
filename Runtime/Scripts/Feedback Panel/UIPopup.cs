@@ -21,9 +21,7 @@ public class UIPopup : UIPopUpBase {
             submitAccessToken = true;
         });
         Configure();
-        //base.GetData("https://app.asana.com/api/1.0/workspaces/1192678870065366/tasks/search?teamS.any=1192678870065368&opt_fields=projects,name,assignee,due_on,completed_at&limit=100 ");
-        //base.GetData("https://app.asana.com/api/1.0/workspaces/1192678870065366/tasks");
-        base.GetData();
+        //base.GetData();
     }
     public void Configure() {
         if (type.Equals(API_Type.asana)) {

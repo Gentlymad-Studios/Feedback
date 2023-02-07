@@ -214,19 +214,13 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     #endregion
     private void WriteFile(string text) {
-        string path = Application.dataPath + "/AsanaTasks.json";
+        string path = Application.dataPath + "/Feedback/Runtime/Resources/AsanaTasks.json";
 
         if (!File.Exists(path)) {
-
-            // Create a file to write to.
             using (StreamWriter sw = File.CreateText(path)) {
-                sw.WriteLine(DateTime.Now.ToString() + ": " + "pagination initialised");
             }
         } else {
-            // This text is always added, making the file longer over time
-            // if it is not deleted.
             using (StreamWriter sw = File.AppendText(path)) {
-                sw.WriteLine(DateTime.Now.ToString() + ": " + "____pagination iteration____");
                 sw.Write(text);
             }
         }
