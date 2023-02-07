@@ -46,7 +46,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         // TODO: added list of ticket models here. Evaluate if this makes sense or if it should become a class wide field...
         List<TicketModel> ticketModels = new List<TicketModel>();
         Stopwatch sw = new Stopwatch();
-        //TODO: most liekely already on your radar but if this is the way data has to be requested we most liekely need a dynamic solution, that builts these monthly requests automatically and based on the current year?
+        //TODO: most likely already on your radar but if this is the way data has to be requested we'll need a dynamic solution, that builts these monthly requests automatically and based on the current year?
         string[] dates = new string[] { "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01",
             "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01",
          "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01",
