@@ -1,18 +1,20 @@
+using System.Collections.Generic;
 /// <summary>
 /// Api class which inherits from the basic api class.  
 /// </summary>
 public class AsanaAPI : BaseAPI {
 
-    private APISettingsHandler settingsHandler;
-    public AsanaAPISettings asanaAPISettings;
+    public AsanaAPISettings asanaSpecificSettings;
+    public List<TicketModel> ticketModels = new List<TicketModel>();
+
     public AsanaAPI(){
-        settingsHandler = new APISettingsHandler();
         CreateAPISpecificSettings();
         CreateRequestHandler(new AsanaRequestHandler(this));
     }
+
     public override void CreateAPISpecificSettings() {
-        asanaAPISettings = settingsHandler.FindAsanaAPISettings();
-        base.settings = asanaAPISettings;
+        asanaSpecificSettings = APISettings.LoadSettings<AsanaAPISettings>();
+        settings = asanaSpecificSettings;
     }
 
 }

@@ -1,7 +1,5 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
-using File = System.IO.File;
 
 public class TicketBrowser : MonoBehaviour {
 
@@ -10,19 +8,29 @@ public class TicketBrowser : MonoBehaviour {
     public GameObject layoutGroup;
     public GameObject ticketPreviewPrefab;
 
-    private string jsonFile;
+    //private string jsonFile;
     private List<TicketModel> ticketModels = new List<TicketModel>();
 
-    void Start() {
-        FormatFile();
-       
+    void Awake() {
+        //FormatFile();
+        //TODO: unsubscribe from any event (safety measure)
+        AsanaRequestHandler.TicketModelsReceivedEvent -= OnTicketModelsReceived;
+        //TODO: subscribe to TicketModelsCreatedEvent event to get notified when the api/request handler did receive tickets
+        AsanaRequestHandler.TicketModelsReceivedEvent += OnTicketModelsReceived;
+    }
+
+    private void OnTicketModelsReceived(List<TicketModel> tickets) {
+        this.ticketModels = tickets;
+        //TODO: this is only a demo so this should go whereever this makes sense, just keep in mind that we can only be sure that we have received tickets after this event has fired.
+        SearchTicketFromString(searchString);
     }
 
     private void SearchTicketFromString(string searchString) {
-        ticketModels = JsonConvert.DeserializeObject<List<TicketModel>>(jsonFile);
+        //ticketModels = JsonConvert.DeserializeObject<List<TicketModel>>(jsonFile);
         foreach (TicketModel ticket in ticketModels) {
             if (ticket.notes.Contains(searchString) || ticket.name.Contains(searchString)) {
-                FillPreiew(ticket.notes, ticket.name);
+                Debug.Log(ticket.notes);
+                FillPreview(ticket.notes, ticket.name);
             }
         }
     }
@@ -31,13 +39,14 @@ public class TicketBrowser : MonoBehaviour {
         
     }
 
-    private void FillPreiew(string notes, string name) {
+    private void FillPreview(string notes, string name) {
         GameObject newPreviewField = Instantiate(ticketPreviewPrefab);
         newPreviewField.transform.parent = layoutGroup.transform;
         TicketPreview preview = newPreviewField.GetComponent<TicketPreview>();
         preview.notes.text = notes;
         preview.ticketName.text = name;
     }
+    /* TODO: I think we should operate directly on the data instead of doing the extra steps of get response > save .json to disk > load again and deserialize
     public void FormatFile() {
         if(Resources.Load<TextAsset>("AsanaTasks")== null) {
             return;
@@ -57,5 +66,5 @@ public class TicketBrowser : MonoBehaviour {
 
         File.WriteAllText("Assets/Feedback/Runtime/Resources/AsanaTasks.json", jsonFile);
         SearchTicketFromString(searchString);
-    }
+    }*/
 }

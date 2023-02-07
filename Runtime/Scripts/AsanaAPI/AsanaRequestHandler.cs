@@ -1,10 +1,9 @@
-using Codice.Client.BaseCommands;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -17,6 +16,10 @@ using File = System.IO.File;
 /// </summary>
 public class AsanaRequestHandler : BaseRequestHandler {
 
+    // TODO: alternative event based way to receive data from anywhere
+    public delegate void TicketModelsCreated(List<TicketModel> tickets);
+    public static event TicketModelsCreated TicketModelsReceivedEvent;
+
     private StreamReader _sr;
     private AsanaAPI asanaAPI;
     private AsanaAPISettings asanaAPISettings;
@@ -27,7 +30,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private string paginatedCreatedBefore;
     private string paginatedCreatedAfter;
     public AsanaRequestHandler(AsanaAPI asanaAPI) {
-        asanaAPISettings = asanaAPI.asanaAPISettings;
+        asanaAPISettings = asanaAPI.asanaSpecificSettings;
         this.asanaAPI = asanaAPI;
         request = default(HttpWebRequest);
     }
@@ -41,6 +44,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     //Get a lot asana task (may not all because there could be more than 100 tasks created in a month).
     //Diagnostic method to measure time and file size to fetch and store up to 2500 tasks from asana api.
     private async void GetTasksWithCustomPagination() {
+        // TODO: added list of ticket models here. Evaluate if this makes sense or if it should become a class wide field...
+        List<TicketModel> ticketModels = new List<TicketModel>();
         Stopwatch sw = new Stopwatch();
         string[] dates = new string[] { "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01",
             "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01",
@@ -64,12 +69,19 @@ public class AsanaRequestHandler : BaseRequestHandler {
             using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream)) {
+                // TODO: Instead of writing responses to disk we just simply deserialize them directly
+                // this has the nice benefit that we do not need to do any IO operations as well as do the deserialization while we are in an asynchronous operation aka non-blocking environment (= WIN WIN)
+                //WriteFile(result);
                 string result = await reader.ReadToEndAsync();
-                WriteFile(result);
+                TicketModels setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketModels>(result);
+                if (setOfTickets != null) {
+                    ticketModels.AddRange(setOfTickets.data);
+                }
             }
         }
         sw.Stop();
         Debug.Log(sw.Elapsed);
+        TicketModelsReceivedEvent.Invoke(ticketModels);
     }
 
     //POST a task data object to task list
@@ -213,6 +225,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
 
     #endregion
+    /* //TODO: I don't think this is needed, better to deserialize right away and then operate on the deserialized set of data instead of writing the json to disk to just to load it again
     private void WriteFile(string text) {
         string path = Application.dataPath + "/Feedback/Runtime/Resources/AsanaTasks.json";
 
@@ -225,7 +238,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
             }
         }
 
-    }
+    }*/
 
 }
 
