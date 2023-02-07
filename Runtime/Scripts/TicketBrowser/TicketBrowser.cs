@@ -9,25 +9,25 @@ public class TicketBrowser : MonoBehaviour {
     public GameObject ticketPreviewPrefab;
 
     //private string jsonFile;
-    private List<TicketModel> ticketModels = new List<TicketModel>();
+    private List<TicketModel> tickets = new List<TicketModel>();
 
     void Awake() {
         //FormatFile();
         //TODO: unsubscribe from any event (safety measure)
-        AsanaRequestHandler.TicketModelsReceivedEvent -= OnTicketModelsReceived;
-        //TODO: subscribe to TicketModelsCreatedEvent event to get notified when the api/request handler did receive tickets
-        AsanaRequestHandler.TicketModelsReceivedEvent += OnTicketModelsReceived;
+        AsanaAPI.TicketsReceivedEvent -= OnTicketsReceived;
+        //TODO: subscribe to TicketsReceivedEvent event to get notified when the api did receive tickets
+        AsanaAPI.TicketsReceivedEvent += OnTicketsReceived;
     }
 
-    private void OnTicketModelsReceived(List<TicketModel> tickets) {
-        this.ticketModels = tickets;
+    private void OnTicketsReceived(List<TicketModel> tickets) {
+        this.tickets = tickets;
         //TODO: this is only a demo so this should go whereever this makes sense, just keep in mind that we can only be sure that we have received tickets after this event has fired.
         SearchTicketFromString(searchString);
     }
 
     private void SearchTicketFromString(string searchString) {
         //ticketModels = JsonConvert.DeserializeObject<List<TicketModel>>(jsonFile);
-        foreach (TicketModel ticket in ticketModels) {
+        foreach (TicketModel ticket in tickets) {
             if (ticket.notes.Contains(searchString) || ticket.name.Contains(searchString)) {
                 Debug.Log(ticket.notes);
                 FillPreview(ticket.notes, ticket.name);

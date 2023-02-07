@@ -15,10 +15,6 @@ using Debug = UnityEngine.Debug;
 /// </summary>
 public class AsanaRequestHandler : BaseRequestHandler {
 
-    // TODO: alternative event based way to receive data from anywhere
-    public delegate void TicketModelsCreated(List<TicketModel> tickets);
-    public static event TicketModelsCreated TicketModelsReceivedEvent;
-
     private StreamReader _sr;
     private AsanaAPI asanaAPI;
     private AsanaAPISettings asanaAPISettings;
@@ -81,7 +77,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
         sw.Stop();
         Debug.Log(sw.Elapsed);
-        TicketModelsReceivedEvent.Invoke(ticketModels);
+        // TODO: here we'll send all of our received tickets.
+        asanaAPI.FireTicketsCreated(ticketModels);
     }
 
     //POST a task data object to task list
