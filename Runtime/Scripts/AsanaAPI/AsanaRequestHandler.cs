@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Text;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using File = System.IO.File;
 
 //query builder https://developers.asana.com/reference/searchtasksforworkspace
 
@@ -47,6 +46,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         // TODO: added list of ticket models here. Evaluate if this makes sense or if it should become a class wide field...
         List<TicketModel> ticketModels = new List<TicketModel>();
         Stopwatch sw = new Stopwatch();
+        //TODO: most liekely already on your radar but if this is the way data has to be requested we most liekely need a dynamic solution, that builts these monthly requests automatically and based on the current year?
         string[] dates = new string[] { "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01",
             "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01",
          "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01",
@@ -107,8 +107,27 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
     }
 
+    // TODO: asana API is a bit weird so for ticket creation we need to have yet another wrapper class like this
+    // this should probably go into its own file so it doesn't convolute this handler class
+    public class NewAsanaTicketRequest {
+        public class NewTicketData {
+            public string name;
+            public string notes;
+            public string projects;
+            public string workspace;
+        }
+
+        public NewTicketData data = new NewTicketData();
+    }
+
     //Build task data out of user inputs
     private string BuildTaskData(RequestData data) {
+        //TODO: no need to IO here, just use a defined c# model
+        // this saves you from:
+        // 1. having to load an actual file
+        // 2. having to deserialize json
+        // 3. no need to do jsonObj string stuff, which can be error prone
+        /* OLD CODE:
         string json = File.ReadAllText(asanaAPISettings.pathToTaskTemplate);
         dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
 
@@ -121,6 +140,17 @@ public class AsanaRequestHandler : BaseRequestHandler {
         jsonObj["data"]["workspace"] = asanaAPISettings.workspaceId;
 
         string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+        */
+
+        string projectId = asanaAPISettings.bugId;
+        if (data.dataType is DataType.feedback) { projectId = asanaAPISettings.feedbackId; }
+
+        NewAsanaTicketRequest newTicketRequest = new NewAsanaTicketRequest();
+        newTicketRequest.data.name = data.title;
+        newTicketRequest.data.notes = data.text;
+        newTicketRequest.data.projects = projectId;
+        newTicketRequest.data.workspace = asanaAPISettings.workspaceId;
+        string output = Newtonsoft.Json.JsonConvert.SerializeObject(newTicketRequest, Newtonsoft.Json.Formatting.Indented);
         return output;
     }
 
