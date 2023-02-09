@@ -19,7 +19,7 @@ public class RequestData  {
 }
 
 public enum DataType {
-    feedback = 1,
-    bug = 2,
+    Feedback = 1,
+    Bug = 2,
 }
 

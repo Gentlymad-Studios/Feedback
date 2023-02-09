@@ -8,14 +8,12 @@ public class AsanaAPISettings : APISettings {
     public string projectRoute;
     public string taskRoute;
     public string userRoute;
+    public string attachmentRoute;
 
     [Header("")]
     public string workspaceId;
     public string feedbackId;
     public string bugId;
-
-    [Header("Resources")]
-    public string pathToTaskTemplate;
 
     [Header("Authorization Information")]
     public string asanaAuthorizationEndpoint;

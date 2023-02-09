@@ -1,16 +1,15 @@
 using System;
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 
 public class UIPopup : UIPopUpBase { 
 
-    public API_Type type;
+    public APISettings.APIType type;
     public DrawImage drawImage;
 
     private bool submitAccessToken = false;
     private PanelComponents panelComponents;
-    private DataType currentDataType = DataType.feedback;
+    private DataType currentDataType = DataType.Feedback;
 
     private void Start() {
         drawImage.Setup();
@@ -21,13 +20,10 @@ public class UIPopup : UIPopUpBase {
             submitAccessToken = true;
         });
         Configure();
-        if(Resources.Load<TextAsset>("AsanaTasks")!= null) {
-            return;
-        }
         base.GetData();
     }
     public void Configure() {
-        if (type.Equals(API_Type.asana)) {
+        if (type.Equals(APISettings.APIType.Asana)) {
             api =  new AsanaAPI();
         }
     }

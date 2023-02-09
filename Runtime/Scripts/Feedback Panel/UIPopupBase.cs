@@ -118,5 +118,4 @@ public enum LoginFailReason {
     WrongUsernameOrMail = 0,
     WrongPassword = 1,
     UnknownError = 2
-
 }

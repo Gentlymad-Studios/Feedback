@@ -402,7 +402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6fe0103f72564a459d43ea1c6e78e4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  searchString: Bot
+  searchString: Generic
   counter: 0
   layoutGroup: {fileID: 1231902802}
   ticketPreviewPrefab: {fileID: 2565469106121440807, guid: 33d81e98d2d80d248a73b69787d251e9, type: 3}

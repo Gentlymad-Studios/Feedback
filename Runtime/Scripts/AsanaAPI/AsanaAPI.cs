@@ -1,14 +1,15 @@
 using System.Collections.Generic;
+
 /// <summary>
 /// Api class which inherits from the basic api class.  
 /// </summary>
 public class AsanaAPI : BaseAPI {
-    // TODO: alternative event based way to receive data from anywhere
-    public delegate void TicketsReceived(List<TicketModel> tickets);
+
+    public delegate void TicketsReceived(List<AsanaTicketModel> tickets);
     public static event TicketsReceived TicketsReceivedEvent;
 
     public AsanaAPISettings asanaSpecificSettings;
-    public List<TicketModel> ticketModels = new List<TicketModel>();
+    public List<AsanaTicketModel> ticketModels = new List<AsanaTicketModel>();
 
     public AsanaAPI(){
         CreateAPISpecificSettings();
@@ -20,7 +21,7 @@ public class AsanaAPI : BaseAPI {
         settings = asanaSpecificSettings;
     }
 
-    public void FireTicketsCreated(List<TicketModel> tickets) {
+    public void FireTicketsCreated(List<AsanaTicketModel> tickets) {
         TicketsReceivedEvent.Invoke(tickets);
     }
 }
