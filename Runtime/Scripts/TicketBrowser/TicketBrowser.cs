@@ -36,7 +36,7 @@ public class TicketBrowser : MonoBehaviour {
         if(searchString != differ) {
             StartCoroutine(Search());
             
-            Debug.Log(searchString);
+            Debug.Log("current search string: " + searchString);
         }
         searchString = differ;
     }
