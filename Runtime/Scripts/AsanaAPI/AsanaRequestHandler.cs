@@ -37,7 +37,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private async void SaveAsanaTasksFile(StreamReader reader) {
         if (Resources.Load<TextAsset>("AsnaTasks") == null) {
             string result = await reader.ReadToEndAsync();
-            AsanaTicketModels setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<AsanaTicketModels>(result);
+            TicketModels.AsanaTicketModels setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
 
         }
     }
@@ -50,8 +50,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
         bool write = false;
         if (Resources.Load<TextAsset>("AsanaTasks") == null) { write = true; }
 
-        List<AsanaTicketModel> ticketModels = new List<AsanaTicketModel>();
-        AsanaTicketModels setOfTickets = new AsanaTicketModels();
+        List<TicketModels.AsanaTicketModel> ticketModels = new List<TicketModels.AsanaTicketModel>();
+        TicketModels.AsanaTicketModels setOfTickets = new TicketModels.AsanaTicketModels();
         string result = "";
 
         string[] dates = new string[] { "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01",
@@ -83,7 +83,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                     result = Resources.Load<TextAsset>("AsanaTasks").ToString();
                     result = result.Replace("]}{\"data\":[", ",");
 
-                    setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<AsanaTicketModels>(result);
+                    setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
                     if (setOfTickets != null) {
                         ticketModels.AddRange(setOfTickets.data);
                     }
@@ -96,7 +96,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
 #if UNITY_EDITOR
                 WriteFile(result);
 #endif
-                setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<AsanaTicketModels>(result);
+                setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
                 if (setOfTickets != null) {
                     ticketModels.AddRange(setOfTickets.data);
                 }

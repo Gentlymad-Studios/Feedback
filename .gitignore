@@ -71,3 +71,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /Runtime/Settings/APISettings
+/Runtime/APISettings/API_Settings_SO_asana.asset
+/Runtime/APISettings/API_Settings_SO_asana.asset.meta
+/Runtime/Resources/AsanaTasks.json.meta
+/Runtime/Resources/AsanaTasks.json
+/Runtime/APISettings.meta

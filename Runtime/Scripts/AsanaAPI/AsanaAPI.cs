@@ -5,11 +5,11 @@ using System.Collections.Generic;
 /// </summary>
 public class AsanaAPI : BaseAPI {
 
-    public delegate void TicketsReceived(List<AsanaTicketModel> tickets);
+    public delegate void TicketsReceived(List<TicketModels.AsanaTicketModel> tickets);
     public static event TicketsReceived TicketsReceivedEvent;
 
     public AsanaAPISettings asanaSpecificSettings;
-    public List<AsanaTicketModel> ticketModels = new List<AsanaTicketModel>();
+    public List<TicketModels.AsanaTicketModel> ticketModels = new List<TicketModels.AsanaTicketModel>();
 
     public AsanaAPI(){
         CreateAPISpecificSettings();
@@ -21,7 +21,7 @@ public class AsanaAPI : BaseAPI {
         settings = asanaSpecificSettings;
     }
 
-    public void FireTicketsCreated(List<AsanaTicketModel> tickets) {
+    public void FireTicketsCreated(List<TicketModels.AsanaTicketModel> tickets) {
         TicketsReceivedEvent.Invoke(tickets);
     }
 }
