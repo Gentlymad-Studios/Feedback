@@ -1,0 +1,42 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); min-width: 1920px; min-height: 1080px; max-width: 100%; max-height: 100%; width: 100%; height: 100%;">
+        <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgb(255, 255, 255); width: 100%; height: 100%;">
+            <ui:VisualElement name="TopBar" style="flex-grow: 1; background-color: rgb(106, 106, 106); height: 5%; width: 100%; flex-direction: row; align-self: flex-start; align-items: stretch; max-height: 5%; min-height: 5%;">
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; align-items: stretch; height: 100%; max-height: 100%; min-height: 100%;">
+                    <ui:Button text="Search" display-tooltip-when-elided="true" name="Button" style="min-width: 150px; max-width: 150px; max-height: 100%; min-height: 100%; background-color: rgb(255, 255, 255); height: 10%; align-self: flex-start; width: 150px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                    <ui:Button text="Report" display-tooltip-when-elided="true" name="Button" style="max-width: 150px; min-width: 150px; max-height: 100%; min-height: 100%; align-self: flex-start; width: 150px; height: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; justify-content: flex-end; align-self: stretch; max-width: 20%; max-height: 100%; height: 100%; min-height: 100%;">
+                    <ui:Button text="Login" display-tooltip-when-elided="true" name="Button" style="align-items: stretch; align-self: flex-end; justify-content: space-around; height: 100%; width: 150px; min-height: 100%; max-height: 100%; max-width: 150px; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; background-color: rgb(106, 106, 106);" />
+                    <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(114, 185, 71, 0.61); height: 80%; width: 40px; max-height: 80%; max-width: 40px; min-height: 80%; border-top-left-radius: 100px; border-bottom-left-radius: 100px; border-top-right-radius: 100px; border-bottom-right-radius: 100px; padding-left: 8px; padding-right: 8px; padding-top: 8px; padding-bottom: 8px; margin-left: 8px; margin-right: 8px; margin-top: 8px; margin-bottom: 8px; min-width: 40px; justify-content: flex-start; align-self: center;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="Container1" style="flex-grow: 1; background-color: rgb(255, 255, 255); height: 50%; width: 100%; align-items: flex-start; align-self: flex-start; justify-content: center; border-left-width: 20px; border-right-width: 20px; border-top-width: 20px; border-bottom-width: 20px;">
+                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 60, 255, 0); height: 100%; width: 100%; max-height: 80px; max-width: 100%; align-items: flex-start; justify-content: center;">
+                    <ui:Label tabindex="-1" text="What Bug did you encounterd?" display-tooltip-when-elided="true" name="Label" style="color: rgb(0, 0, 0); font-size: 25px;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgb(90, 192, 107); flex-direction: row; height: 80px; align-items: center; width: 100%; justify-content: flex-start; max-height: 80px; align-self: center; -unity-text-align: upper-center; overflow: hidden;">
+                    <ui:TextField picking-mode="Ignore" label="Text Field" value="filler text" name="TextField" style="justify-content: flex-start; -unity-text-align: upper-left; overflow: hidden; align-self: auto; width: 90%; height: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;" />
+                    <ui:Button text="Submit" display-tooltip-when-elided="true" name="Button" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 100%; width: 10%; align-self: flex-end;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(26, 193, 207, 0); max-height: 80px; max-width: 100%; width: 100%; height: 100%; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
+                    <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgb(216, 219, 46); max-width: 220px; max-height: 80px; border-top-left-radius: 50px; border-bottom-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+                        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" style="height: 100%; -unity-text-align: middle-center; font-size: 20px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="Container2" style="flex-grow: 1; background-color: rgba(87, 87, 87, 0); height: 50%; width: 100%; justify-content: center; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-width: 20px; border-right-width: 20px; border-top-width: 20px; border-bottom-width: 20px;">
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgb(101, 101, 101); border-left-width: 20px; border-right-width: 20px; border-top-width: 20px; border-bottom-width: 20px;">
+                    <ui:VisualElement name="Card" style="flex-grow: 1; background-color: rgba(147, 107, 143, 0); max-height: 80%; justify-content: flex-start; align-self: auto; max-width: 400px;">
+                        <ui:VisualElement style="flex-grow: 1; background-color: rgb(132, 28, 28); max-height: 20%; max-width: 100%; min-height: 20%; min-width: 100%;">
+                            <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" style="font-size: 22px; -unity-text-align: middle-left;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; background-color: rgba(84, 27, 27, 0.99); min-height: 80%; min-width: 100%;">
+                            <ui:Label tabindex="-1" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet" display-tooltip-when-elided="true" name="Label" style="white-space: normal; color: rgb(0, 0, 0); font-size: 18px; padding-left: 10px; padding-right: 10px; height: 100%;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
