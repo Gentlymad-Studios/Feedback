@@ -2,13 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class TicketBrowser : MonoBehaviour {
 
     public GameObject layoutGroup;
     public GameObject ticketPreviewPrefab;
+    public GameObject tagPanel;
+
     public LuceneTest lucene;
+    public TMP_InputField input;
+    public TagList tagList;
 
     private List<TicketModels.AsanaTicketModel> tickets = new List<TicketModels.AsanaTicketModel>();
     private List<GameObject> ticketsList = new List<GameObject>();
@@ -18,9 +23,19 @@ public class TicketBrowser : MonoBehaviour {
     private int count = 0;
 
     private List<TicketModels.AsanaTicketModel> searchResult = new List<TicketModels.AsanaTicketModel>();
+    public List<ScriptableTag> usedTags = new List<ScriptableTag>();
+
     void Awake() {
         AsanaAPI.TicketsReceivedEvent -= OnTicketsReceived;
         AsanaAPI.TicketsReceivedEvent += OnTicketsReceived;
+    }
+
+    private void Update() {
+        differ = input.text;
+        if (searchString != differ) {
+            StartCoroutine(Search());
+        }
+        searchString = differ;
     }
 
     //Needs to be fired to operate on tickets!
@@ -30,24 +45,38 @@ public class TicketBrowser : MonoBehaviour {
         lucene.AddTicketsToIndex(tickets);
     }
 
+    //Remove a tag 
+    public void RemoveTag(GameObject tag) {
+        ScriptableTag st = tag.GetComponentInChildren<TagPreview>().scriptableTag;
+        usedTags.Remove(st);
+        Destroy(tag);
+    }
+
+    //Search for sarch term each time the string in the inout field was changed 
     private IEnumerator Search() {
         ResetPreview();
         var res = lucene.SearchTerm(searchString);
         searchResult = res.ToList();
 
+        AddTag();
         foreach (TicketModels.AsanaTicketModel ticket in searchResult) {
             FillPreview(ticket.notes, ticket.name);
         }
+
         Debug.Log(searchResult.ToList().Count);
         yield return new WaitForSeconds(0.5f);
     }
-    private void Update() {
-        differ = GetComponent<TMP_InputField>().text;
-        if (searchString != differ) {
-            StartCoroutine(Search());
-            Debug.Log("current search string: " + searchString);
+
+    private void AddTag() {
+        foreach (ScriptableTag tag in tagList.tags) {
+            if (searchString.ToLower().Contains(tag.tagName.ToLower()) && !usedTags.Contains(tag)) {
+                usedTags.Add(tag);
+                GameObject tagObj = Instantiate(tag.tagPrefab);
+                tagObj.transform.parent = tagPanel.transform;
+                tagObj.GetComponentInChildren<TMP_Text>().text = tag.tagName;
+                tagObj.GetComponentInChildren<TagPreview>().scriptableTag = tag;
+            }
         }
-        searchString = differ;
     }
 
     private void FillPreview(string notes, string name) {
