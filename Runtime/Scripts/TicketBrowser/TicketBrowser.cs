@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class TicketBrowser : MonoBehaviour {
 
@@ -31,12 +31,18 @@ public class TicketBrowser : MonoBehaviour {
     }
 
     private void Update() {
+    
         differ = input.text;
-        if (searchString != differ) {
+        if(input.text == "") { return;  }
+        if (differ != searchString && searchString != " ") {
+            searchString = differ;
             StartCoroutine(Search());
         }
-        searchString = differ;
     }
+
+    //private void OnDisable() {
+    //    lucene.Dispose();
+    //}
 
     //Needs to be fired to operate on tickets!
     private void OnTicketsReceived(List<TicketModels.AsanaTicketModel> tickets) {
@@ -72,7 +78,7 @@ public class TicketBrowser : MonoBehaviour {
             if (searchString.ToLower().Contains(tag.tagName.ToLower()) && !usedTags.Contains(tag)) {
                 usedTags.Add(tag);
                 GameObject tagObj = Instantiate(tag.tagPrefab);
-                tagObj.transform.parent = tagPanel.transform;
+                tagObj.transform.SetParent(tagPanel.transform);
                 tagObj.GetComponentInChildren<TMP_Text>().text = tag.tagName;
                 tagObj.GetComponentInChildren<TagPreview>().scriptableTag = tag;
             }

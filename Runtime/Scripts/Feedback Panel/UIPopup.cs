@@ -22,6 +22,7 @@ public class UIPopup : UIPopUpBase {
         Configure();
         base.GetData();
     }
+
     public void Configure() {
         if (type.Equals(APISettings.APIType.Asana)) {
             api =  new AsanaAPI();
