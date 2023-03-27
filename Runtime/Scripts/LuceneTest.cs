@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Profiling;
 using Directory = Lucene.Net.Store.Directory;
@@ -44,7 +43,6 @@ public class LuceneTest : MonoBehaviour {
         // Create an analyzer to process the text
         analyzer = new StandardAnalyzer(version);
         var config = new IndexWriterConfig(version, analyzer);
-
         if (!DirectoryReader.IndexExists(indexDirectory)) {
             // Create an index writer if no index exists 
             writer = new IndexWriter(indexDirectory, config);
@@ -84,7 +82,6 @@ public class LuceneTest : MonoBehaviour {
                     Profiler.BeginSample("lucene writer sample");
                     writer.AddDocument(document);
                     Profiler.EndSample();
-
                     count++;
                 } catch (Exception e) {
                     Debug.Log(e);
@@ -106,7 +103,7 @@ public class LuceneTest : MonoBehaviour {
     /// <param name="searchTerm"></param>
     /// <returns></returns>
     public IEnumerable<TicketModels.AsanaTicketModel> SearchTerm(string searchTerm) {
-        string escapedSearchTerm = ModifySearchTerm(EscapeSpecialChars(searchTerm), new string[]{ "*" });
+        string escapedSearchTerm = EscapeSpecialChars(searchTerm);
 
         directoryReader = DirectoryReader.Open(indexDirectory);
         indexSearcher = new IndexSearcher(directoryReader);
@@ -116,9 +113,8 @@ public class LuceneTest : MonoBehaviour {
         Query searchQuery = queryParser.Parse(escapedSearchTerm.Trim());
       
         Debug.Log(searchQuery.ToString());
-        ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 5000).ScoreDocs;
+        ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 10).ScoreDocs;
 
-        Debug.Log(hits.Length);
         var results = new List<TicketModels.AsanaTicketModel>();
 
         foreach (ScoreDoc hit in hits) {
@@ -149,12 +145,12 @@ public class LuceneTest : MonoBehaviour {
     /// <param name="searchTerm"></param>
     /// <returns></returns>
     private string EscapeSpecialChars(string searchTerm) {
-        char[] escapingChars = { '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '?', ':', '*'};
+        char[] escapeCharSet = { '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '?', ':', '*'};
         char[] chars = searchTerm.ToCharArray();
         string escapedText = "";
         for(int i = 0; i < chars.Length; i++) {
             var esc = chars[i].ToString();
-            if (escapingChars.Contains(chars[i])) {
+            if (escapeCharSet.Contains(chars[i])) {
                 esc = "\\" + chars[i];
             }
             escapedText += esc;

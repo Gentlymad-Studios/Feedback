@@ -8,21 +8,23 @@ public class UIPopup : UIPopUpBase {
     public DrawImage drawImage;
 
     private bool submitAccessToken = false;
-    private PanelComponents panelComponents;
+    public PanelComponents panelComponents;
     private DataType currentDataType = DataType.Feedback;
 
     private void Start() {
         drawImage.Setup();
         base.OnShowWindow();
-        panelComponents = GetComponent<PanelComponents>();
-        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
-        panelComponents.button.onClick.AddListener(() => {
-            submitAccessToken = true;
-        });
         Configure();
+        RegisterEvents();
         base.GetData();
     }
-
+    
+    private void RegisterEvents() {
+        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
+        panelComponents.tokenSubmitButton.onClick.AddListener(() => { submitAccessToken = true; });
+        panelComponents.reportTabButton.onClick.AddListener(() => { ShowReportPanel(); });
+        panelComponents.searchTabButton.onClick.AddListener(() => { ShowSearchPanel(); });
+    }
     public void Configure() {
         if (type.Equals(APISettings.APIType.Asana)) {
             api =  new AsanaAPI();
@@ -50,8 +52,8 @@ public class UIPopup : UIPopUpBase {
         api.settings.token = panelComponents.tokenText.text.ToString();
         api.requestHandler.TokenExchange();
        
-        panelComponents.userName.text = api.requestHandler.user.name;
-        panelComponents.userMail.text = api.requestHandler.user.email;
+        panelComponents.userName.text = api.requestHandler.user?.name;
+        panelComponents.userMail.text = api.requestHandler.user?.email;
         panelComponents.tokenPanel.SetActive(false);
     }
     public void OnLogOutButtonClick() {
@@ -71,6 +73,7 @@ public class UIPopup : UIPopUpBase {
             currentDataType);
     }
     protected override void OnHideWindow() {
+        //dispose lucene stuff?
     }
 
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
@@ -114,5 +117,16 @@ public class UIPopup : UIPopUpBase {
         screenshot.Apply(true);
 
         return screenshot;
+    }
+
+    private void ShowReportPanel() {
+        panelComponents.searchPanel.SetActive(false);
+        panelComponents.reportPanel.SetActive(true);
+        
+    }
+    private void ShowSearchPanel() {
+        panelComponents.searchPanel.SetActive(true);
+        panelComponents.reportPanel.SetActive(false);
+
     }
 }

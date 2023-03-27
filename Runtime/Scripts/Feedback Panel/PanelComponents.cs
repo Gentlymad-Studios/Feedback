@@ -21,6 +21,11 @@ public class PanelComponents : MonoBehaviour {
     [Header("Token exchange")]
     public GameObject tokenPanel;
     public TMP_InputField tokenText;
-    public Button button;
+    public Button tokenSubmitButton;
 
+    [Header("Tab Buttons")]
+    public Button searchTabButton;
+    public Button reportTabButton;
+    public GameObject reportPanel;
+    public GameObject searchPanel;
 }

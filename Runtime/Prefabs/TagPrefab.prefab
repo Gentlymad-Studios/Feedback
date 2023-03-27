@@ -120,19 +120,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1689974163036445027}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2225289866722122024, guid: e4c627d7c447014449684123523445d7, type: 3}
-        m_TargetAssemblyTypeName: TicketBrowser, FeedbackService
-        m_MethodName: RemoveTag
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 3701496895505031703}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &3701496895505031703
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,6 +213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scriptableTag: {fileID: 0}
+  deletButton: {fileID: 3296139602368201111}
 --- !u!1 &5670757074848102319
 GameObject:
   m_ObjectHideFlags: 0
