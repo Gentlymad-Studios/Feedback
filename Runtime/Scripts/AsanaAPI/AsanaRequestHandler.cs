@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -47,7 +48,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     //Diagnostic method to measure time and file size to fetch and store up to 2500 tasks from asana api.
     //=> This is just for testing! Using this would assume to use a system to iterate through dates and add new dates.
     private async void FetchAsanaTasks() {
-
+        Stopwatch sp = new Stopwatch();
+        sp.Start();
         bool write = false;
         if (Resources.Load<TextAsset>("AsanaTasks") == null) { write = true; }
 
@@ -84,7 +86,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                     result = Resources.Load<TextAsset>("AsanaTasks").ToString();
                     result = result.Replace("]}{\"data\":[", ",");
 
-                    setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
+                    setOfTickets = JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
                     if (setOfTickets != null) {
                         ticketModels.AddRange(setOfTickets.data);
                     }
@@ -97,12 +99,14 @@ public class AsanaRequestHandler : BaseRequestHandler {
 #if UNITY_EDITOR
                 WriteFile(result);
 #endif
-                setOfTickets = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
+                setOfTickets = JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
                 if (setOfTickets != null) {
                     ticketModels.AddRange(setOfTickets.data);
                 }
             }
         }
+        sp.Stop();
+        Debug.Log(sp.Elapsed + " : all tickets fetched : " + ticketModels.Count);
         asanaAPI.FireTicketsCreated(ticketModels);
     }
 
@@ -152,7 +156,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         newTicketRequest.data.notes = data.text;
         newTicketRequest.data.projects = projectId;
         newTicketRequest.data.workspace = asanaAPISettings.workspaceId;
-        string output = Newtonsoft.Json.JsonConvert.SerializeObject(newTicketRequest, Newtonsoft.Json.Formatting.Indented);
+        string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
         return output;
     }
 

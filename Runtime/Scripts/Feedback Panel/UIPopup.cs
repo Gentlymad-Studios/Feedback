@@ -1,23 +1,26 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Unity.UI;
 
 public class UIPopup : UIPopUpBase { 
 
     public APISettings.APIType type;
     public DrawImage drawImage;
+    public PanelComponents panelComponents;
 
     private bool submitAccessToken = false;
-    public PanelComponents panelComponents;
     private DataType currentDataType = DataType.Feedback;
-    private int loginCounter = 0;
 
     private void Start() {
         drawImage.Setup();
-        base.OnShowWindow();
+
         ConfigureAPI();
         RegisterEvents();
+
+        base.OnShowWindow();
         base.GetData();
+
         panelComponents.reportPanel.SetActive(false);
     }
     
@@ -28,22 +31,17 @@ public class UIPopup : UIPopUpBase {
         panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
         panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
         panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
-        
+        panelComponents.createTicketButton.onClick.AddListener(CreateTicketFromSearch);
+        panelComponents.sendButton.onClick.AddListener(SendData);
     }
-    public void ConfigureAPI() {
-        if (type.Equals(APISettings.APIType.Asana)) {
-            api =  new AsanaAPI();
-        }
-    }
-    public void SetDataType(int i) {
-        currentDataType = (DataType)i + 1;
+    protected override void OnHideWindow() {
+        //dispose the lucene stuff here...
     }
 
     #region Auth and login
     public void OnLogInButtonClick() {
         try {
             LogIn();
-            loginCounter++;
             panelComponents.tokenPanel.SetActive(true);
             StartCoroutine(WaitForTokenSubmitButtonPress());
         } catch (Exception e) {
@@ -73,15 +71,49 @@ public class UIPopup : UIPopUpBase {
     }
 
     #endregion
-    public void Submit() {
+
+    #region Setup
+
+    public void ConfigureAPI() {
+        if (type.Equals(APISettings.APIType.Asana)) {
+            api =  new AsanaAPI();
+        }
+    }
+    public void SetDataType(int i) {
+        currentDataType = (DataType)i + 1;
+    }
+    private void ShowReportPanel() {
+        panelComponents.searchPanel.SetActive(false);
+        panelComponents.reportPanel.SetActive(true);
+        
+    }
+    private void ShowSearchPanel() {
+        panelComponents.searchPanel.SetActive(true);
+        panelComponents.reportPanel.SetActive(false);
+
+    }
+
+    #endregion
+
+    #region Data creation
+    public void CreateTicketFromSearch() {
+        string titleText = "";
+        if (string.IsNullOrWhiteSpace(panelComponents.searchInput.text)) {
+            titleText = "...";
+        } else {
+            titleText = panelComponents.searchInput.text;
+        }
+        panelComponents.title.text = titleText;
+        ShowReportPanel();
+    }
+    public void SendData() {
         PostData(panelComponents.title.text, panelComponents.text.text,
             MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
             currentDataType);
     }
-    protected override void OnHideWindow() {
-        //dispose the lucene stuff here...
-    }
+    #endregion
 
+    #region Screenshot
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
         panelComponents.screenshot.texture = screenshot;
         screenshot.Apply();
@@ -124,15 +156,5 @@ public class UIPopup : UIPopUpBase {
 
         return screenshot;
     }
-
-    private void ShowReportPanel() {
-        panelComponents.searchPanel.SetActive(false);
-        panelComponents.reportPanel.SetActive(true);
-        
-    }
-    private void ShowSearchPanel() {
-        panelComponents.searchPanel.SetActive(true);
-        panelComponents.reportPanel.SetActive(false);
-
-    }
+    #endregion
 }

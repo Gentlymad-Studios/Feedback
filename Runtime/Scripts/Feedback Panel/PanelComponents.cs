@@ -11,9 +11,10 @@ public class PanelComponents : MonoBehaviour {
     public TMP_Text userName;
 
     [Header("Data")]
-    public TMP_Text title;
-    public TMP_Text text;
+    public TMP_InputField title;
+    public TMP_InputField text;
     public TMP_Dropdown dropdown;
+    public Button sendButton;
 
     [Header("Screenshot")]
     public RawImage screenshot;
@@ -29,4 +30,11 @@ public class PanelComponents : MonoBehaviour {
     public Button reportTabButton;
     public GameObject reportPanel;
     public GameObject searchPanel;
+
+    [Header("TicketBrowser")]
+    public Button createTicketButton;
+    public TMP_InputField searchInput;
+    public GameObject scrollviewPreviewLayoutGroup;
+    public GameObject ticketPreviewPrefab;
+    public GameObject tagPanel;
 }

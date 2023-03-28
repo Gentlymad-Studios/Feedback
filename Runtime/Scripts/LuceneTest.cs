@@ -19,7 +19,6 @@ public class LuceneTest : MonoBehaviour {
     private string indexPath;
 
     private bool createIndexDocs = false;
-    private bool disposeLucene = false;
 
     private StandardAnalyzer analyzer;
     private IndexWriter writer;
@@ -27,12 +26,7 @@ public class LuceneTest : MonoBehaviour {
     private IndexSearcher indexSearcher;
 
     private string[] fieldsIncluded = { "Name", "Notes" };
-    private int count = 0;
     private Directory indexDirectory;
-
-    private void Start() {
-       
-    }
 
     private void OnEnable() {
         SetupLucene();
@@ -75,7 +69,6 @@ public class LuceneTest : MonoBehaviour {
                     Profiler.BeginSample("lucene writer sample");
                     writer.AddDocument(document);
                     Profiler.EndSample();
-                    count++;
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
@@ -93,40 +86,30 @@ public class LuceneTest : MonoBehaviour {
     /// <param name="searchTerm"></param>
     /// <returns></returns>
     public IEnumerable<TicketModels.AsanaTicketModel> SearchTerm(string searchTerm) {
-        string escapedSearchTerm = EscapeSpecialChars(searchTerm);
-
-        directoryReader = DirectoryReader.Open(indexDirectory);
-        indexSearcher = new IndexSearcher(directoryReader);
-
-        QueryParser queryParser = new MultiFieldQueryParser(version, fieldsIncluded, analyzer);
-        queryParser.AllowLeadingWildcard = true;
-        Query searchQuery = queryParser.Parse(escapedSearchTerm.Trim());
-      
-        Debug.Log(searchQuery.ToString());
-        ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 10).ScoreDocs;
-
         var results = new List<TicketModels.AsanaTicketModel>();
+        try {
+            directoryReader = DirectoryReader.Open(indexDirectory);
+            indexSearcher = new IndexSearcher(directoryReader);
 
-        foreach (ScoreDoc hit in hits) {
-            Document document = indexSearcher.Doc(hit.Doc);
-            results.Add(new TicketModels.AsanaTicketModel() {
-                name = document.Get("Name"),
-                notes = document.Get("Notes"),
-            });
+            QueryParser queryParser = new MultiFieldQueryParser(version, fieldsIncluded, analyzer);
+            queryParser.AllowLeadingWildcard = true;
+            Query searchQuery = queryParser.Parse(QueryParser.Escape(searchTerm));
+
+            Debug.Log(searchQuery.ToString());
+            ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 10).ScoreDocs;
+
+            foreach (ScoreDoc hit in hits) {
+                Document document = indexSearcher.Doc(hit.Doc);
+                results.Add(new TicketModels.AsanaTicketModel() {
+                    name = document.Get("Name"),
+                    notes = document.Get("Notes"),
+                });
+            }
+
+        } catch (Exception e) {
+            Debug.Log(e);
         }
         return results;
-    }
-
-    /// <summary>
-    /// Modify a string with the prefixes in the string array. The prefixes will be added in the same order as in the array.
-    /// </summary>
-    /// <param name="searchTerm"></param>
-    /// <returns></returns>
-    private string ModifySearchTerm(string searchTerm, string[] prefix) {
-        foreach(string pre in prefix) {
-            searchTerm = pre + searchTerm;
-        }
-        return searchTerm;
     }
 
     /// <summary>
@@ -134,11 +117,11 @@ public class LuceneTest : MonoBehaviour {
     /// </summary>
     /// <param name="searchTerm"></param>
     /// <returns></returns>
-    private string EscapeSpecialChars(string searchTerm) {
-        char[] escapeCharSet = { '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '?', ':', '*'};
+    private string CustomEscape(string searchTerm) {
+        char[] escapeCharSet = { '+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '?', ':', '*' };
         char[] chars = searchTerm.ToCharArray();
         string escapedText = "";
-        for(int i = 0; i < chars.Length; i++) {
+        for (int i = 0; i < chars.Length; i++) {
             var esc = chars[i].ToString();
             if (escapeCharSet.Contains(chars[i])) {
                 esc = "\\" + chars[i];

@@ -7,35 +7,28 @@ using UnityEngine;
 
 public class TicketBrowser : MonoBehaviour {
 
-    public GameObject layoutGroup;
-    public GameObject ticketPreviewPrefab;
-    public GameObject tagPanel;
 
+    [Header("Ticket Browser Components")]
     public LuceneTest lucene;
-    public TMP_InputField input;
     public TagList tagList;
+    public PanelComponents panelComponents;
+    public List<ScriptableTag> usedTagsScriptableList = new List<ScriptableTag>();
 
-    private string searchString = "";
-    private string differ = "";
-    private int count = 0;
     private int ticketPreviewCount = 10;
-
-
-    private List<TicketModels.AsanaTicketModel> tickets = new List<TicketModels.AsanaTicketModel>();
+    private List<GameObject> tagsGameObjectsList = new List<GameObject>();
     private List<GameObject> ticketsList = new List<GameObject>();
-
     private List<TicketModels.AsanaTicketModel> searchResult = new List<TicketModels.AsanaTicketModel>();
-    public List<ScriptableTag> usedTags = new List<ScriptableTag>();
 
     private void Start() {
-        //instatiate all preview objects on start and hide them
+        //pool all preview objects on start and hide them
         for (int i = 0; i < ticketPreviewCount; i++) {
-            GameObject ticketPreview = Instantiate(ticketPreviewPrefab);
-            ticketPreview.transform.SetParent(layoutGroup.transform);
+            GameObject ticketPreview = Instantiate(panelComponents.ticketPreviewPrefab);
+            ticketPreview.transform.SetParent(panelComponents.scrollviewPreviewLayoutGroup.transform);
             ticketPreview.SetActive(false);
             ticketsList.Add(ticketPreview);
         }
 
+        RegisterEvents();
     }
 
     void Awake() {
@@ -43,53 +36,67 @@ public class TicketBrowser : MonoBehaviour {
         AsanaAPI.TicketsReceivedEvent += OnTicketsReceived;
     }
 
-    private void Update() {
-
-        differ = input.text;
-        if (input.text == " " || input.text.Equals(string.Empty)) {
-            ResetPreview();
-            return;
-        }
-
-        if (differ != searchString && searchString != " ") {
-            searchString = differ;
-            AddTag();
-            StartCoroutine(Search());
-        }
+    private void RegisterEvents() {
+        panelComponents.searchInput.onValueChanged.AddListener(Search);
     }
-
-    //private void OnDisable() {
-    //    lucene.Dispose();
-    //}
 
     //Needs to be fired to operate on tickets!
     private void OnTicketsReceived(List<TicketModels.AsanaTicketModel> tickets) {
-        this.tickets = tickets;
-        Debug.Log("Tickets are there");
+        Debug.Log("<color=cyan>Tickets are there.</color>");
         lucene.AddTicketsToIndex(tickets);
     }
 
-    //Search for sarch term each time the string in the input field changed 
-    private IEnumerator Search() {
-        ResetPreview();
-        searchResult = lucene.SearchTerm(searchString).ToList();
+    private void Search(string change) {
+        if (string.IsNullOrEmpty(change) || string.IsNullOrWhiteSpace(change)) {
+            if (!ticketsList[0].GetComponent<TicketPreview>().ticketName.text.Equals(string.Empty)) {
+                ResetPreview();
+            }
+            return;
+        }
+
+        searchResult = lucene.SearchTerm(change).ToList();
         FillPreview();
-        yield return new WaitForSeconds(0.5f);
+        ManageTags(change);
     }
 
-    public void AddTag() {
+
+    public void ManageTags(string change) {
+        var text = change.ToLower();
+
         foreach (ScriptableTag tag in tagList.tags) {
-            if (searchString.ToLower().Contains(tag.tagName.ToLower()) && !usedTags.Contains(tag)) {
+            if (usedTagsScriptableList.Contains(tag)) {
+                continue;
+            }
+
+            if (text.Contains(tag.tagName.ToLower())){
 
                 GameObject tagObj = Instantiate(tag.tagPrefab);
-                tagObj.transform.SetParent(tagPanel.transform);
+                tagObj.transform.SetParent(panelComponents.tagPanel.transform);
                 tagObj.GetComponentInChildren<TMP_Text>().text = tag.tagName;
+                tagObj.name = tag.tagName.ToLower();
+                tagsGameObjectsList.Add(tagObj);
 
                 TagPreview tagPreview = tagObj.GetComponentInChildren<TagPreview>();
                 tagPreview.scriptableTag = tag;
-                tagPreview.deleteAction = new Action<ScriptableTag>((tag) => { usedTags.Remove(tag); });
+                tagPreview.deleteAction = new Action<ScriptableTag>((tag) => {
+                    usedTagsScriptableList.Remove(tag);
+                    tagsGameObjectsList.Remove(tagObj);
+                });
 
-                usedTags.Add(tag);
+                usedTagsScriptableList.Add(tag);
+            }
+        }
+
+        for (int i = 0; i < usedTagsScriptableList.Count; i++) {
+            if (!usedTagsScriptableList.Contains(usedTagsScriptableList[i])) {
+                continue;
+            }
+            if (!text.Contains(usedTagsScriptableList[i].tagName.ToLower())) {
+                var obj = tagsGameObjectsList.Find(tag => tag.name.Contains(usedTagsScriptableList[i].tagName.ToLower()));
+                usedTagsScriptableList.Remove(usedTagsScriptableList[i]);
+                tagsGameObjectsList.Remove(obj);
+                Destroy(obj);
+
             }
         }
     }
@@ -112,5 +119,6 @@ public class TicketBrowser : MonoBehaviour {
             preview.ticketName.text = "";
             obj.SetActive(false);
         });
+        Debug.Log("reset preview list");
     }
 }
