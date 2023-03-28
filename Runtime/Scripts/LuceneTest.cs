@@ -31,15 +31,22 @@ public class LuceneTest : MonoBehaviour {
     private Directory indexDirectory;
 
     private void Start() {
+       
+    }
 
+    private void OnEnable() {
+        SetupLucene();
+    }
+
+    //Call in ShowWindow or onEnable
+    private void SetupLucene() {
         indexPath = Path.Combine(Application.persistentDataPath, "Index");
         if (!System.IO.Directory.Exists(indexPath)) {
             System.IO.Directory.CreateDirectory(indexPath);
         }
         indexDirectory = FSDirectory.Open(indexPath);
-
         //indexDirectory = new RAMDirectory();
-      
+
         // Create an analyzer to process the text
         analyzer = new StandardAnalyzer(version);
         var config = new IndexWriterConfig(version, analyzer);
@@ -49,26 +56,12 @@ public class LuceneTest : MonoBehaviour {
             createIndexDocs = true;
             Debug.Log("Add lucene index file at directory: " + writer.Directory);
         }
-        Profiler.EndSample();
-    }
-
-    private void Update() {
-
-        if (disposeLucene) {
-            Dispose();
-            disposeLucene = false;
-        }
-
     }
     public void Dispose() {
         writer?.Dispose();
         directoryReader?.Dispose();
         indexDirectory?.Dispose();
         Debug.Log("Dispose the lucene stuff");
-    }
-
-    public void SetDisposeLuceneTools(bool disposeLuceneTools) {
-        this.disposeLucene = disposeLuceneTools;
     }
 
     public void AddTicketsToIndex(IEnumerable<TicketModels.AsanaTicketModel> tickets) {
@@ -91,9 +84,6 @@ public class LuceneTest : MonoBehaviour {
             Profiler.BeginSample("lucene commit sample");
             writer.Commit();
             Profiler.EndSample();
-
-            Debug.Log(count);
-
         }
     }
 

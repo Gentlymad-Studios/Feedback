@@ -46,7 +46,6 @@ public class TicketBrowser : MonoBehaviour {
     private void Update() {
 
         differ = input.text;
-        Debug.Log(usedTags.Count);
         if (input.text == " " || input.text.Equals(string.Empty)) {
             ResetPreview();
             return;
@@ -91,7 +90,6 @@ public class TicketBrowser : MonoBehaviour {
                 tagPreview.deleteAction = new Action<ScriptableTag>((tag) => { usedTags.Remove(tag); });
 
                 usedTags.Add(tag);
-                Debug.Log(usedTags.Count);
             }
         }
     }

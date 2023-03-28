@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -195,9 +196,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
         request.Headers.Add("Authorization", "Bearer " + asanaAPISettings.token);
     }
 
-    //Log out and use PAT to access api TODO: remove access token
     public override void LogOut() {
         asanaAPISettings.token = asanaAPISettings.defaultToken;
+        base.user = null;
     }
 
     //Open the auth endpoint in the Asana OAtuh grant flow for nativ applications
@@ -243,9 +244,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
         string data = _sr.ReadToEnd();
 
         if (!isTokenRefresh) {
-            AuthorizationInfo info = JsonUtility.FromJson<AuthorizationInfo>(data);
-
-            Debug.Log(((HttpWebResponse)response).StatusDescription);
+            AuthorizationInfo info = JsonConvert.DeserializeObject<AuthorizationInfo>(data);
+            Debug.Log("Login status code: " + ((HttpWebResponse)response).StatusDescription);
             asanaAPISettings.token = info.access_token;
             _authorizationInfo = info;
             user = info.data;

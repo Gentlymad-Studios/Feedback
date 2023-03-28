@@ -10,22 +10,27 @@ public class UIPopup : UIPopUpBase {
     private bool submitAccessToken = false;
     public PanelComponents panelComponents;
     private DataType currentDataType = DataType.Feedback;
+    private int loginCounter = 0;
 
     private void Start() {
         drawImage.Setup();
         base.OnShowWindow();
-        Configure();
+        ConfigureAPI();
         RegisterEvents();
         base.GetData();
+        panelComponents.reportPanel.SetActive(false);
     }
     
     private void RegisterEvents() {
-        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
         panelComponents.tokenSubmitButton.onClick.AddListener(() => { submitAccessToken = true; });
-        panelComponents.reportTabButton.onClick.AddListener(() => { ShowReportPanel(); });
-        panelComponents.searchTabButton.onClick.AddListener(() => { ShowSearchPanel(); });
+        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
+        panelComponents.reportTabButton.onClick.AddListener(ShowReportPanel);
+        panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
+        panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
+        panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
+        
     }
-    public void Configure() {
+    public void ConfigureAPI() {
         if (type.Equals(APISettings.APIType.Asana)) {
             api =  new AsanaAPI();
         }
@@ -38,8 +43,8 @@ public class UIPopup : UIPopUpBase {
     public void OnLogInButtonClick() {
         try {
             LogIn();
+            loginCounter++;
             panelComponents.tokenPanel.SetActive(true);
-            panelComponents.userInfoPanel.SetActive(true);
             StartCoroutine(WaitForTokenSubmitButtonPress());
         } catch (Exception e) {
             OnLoginFail(e.Message);
@@ -50,17 +55,18 @@ public class UIPopup : UIPopUpBase {
             yield return new WaitForSeconds(1f);
         }
         api.settings.token = panelComponents.tokenText.text.ToString();
-        api.requestHandler.TokenExchange();
-       
+        api.requestHandler.TokenExchange(false);
+        
         panelComponents.userName.text = api.requestHandler.user?.name;
-        panelComponents.userMail.text = api.requestHandler.user?.email;
+        panelComponents.loginSection.SetActive(false);
         panelComponents.tokenPanel.SetActive(false);
     }
     public void OnLogOutButtonClick() {
         LogOut();
-        panelComponents.userName.text = "user name";
-        panelComponents.userMail.text = "user mail";
-        panelComponents.userInfoPanel.SetActive(false);
+        submitAccessToken = false;
+        panelComponents.userName.text = "";
+        panelComponents.tokenText.text = "Paste token from browser and click \"ok\"";
+        panelComponents.loginSection.SetActive(true);
     }
     protected override void OnLoginFail(string failMessage) {
         Debug.LogWarning(failMessage);
@@ -73,7 +79,7 @@ public class UIPopup : UIPopUpBase {
             currentDataType);
     }
     protected override void OnHideWindow() {
-        //dispose lucene stuff?
+        //dispose the lucene stuff here...
     }
 
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {

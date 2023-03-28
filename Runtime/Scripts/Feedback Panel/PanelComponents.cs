@@ -5,9 +5,10 @@ using UnityEngine.UI;
 public class PanelComponents : MonoBehaviour {
 
     [Header("Login Information")]
-    public GameObject userInfoPanel;
+    public GameObject loginSection;
+    public Button loginButton;
+    public Button logoutButton;
     public TMP_Text userName;
-    public TMP_Text userMail;
 
     [Header("Data")]
     public TMP_Text title;
