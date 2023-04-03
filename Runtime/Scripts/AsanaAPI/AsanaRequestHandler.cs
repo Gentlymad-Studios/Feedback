@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -24,6 +25,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private AuthorizationInfo _authorizationInfo;
     private HttpWebRequest request;
     private HttpWebResponse response;
+    private int writeCount = 0;
 
     private string paginatedCreatedBefore;
     private string paginatedCreatedAfter;
@@ -51,12 +53,13 @@ public class AsanaRequestHandler : BaseRequestHandler {
         Stopwatch sp = new Stopwatch();
         sp.Start();
         bool write = false;
+
         if (Resources.Load<TextAsset>("AsanaTasks") == null) { write = true; }
 
         List<TicketModels.AsanaTicketModel> ticketModels = new List<TicketModels.AsanaTicketModel>();
         TicketModels.AsanaTicketModels setOfTickets = new TicketModels.AsanaTicketModels();
-        string result = "";
 
+        string result = "";
         string[] dates = new string[] { "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01",
             "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01",
          "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01",
@@ -72,7 +75,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 paginatedCreatedBefore = dates[i];
             }
 
-            var url = $"{asanaAPISettings.baseURL}{asanaAPISettings.workspaceRoute}/{asanaAPISettings.workspaceId}/tasks/search?opt_fields=created_at,name,notes&resource_subtype=default_task&" +
+            var url = $"{asanaAPISettings.baseURL}{asanaAPISettings.workspaceRoute}/{asanaAPISettings.workspaceId}/tasks/search?opt_fields=created_at,name,notes,custom_fields&resource_subtype=default_task&" +
                 $"created_on.before={paginatedCreatedBefore}&created_on.after={paginatedCreatedAfter}&sort_by=modified_at&sort_ascending=false";
 
             ConfigureRequest(url, RequestMethods.GET);
@@ -82,11 +85,14 @@ public class AsanaRequestHandler : BaseRequestHandler {
             using (StreamReader reader = new StreamReader(stream)) {
 
 #if UNITY_EDITOR
+                //if write ist false the file will be loaded
                 if (!write) {
                     result = Resources.Load<TextAsset>("AsanaTasks").ToString();
-                    result = result.Replace("]}{\"data\":[", ",");
-
+                    if (!result.EndsWith("]}")) {
+                        result += "]}";
+                    }
                     setOfTickets = JsonConvert.DeserializeObject<TicketModels.AsanaTicketModels>(result);
+
                     if (setOfTickets != null) {
                         ticketModels.AddRange(setOfTickets.data);
                     }
@@ -94,8 +100,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
                     return;
                 }
 #endif
-
                 result = await reader.ReadToEndAsync();
+
 #if UNITY_EDITOR
                 WriteFile(result);
 #endif
@@ -115,10 +121,13 @@ public class AsanaRequestHandler : BaseRequestHandler {
         string path = Application.dataPath + "/Feedback/Runtime/Resources/AsanaTasks.json";
         if (!File.Exists(path)) {
             using (StreamWriter sw = File.CreateText(path)) {
+                string escapedText = text.Replace("]}", "");
+                sw.Write(escapedText);
             }
         } else {
             using (StreamWriter sw = File.AppendText(path)) {
-                sw.Write(text);
+                string escapedText = text.Replace("{\"data\":[", ",").Replace("]}", "");
+                sw.Write(escapedText);
             }
         }
     }

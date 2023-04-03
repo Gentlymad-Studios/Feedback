@@ -862,6 +862,7 @@ MonoBehaviour:
   searchPanel: {fileID: 466796492}
   createTicketButton: {fileID: 665682060}
   searchInput: {fileID: 33171326}
+  tabPanel: {fileID: 629666739}
   scrollviewPreviewLayoutGroup: {fileID: 1848097755}
   ticketPreviewPrefab: {fileID: 2565469106121440807, guid: 33d81e98d2d80d248a73b69787d251e9, type: 3}
   tagPanel: {fileID: 1411455702}
@@ -881,6 +882,7 @@ MonoBehaviour:
   type: 1
   drawImage: {fileID: 810824743}
   panelComponents: {fileID: 1481398017}
+  activeWindow: 1
 --- !u!1001 &1509497164
 PrefabInstance:
   m_ObjectHideFlags: 0

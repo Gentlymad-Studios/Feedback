@@ -1,7 +1,8 @@
+using Codice.Client.Common.GameUI;
 using System;
 using System.Collections;
+using System.ComponentModel.Design;
 using UnityEngine;
-using Unity.UI;
 
 public class UIPopup : UIPopUpBase { 
 
@@ -9,23 +10,63 @@ public class UIPopup : UIPopUpBase {
     public DrawImage drawImage;
     public PanelComponents panelComponents;
 
-    private bool submitAccessToken = false;
     private DataType currentDataType = DataType.Feedback;
 
-    private void Start() {
-        drawImage.Setup();
+    private WindowType currentWindowType;
 
+    public WindowType activeWindow = WindowType.Search;
+    public WindowType ActiveWindow {
+        get {
+            return activeWindow;
+        }
+        set {
+            // check the window state
+            if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
+                OnShowWindow();
+            } else if (activeWindow != WindowType.None && value == WindowType.None) {
+                OnHideWindow();
+            }
+            activeWindow = value;
+         
+            // set window visibility accordingly
+            if (activeWindow == WindowType.Search) {
+                panelComponents.searchPanel.SetActive(true);
+                panelComponents.reportPanel.SetActive(false);
+                panelComponents.tabPanel.SetActive(true);
+
+            } else if (activeWindow == WindowType.Report) {
+                panelComponents.searchPanel.SetActive(false);
+                panelComponents.reportPanel.SetActive(true);
+                panelComponents.tabPanel.SetActive(true);
+            } else {
+                panelComponents.searchPanel.SetActive(false);
+                panelComponents.reportPanel.SetActive(false);
+                panelComponents.tabPanel.SetActive(false);
+            }
+        }
+    }
+   
+
+    private void Awake() {
         ConfigureAPI();
         RegisterEvents();
-
-        base.OnShowWindow();
         base.GetData();
-
-        panelComponents.reportPanel.SetActive(false);
+        ActiveWindow = WindowType.None;
+        currentWindowType = WindowType.Search;
     }
-    
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.F1)) {
+            if (ActiveWindow != WindowType.None) {
+                currentWindowType = ActiveWindow;
+                ActiveWindow = WindowType.None;
+            } else {
+                ActiveWindow = currentWindowType;
+            }
+        }
+    }
     private void RegisterEvents() {
-        panelComponents.tokenSubmitButton.onClick.AddListener(() => { submitAccessToken = true; });
+        panelComponents.tokenSubmitButton.onClick.AddListener(TokenSubmitButton);
         panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
         panelComponents.reportTabButton.onClick.AddListener(ShowReportPanel);
         panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
@@ -35,7 +76,6 @@ public class UIPopup : UIPopUpBase {
         panelComponents.sendButton.onClick.AddListener(SendData);
     }
     protected override void OnHideWindow() {
-        //dispose the lucene stuff here...
     }
 
     #region Auth and login
@@ -43,15 +83,11 @@ public class UIPopup : UIPopUpBase {
         try {
             LogIn();
             panelComponents.tokenPanel.SetActive(true);
-            StartCoroutine(WaitForTokenSubmitButtonPress());
         } catch (Exception e) {
             OnLoginFail(e.Message);
         }
     }
-    private IEnumerator WaitForTokenSubmitButtonPress() {
-        while (!submitAccessToken) {
-            yield return new WaitForSeconds(1f);
-        }
+    private void TokenSubmitButton() {
         api.settings.token = panelComponents.tokenText.text.ToString();
         api.requestHandler.TokenExchange(false);
         
@@ -61,7 +97,6 @@ public class UIPopup : UIPopUpBase {
     }
     public void OnLogOutButtonClick() {
         LogOut();
-        submitAccessToken = false;
         panelComponents.userName.text = "";
         panelComponents.tokenText.text = "Paste token from browser and click \"ok\"";
         panelComponents.loginSection.SetActive(true);
@@ -83,14 +118,10 @@ public class UIPopup : UIPopUpBase {
         currentDataType = (DataType)i + 1;
     }
     private void ShowReportPanel() {
-        panelComponents.searchPanel.SetActive(false);
-        panelComponents.reportPanel.SetActive(true);
-        
+        ActiveWindow = WindowType.Report;
     }
     private void ShowSearchPanel() {
-        panelComponents.searchPanel.SetActive(true);
-        panelComponents.reportPanel.SetActive(false);
-
+        ActiveWindow = WindowType.Search;
     }
 
     #endregion
@@ -110,6 +141,9 @@ public class UIPopup : UIPopUpBase {
         PostData(panelComponents.title.text, panelComponents.text.text,
             MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
             currentDataType);
+        panelComponents.title.text = "Enter descriptive Title";
+        panelComponents.text.text = "Description of bug or feedback";
+
     }
     #endregion
 
@@ -157,4 +191,10 @@ public class UIPopup : UIPopUpBase {
         return screenshot;
     }
     #endregion
+}
+
+public enum WindowType {
+    None = 0,
+    Search = 1,
+    Report = 2,
 }

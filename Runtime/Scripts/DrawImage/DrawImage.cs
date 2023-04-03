@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class DrawImage : MonoBehaviour {
@@ -9,7 +10,7 @@ public class DrawImage : MonoBehaviour {
     public int drawWidth;
     public Color drawColor = Color.black;
     public float[,] drawKernel;
-    public  float sigma = 1; //describes the pen fallof / hardness
+    public float sigma = 1; //describes the pen fallof / hardness
 
     public float test = 1;
 
@@ -38,7 +39,7 @@ public class DrawImage : MonoBehaviour {
     Color32[] resetColorArray;
     Color32[] last_colors;
     Color32[] cur_colors;
-    
+
     float[] max_opacity;
     bool isEraser = false;
 
@@ -114,7 +115,7 @@ public class DrawImage : MonoBehaviour {
 
         toolbar.chooseColorButton.onClick.AddListener(() => {
             pickedColor = Color.green;
-            SetPenColor(pickedColor); 
+            SetPenColor(pickedColor);
         });
 
         toolbar.clearButton.onClick.AddListener(() => {
@@ -122,7 +123,7 @@ public class DrawImage : MonoBehaviour {
         });
 
         toolbar.shrinkButton.onClick.AddListener(() => {
-            SetPenSize(Mathf.Min(drawWidth - 1, 1));
+            SetPenSize(drawWidth - 1);
         });
 
         toolbar.enlargeButton.onClick.AddListener(() => {
@@ -145,29 +146,37 @@ public class DrawImage : MonoBehaviour {
     }
 
     private void CalculatePenKernel(int size) {
-        int kernelSize = size * 2 + 1;
-        float kernelMid = 0;
-        drawKernel = new float[kernelSize, kernelSize];
-        // Fit sigma to kernel size -> rule of thumb -> half kernelsize = 3*sigma
-        sigma = (size + 1) / 3.0f;
-
-        // calculate each kernel field
-        for (int x = -size, xIndex = 0; x <= size; x++, xIndex++) {
-            for (int y = -size, yIndex = 0; y <= size; y++, yIndex++) {
-                drawKernel[xIndex, yIndex] = (float)(1 / (2 * Mathf.PI * (sigma * sigma))) * (float)Mathf.Exp(-((x * x + y * y) / (2 * (sigma * sigma))));
-
-                //     (1/B) * 1/(1+exp(A*(x-B))) * 1/(1+exp(-A*(x+B)))
+        try {
+            if(drawWidth <= 0)  { 
+                drawWidth=0;
+                return;
             }
-        }
+            int kernelSize = size * 2 + 1;
+            float kernelMid = 0;
+            drawKernel = new float[kernelSize, kernelSize];
+            // Fit sigma to kernel size -> rule of thumb -> half kernelsize = 3*sigma
+            sigma = (size + 1) / 3.0f;
 
-        // extract kernel mid value
-        kernelMid = drawKernel[(kernelSize - 1) / 2, (kernelSize - 1) / 2];
+            // calculate each kernel field
+            for (int x = -size, xIndex = 0; x <= size; x++, xIndex++) {
+                for (int y = -size, yIndex = 0; y <= size; y++, yIndex++) {
+                    drawKernel[xIndex, yIndex] = (float)(1 / (2 * Mathf.PI * (sigma * sigma))) * (float)Mathf.Exp(-((x * x + y * y) / (2 * (sigma * sigma))));
 
-        // remap kernel to 0-1
-        for (int x = 0; x < kernelSize; x++) {
-            for (int y = 0; y < kernelSize; y++) {
-                drawKernel[x, y] *= 1 / kernelMid;
+                    //     (1/B) * 1/(1+exp(A*(x-B))) * 1/(1+exp(-A*(x+B)))
+                }
             }
+
+            // extract kernel mid value
+            kernelMid = drawKernel[(kernelSize - 1) / 2, (kernelSize - 1) / 2];
+
+            // remap kernel to 0-1
+            for (int x = 0; x < kernelSize; x++) {
+                for (int y = 0; y < kernelSize; y++) {
+                    drawKernel[x, y] *= 1 / kernelMid;
+                }
+            }
+        } catch (Exception e) {
+            Debug.Log(e.Message);
         }
     }
     #endregion
@@ -178,7 +187,7 @@ public class DrawImage : MonoBehaviour {
         if (previous_drag_position == Vector2.zero) {
             // If this is the first time we've ever dragged on this image, simply colour the pixels at our mouse position
             MarkPixelsToColour(pos, drawWidth, drawColor);
-        } else if (previous_drag_position == pos) { 
+        } else if (previous_drag_position == pos) {
             // just testing for now -> prevents draw on the same spot
         } else {
             // Colour in a line from where we were on the last update call

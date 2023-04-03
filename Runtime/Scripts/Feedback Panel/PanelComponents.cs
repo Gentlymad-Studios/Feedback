@@ -34,6 +34,7 @@ public class PanelComponents : MonoBehaviour {
     [Header("TicketBrowser")]
     public Button createTicketButton;
     public TMP_InputField searchInput;
+    public GameObject tabPanel;
     public GameObject scrollviewPreviewLayoutGroup;
     public GameObject ticketPreviewPrefab;
     public GameObject tagPanel;

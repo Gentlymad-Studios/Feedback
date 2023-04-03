@@ -59,13 +59,23 @@ public class LuceneTest : MonoBehaviour {
     }
 
     public void AddTicketsToIndex(IEnumerable<TicketModels.AsanaTicketModel> tickets) {
-
+        string field = "0";
         if (createIndexDocs) {
             foreach (TicketModels.AsanaTicketModel ticket in tickets) {
                 var document = new Document();
                 try {
+                  
                     document.Add(new TextField("Name", ticket.name, Field.Store.YES));
                     document.Add(new TextField("Notes", ticket.notes.ToString(), Field.Store.YES));
+
+                    //Add field with discord likes if it exist
+                    TicketModels.CustomField cf = ticket.custom_fields.Find(field => field.name == "Discord Likes");
+                    if (cf != null) {
+                        field = cf.display_value.ToString();
+                    }
+
+                    document.Add(new TextField("Upvotes", field, Field.Store.YES));
+
                     Profiler.BeginSample("lucene writer sample");
                     writer.AddDocument(document);
                     Profiler.EndSample();
@@ -76,6 +86,7 @@ public class LuceneTest : MonoBehaviour {
 
             Profiler.BeginSample("lucene commit sample");
             writer.Commit();
+            Debug.Log("write to index");
             Profiler.EndSample();
         }
     }
@@ -98,11 +109,19 @@ public class LuceneTest : MonoBehaviour {
             Debug.Log(searchQuery.ToString());
             ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 10).ScoreDocs;
 
+          
             foreach (ScoreDoc hit in hits) {
                 Document document = indexSearcher.Doc(hit.Doc);
+
+                List<TicketModels.CustomField> customFields = new List<TicketModels.CustomField>();
+                TicketModels.CustomField field = new TicketModels.CustomField();
+                field.display_value = document.Get("Upvotes");
+                customFields.Add(field);
+
                 results.Add(new TicketModels.AsanaTicketModel() {
                     name = document.Get("Name"),
                     notes = document.Get("Notes"),
+                    custom_fields = customFields,
                 });
             }
 

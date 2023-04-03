@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using TMPro;
 using UnityEngine;
 
@@ -42,19 +43,20 @@ public class TicketBrowser : MonoBehaviour {
 
     //Needs to be fired to operate on tickets!
     private void OnTicketsReceived(List<TicketModels.AsanaTicketModel> tickets) {
-        Debug.Log("<color=cyan>Tickets are there.</color>");
+        Debug.Log("<color=cyan>Tickets are there: </color>" + tickets.Count);
         lucene.AddTicketsToIndex(tickets);
     }
 
     private void Search(string change) {
         if (string.IsNullOrEmpty(change) || string.IsNullOrWhiteSpace(change)) {
-            if (!ticketsList[0].GetComponent<TicketPreview>().ticketName.text.Equals(string.Empty)) {
+            if (!ticketsList[0].GetComponent<TicketPreview>().PreviewEmpty()) {
                 ResetPreview();
             }
             return;
         }
 
         searchResult = lucene.SearchTerm(change).ToList();
+
         FillPreview();
         ManageTags(change);
     }
@@ -68,7 +70,7 @@ public class TicketBrowser : MonoBehaviour {
                 continue;
             }
 
-            if (text.Contains(tag.tagName.ToLower())){
+            if (text.Contains(tag.tagName.ToLower())) {
 
                 GameObject tagObj = Instantiate(tag.tagPrefab);
                 tagObj.transform.SetParent(panelComponents.tagPanel.transform);
@@ -105,8 +107,7 @@ public class TicketBrowser : MonoBehaviour {
     private void FillPreview() {
         for (int i = 0; i < searchResult.Count; i++) {
             TicketPreview preview = ticketsList[i].GetComponent<TicketPreview>();
-            preview.ticketName.text = searchResult[i]?.name;
-            preview.notes.text = searchResult[i]?.notes;
+            preview.SetTicketModel(searchResult[i]);
             ticketsList[i].SetActive(true);
         }
     }
@@ -115,8 +116,7 @@ public class TicketBrowser : MonoBehaviour {
     private void ResetPreview() {
         ticketsList.ForEach(obj => {
             TicketPreview preview = obj.GetComponent<TicketPreview>();
-            preview.notes.text = "";
-            preview.ticketName.text = "";
+            preview.ResetTicketModel();
             obj.SetActive(false);
         });
         Debug.Log("reset preview list");
