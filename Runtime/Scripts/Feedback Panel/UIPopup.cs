@@ -1,104 +1,100 @@
-using Codice.Client.Common.GameUI;
 using System;
-using System.Collections;
-using System.ComponentModel.Design;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.UI;
 
-public class UIPopup : UIPopUpBase { 
+public class UIPopup : UIPopUpBase {
 
     public APISettings.APIType type;
     public DrawImage drawImage;
     public PanelComponents panelComponents;
 
+    private List<TagPreview> tagPreviewList = new List<TagPreview>();
+
     private DataType currentDataType = DataType.Feedback;
 
     private WindowType currentWindowType;
 
-    public WindowType activeWindow = WindowType.Search;
+    private WindowType activeWindow = WindowType.Search;
     public WindowType ActiveWindow {
         get {
             return activeWindow;
         }
         set {
-            // check the window state
+            WindowType before = activeWindow;
             if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
-                OnShowWindow();
+                base.OnShowWindow();
             } else if (activeWindow != WindowType.None && value == WindowType.None) {
                 OnHideWindow();
             }
             activeWindow = value;
-         
-            // set window visibility accordingly
             if (activeWindow == WindowType.Search) {
                 panelComponents.searchPanel.SetActive(true);
-                panelComponents.reportPanel.SetActive(false);
                 panelComponents.tabPanel.SetActive(true);
-
+                panelComponents.reportPanel.SetActive(false);
             } else if (activeWindow == WindowType.Report) {
-                panelComponents.searchPanel.SetActive(false);
                 panelComponents.reportPanel.SetActive(true);
                 panelComponents.tabPanel.SetActive(true);
+                panelComponents.searchPanel.SetActive(false);
             } else {
                 panelComponents.searchPanel.SetActive(false);
                 panelComponents.reportPanel.SetActive(false);
                 panelComponents.tabPanel.SetActive(false);
             }
+
+            if (before == WindowType.None) {
+                base.GetData();
+            }
         }
     }
-   
 
     private void Awake() {
-        ConfigureAPI();
-        RegisterEvents();
-        base.GetData();
         ActiveWindow = WindowType.None;
         currentWindowType = WindowType.Search;
+        panelComponents.submitLoginPanel.SetActive(false);
+        tagPreviewList = panelComponents.tagPanel.GetComponentsInChildren<TagPreview>().ToList();
+        RegisterEvents();
+        ConfigureAPI();
+    }
+    protected override void OnShowWindow() {
+        base.OnShowWindow();
+        base.GetData();
+    }
+    protected override void OnHideWindow() {
+        SearchWithLucene.Instance.Dispose();
     }
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.F1)) {
+            Debug.Log(ActiveWindow);
             if (ActiveWindow != WindowType.None) {
                 currentWindowType = ActiveWindow;
                 ActiveWindow = WindowType.None;
             } else {
                 ActiveWindow = currentWindowType;
+               // base.GetData();
             }
         }
     }
-    private void RegisterEvents() {
-        panelComponents.tokenSubmitButton.onClick.AddListener(TokenSubmitButton);
-        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
-        panelComponents.reportTabButton.onClick.AddListener(ShowReportPanel);
-        panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
-        panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
-        panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
-        panelComponents.createTicketButton.onClick.AddListener(CreateTicketFromSearch);
-        panelComponents.sendButton.onClick.AddListener(SendData);
-    }
-    protected override void OnHideWindow() {
-    }
-
+ 
     #region Auth and login
     public void OnLogInButtonClick() {
         try {
             LogIn();
-            panelComponents.tokenPanel.SetActive(true);
+            panelComponents.submitLoginPanel.SetActive(true);
         } catch (Exception e) {
             OnLoginFail(e.Message);
         }
     }
-    private void TokenSubmitButton() {
-        api.settings.token = panelComponents.tokenText.text.ToString();
-        api.requestHandler.TokenExchange(false);
-        
-        panelComponents.userName.text = api.requestHandler.user?.name;
+    private void OnLoginSucceed() {
+        panelComponents.userName.text = api.requestHandler.GetUser()?.name;
         panelComponents.loginSection.SetActive(false);
-        panelComponents.tokenPanel.SetActive(false);
+        panelComponents.submitLoginPanel.SetActive(false);
     }
     public void OnLogOutButtonClick() {
         LogOut();
         panelComponents.userName.text = "";
-        panelComponents.tokenText.text = "Paste token from browser and click \"ok\"";
         panelComponents.loginSection.SetActive(true);
     }
     protected override void OnLoginFail(string failMessage) {
@@ -108,11 +104,31 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region Setup
-
+    private void RegisterEvents() {
+        panelComponents.loginSubmitButton.onClick.AddListener(OnLoginSucceed);
+        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
+        panelComponents.reportTabButton.onClick.AddListener(() => {ShowReportPanel();CreateTicketFromSearch();});
+        panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
+        panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
+        panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
+        panelComponents.createTicketButton.onClick.AddListener(CreateTicketFromSearch);
+        panelComponents.sendButton.onClick.AddListener(SendData);
+    }
+    //private void UnregisterEvents() {
+    //    panelComponents.loginSubmitButton.onClick.RemoveAllListeners();
+    //    panelComponents.loginSubmitButton.onClick.RemoveAllListeners();
+    //    panelComponents.dropdown.onValueChanged.RemoveAllListeners();
+    //    panelComponents.reportTabButton.onClick.RemoveAllListeners();
+    //    panelComponents.searchTabButton.onClick.RemoveAllListeners();
+    //    panelComponents.loginButton.onClick.RemoveAllListeners();
+    //    panelComponents.logoutButton.onClick.RemoveAllListeners();
+    //    panelComponents.createTicketButton.onClick.RemoveAllListeners();
+    //    panelComponents.sendButton.onClick.RemoveAllListeners();
+    //}
     public void ConfigureAPI() {
-        if (type.Equals(APISettings.APIType.Asana)) {
-            api =  new AsanaAPI();
-        }
+      if (type.Equals(APISettings.APIType.Asana)) {
+          api = new AsanaAPI();
+      }
     }
     public void SetDataType(int i) {
         currentDataType = (DataType)i + 1;
@@ -127,6 +143,7 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region Data creation
+    
     public void CreateTicketFromSearch() {
         string titleText = "";
         if (string.IsNullOrWhiteSpace(panelComponents.searchInput.text)) {
@@ -134,6 +151,18 @@ public class UIPopup : UIPopUpBase {
         } else {
             titleText = panelComponents.searchInput.text;
         }
+
+        //look for matching tags and set tag preview action
+        foreach (TagPreview p in tagPreviewList) {
+            p.addTagToTagList = () => SetTag(p.scriptableTag);
+            p.removeFromTagList = () => RemoveTag(p.scriptableTag);
+            p.btn = p.gameObject.GetComponent<Button>();
+            if (titleText.ToLower().Contains(p.scriptableTag.tagName.ToLower())) {
+                SetTag(p.scriptableTag);
+                p.Select();
+            }
+        }
+
         panelComponents.title.text = titleText;
         ShowReportPanel();
     }
@@ -141,9 +170,12 @@ public class UIPopup : UIPopUpBase {
         PostData(panelComponents.title.text, panelComponents.text.text,
             MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
             currentDataType);
-        panelComponents.title.text = "Enter descriptive Title";
+        foreach (TagPreview p in tagPreviewList) {
+            p.Deselect();
+        }
+        panelComponents.title.text = "Descriptive Title";
         panelComponents.text.text = "Description of bug or feedback";
-
+        ActiveWindow = WindowType.None;
     }
     #endregion
 

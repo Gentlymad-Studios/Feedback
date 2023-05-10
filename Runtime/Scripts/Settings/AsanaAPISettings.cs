@@ -3,24 +3,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]
 public class AsanaAPISettings : APISettings {
 
-    [Header("Asana API Settings")]
-    public string workspaceRoute;
-    public string projectRoute;
-    public string taskRoute;
-    public string userRoute;
-    public string attachmentRoute;
+    [Header("AsanaRequestManager Endpoints")]
+    public string baseUrl;
+    public string getCustomFields;
+    public string getAllTaskDataEndpoint;
+    public string loginEndpoint;
+    public string logoutEndpoint;
+    public string postNewTaskDataEndpoint;
+    public string updateUpvotesEndpoint;
+    public string getUserWithUniqueId;
 
-    [Header("")]
+    [Header("Asana Gids")]
+    public string bugProjectId;
+    public string feedbackProjectId;
     public string workspaceId;
-    public string feedbackId;
-    public string bugId;
 
-    [Header("Authorization Information")]
-    public string asanaAuthorizationEndpoint;
-    public string asanaTokenExchangeEndpoint;
-    public string clientId;
-    public string clientSecret; 
-    public string responseType;
-    public string redirectUri;
-    public string scope;
 }

@@ -4,14 +4,9 @@ using UnityEngine;
 
 
 public class APISettings : ScriptableObject {
-    [Header("General API Settings")]
-    public string token;
-    public string defaultToken;
-    public string baseURL;
-    public string URL;
+
     public APIType type;
 
-    
     public static T LoadSettings<T>() where T: APISettings {
         string[] guids = AssetDatabase.FindAssets($"t: {typeof(T).Name}").ToArray();
         T settings;

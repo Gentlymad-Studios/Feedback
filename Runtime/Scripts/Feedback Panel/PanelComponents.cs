@@ -21,9 +21,8 @@ public class PanelComponents : MonoBehaviour {
     public RawImage overpaint;
 
     [Header("Token exchange")]
-    public GameObject tokenPanel;
-    public TMP_InputField tokenText;
-    public Button tokenSubmitButton;
+    public GameObject submitLoginPanel;
+    public Button loginSubmitButton;
 
     [Header("Tab Buttons")]
     public Button searchTabButton;

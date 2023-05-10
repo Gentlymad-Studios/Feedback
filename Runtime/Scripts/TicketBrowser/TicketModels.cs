@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 public class TicketModels {
-    public class AsanaTicketModel {
+    public class AsanaTaskModel {
         public string gid { get; set; }
         public string created_at { get; set; }
         public List<CustomField> custom_fields { get; set; }
@@ -10,12 +10,23 @@ public class TicketModels {
     }
 
     public class AsanaTicketModels {
-        public List<AsanaTicketModel> data { get; set; }
+        public List<AsanaTaskModel> data { get; set; }
     }
     public class CustomField {
         public string gid { get; set; }
         public string name { get; set; }
         public object display_value { get; set; }
+
     }
+    public class ReportTags {
+        public string gid { get; set; }
+        public List<Tags> enum_options { get; set; }
+    }
+
+    public class Tags {
+        public string gid { get; set; }
+        public string name { get; set; }
+    }
+
 
 }

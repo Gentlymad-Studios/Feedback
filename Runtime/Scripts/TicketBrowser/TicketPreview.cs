@@ -4,20 +4,26 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TicketPreview : MonoBehaviour {
+
     [SerializeField] private TMP_Text ticketName;
     [SerializeField] private TMP_Text notes;
     [SerializeField] private TMP_Text upvotes;
     [SerializeField] private Button voteButton;
 
-    private Action<string> VoteAction;
-    private TicketModels.AsanaTicketModel ticketModel;
-    private Action<TicketModels.AsanaTicketModel> fillPreview;
+    public Action<string,int> sendUpvoteAction;
+
+    private string gid;
+    private TicketModels.AsanaTaskModel ticketModel;
+    private Action<TicketModels.AsanaTaskModel> fillPreview;
     private Action resetPreview;
     private bool voted;
 
     private void Start() {
         voted = false;
-        voteButton.onClick.AddListener(Vote);
+        voteButton.onClick.AddListener(() => {
+            Vote();
+            sendUpvoteAction.Invoke(gid, int.Parse(upvotes.text));
+        });
     }
 
     private void OnEnable() {
@@ -25,18 +31,20 @@ public class TicketPreview : MonoBehaviour {
         resetPreview = ResetPreview;
     }
 
-    private void FillPreview(TicketModels.AsanaTicketModel ticketModel) {
+    private void FillPreview(TicketModels.AsanaTaskModel ticketModel) {
         ticketName.text = ticketModel.name;
+        gid = ticketModel.gid;
         notes.text = ticketModel.notes;
         upvotes.text = ticketModel.custom_fields[0]?.display_value.ToString();
     }
     private void ResetPreview() {
         ticketName.text = string.Empty;
         notes.text = string.Empty;
+        gid = string.Empty;
         upvotes.text = "0";
     }
 
-    private void Vote() {
+    public string Vote() {
         int value;
         int.TryParse(upvotes.text.ToString(), out value);
         Debug.Log(value);
@@ -48,11 +56,11 @@ public class TicketPreview : MonoBehaviour {
             value -= 1;
             voted = false;
         }
-        Debug.Log(value);
         upvotes.text = value.ToString();
+        return value.ToString();
     }
 
-    public void SetTicketModel(TicketModels.AsanaTicketModel ticketModel) {
+    public void SetTicketModel(TicketModels.AsanaTaskModel ticketModel) {
         this.ticketModel = ticketModel;
         fillPreview.Invoke(ticketModel);
     }
@@ -67,7 +75,7 @@ public class TicketPreview : MonoBehaviour {
         }
         return false;
     }
-    public TicketModels.AsanaTicketModel GetTicketModel() {
+    public TicketModels.AsanaTaskModel GetTicketModel() {
         return ticketModel;
     }
 }

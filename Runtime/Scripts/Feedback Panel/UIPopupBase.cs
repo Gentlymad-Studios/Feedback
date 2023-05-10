@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public abstract class UIPopUpBase : MonoBehaviour {
@@ -23,12 +24,12 @@ public abstract class UIPopUpBase : MonoBehaviour {
     }
 
     protected virtual void GetData() {
-        api.requestHandler.GET();
+        api.requestHandler.GetAllData();
     }
 
     protected virtual void PostData(string title, string text, Texture2D screenshot, DataType type) {
         RequestData data = new RequestData(title, text, screenshot, type);
-        api.requestHandler.POST(data);
+        api.requestHandler.PostNewData(data);
     }
 
     public void LogIn() {
@@ -37,6 +38,12 @@ public abstract class UIPopUpBase : MonoBehaviour {
 
     public void LogOut() {
        api.requestHandler.LogOut();
+    }
+    public void SetTag(ScriptableTag tag) {
+        api.requestHandler.AddTagToTagList(tag);
+    }
+    public void RemoveTag(ScriptableTag tag) {
+        api.requestHandler.RemoveTagFromTagList(tag);
     }
 
     /// <summary>

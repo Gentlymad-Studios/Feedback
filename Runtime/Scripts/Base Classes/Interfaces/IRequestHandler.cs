@@ -1,3 +1,3 @@
 public interface IRequestHandler {
-    public void POST(RequestData data);
+    public void PostNewData(RequestData data);
 }

@@ -8,6 +8,8 @@ public class NewAsanaTicketRequest {
         public string notes;
         public string projects;
         public string workspace;
+        public string attachment;
+        public List<string> custom_fields = new List<string>();
     }
 
     public NewTicketData data = new NewTicketData();
