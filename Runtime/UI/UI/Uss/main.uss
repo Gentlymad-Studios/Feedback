@@ -9,7 +9,6 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
-  
 }
 .TextInput > .unity-base-field__label{
     visibility: hidden;    
@@ -19,12 +18,28 @@
     margin: 0px;
     padding: 0px;
  }
+ .unity-popup-field__input{
+   margin: 0;
+   height: 50px;
+ }
+ .unity-enum-field__input{
+   margin: 0;
+   height: 50px;
+ }
+ .unit-text-input{
+   margin:0;
+ }
+ .unity-base-text-field__input{
+   margin:0;
+   height: 100%;
+ }
   .unity-base-field > .unity-text-field__label{
     display: none;
  }
  .unity-base-field > .unity-popup-field__label{
     display: none;
  }
+ 
  .unity-base-field > .unity-enum-field__label{
     display: none;
  }
