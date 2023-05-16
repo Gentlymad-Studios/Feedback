@@ -1,3 +1,4 @@
+using Lucene.Net.Documents;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,6 +8,4 @@ using UnityEngine;
 public class ScriptableTag : ScriptableObject {
     public GameObject tagPrefab;
     public string tagName;
-    public TagCategories tagCategorie;
-    public List<string> matches = new List<string>();
 }

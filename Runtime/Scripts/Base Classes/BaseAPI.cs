@@ -6,7 +6,6 @@ using UnityEngine;
 /// </summary>
 public class BaseAPI {
 
-    public AuthorizationInfo authorizationInfo; //Information about currently logged in user
     public APISettings settings;
     public BaseRequestHandler requestHandler;
     protected BaseRequestHandler CreateRequestHandler(BaseRequestHandler handler) {

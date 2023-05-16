@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fbf81a86e28a6d44e825f7d61463e08d, type: 3}
-  m_Name: Tag_Raider
+  m_Name: Tag_UI
   m_EditorClassIdentifier: 
   tagPrefab: {fileID: 3701496895505031703, guid: 715c13346dfb0f84da1434ac740719c8, type: 3}
-  tagName: Raider
-  tagCategorie: 1
+  tagName: UI
+  tagCategorie: 0
   matches: []

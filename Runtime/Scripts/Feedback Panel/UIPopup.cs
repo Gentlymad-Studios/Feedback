@@ -1,104 +1,106 @@
-using Codice.Client.Common.GameUI;
 using System;
-using System.Collections;
-using System.ComponentModel.Design;
+using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.UI;
 
-public class UIPopup : UIPopUpBase { 
+public class UIPopup : UIPopUpBase {
 
     public APISettings.APIType type;
     public DrawImage drawImage;
     public PanelComponents panelComponents;
-
-    private DataType currentDataType = DataType.Feedback;
-
-    private WindowType currentWindowType;
-
-    public WindowType activeWindow = WindowType.Search;
+    public Dictionary<string, TaskModels.AsanaTaskModel> mentionedTask = new Dictionary<string, TaskModels.AsanaTaskModel>();
     public WindowType ActiveWindow {
         get {
             return activeWindow;
         }
         set {
-            // check the window state
+            WindowType before = activeWindow;
             if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
-                OnShowWindow();
+                base.OnShowWindow();
             } else if (activeWindow != WindowType.None && value == WindowType.None) {
                 OnHideWindow();
             }
             activeWindow = value;
-         
-            // set window visibility accordingly
             if (activeWindow == WindowType.Search) {
                 panelComponents.searchPanel.SetActive(true);
-                panelComponents.reportPanel.SetActive(false);
                 panelComponents.tabPanel.SetActive(true);
-
+                panelComponents.reportPanel.SetActive(false);
             } else if (activeWindow == WindowType.Report) {
-                panelComponents.searchPanel.SetActive(false);
                 panelComponents.reportPanel.SetActive(true);
                 panelComponents.tabPanel.SetActive(true);
+                panelComponents.searchPanel.SetActive(false);
             } else {
                 panelComponents.searchPanel.SetActive(false);
                 panelComponents.reportPanel.SetActive(false);
                 panelComponents.tabPanel.SetActive(false);
             }
+
+            if (before == WindowType.None) {
+                //base.GetData();
+            }
         }
     }
-   
+    private DataType currentDataType = DataType.Feedback;
+    private WindowType currentWindowType;
+    private WindowType activeWindow = WindowType.Search;
+
+    private List<TagPreview> tagPreviewList = new List<TagPreview>();
+    private DateTime lastOpenTime;
 
     private void Awake() {
-        ConfigureAPI();
-        RegisterEvents();
-        base.GetData();
         ActiveWindow = WindowType.None;
         currentWindowType = WindowType.Search;
+        panelComponents.submitLoginPanel.SetActive(false);
+        tagPreviewList = panelComponents.tagPanel.GetComponentsInChildren<TagPreview>().ToList();
+        RegisterEvents();
+        ConfigureAPI();
+    }
+    protected override void OnShowWindow() {
+        base.OnShowWindow();
+        base.GetData();
+    }
+    protected override void OnHideWindow() {
+        SearchWithLucene.Instance.Dispose();
     }
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.F1)) {
+            Debug.Log(ActiveWindow);
             if (ActiveWindow != WindowType.None) {
                 currentWindowType = ActiveWindow;
                 ActiveWindow = WindowType.None;
             } else {
                 ActiveWindow = currentWindowType;
+                if (lastOpenTime.AddSeconds(4.0) > DateTime.Now) {
+                    Debug.LogWarning("No F1 Spaming please ._.");
+                    return;
+                }
+                base.GetData();
+                lastOpenTime = DateTime.Now;
             }
         }
-    }
-    private void RegisterEvents() {
-        panelComponents.tokenSubmitButton.onClick.AddListener(TokenSubmitButton);
-        panelComponents.dropdown.onValueChanged.AddListener(SetDataType);
-        panelComponents.reportTabButton.onClick.AddListener(ShowReportPanel);
-        panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
-        panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
-        panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
-        panelComponents.createTicketButton.onClick.AddListener(CreateTicketFromSearch);
-        panelComponents.sendButton.onClick.AddListener(SendData);
-    }
-    protected override void OnHideWindow() {
+
     }
 
     #region Auth and login
     public void OnLogInButtonClick() {
         try {
             LogIn();
-            panelComponents.tokenPanel.SetActive(true);
+            panelComponents.submitLoginPanel.SetActive(true);
         } catch (Exception e) {
             OnLoginFail(e.Message);
         }
     }
-    private void TokenSubmitButton() {
-        api.settings.token = panelComponents.tokenText.text.ToString();
-        api.requestHandler.TokenExchange(false);
-        
-        panelComponents.userName.text = api.requestHandler.user?.name;
+    private void OnLoginSucceed() {
+        panelComponents.userName.text = api.requestHandler.GetUser()?.name;
         panelComponents.loginSection.SetActive(false);
-        panelComponents.tokenPanel.SetActive(false);
+        panelComponents.submitLoginPanel.SetActive(false);
     }
     public void OnLogOutButtonClick() {
         LogOut();
         panelComponents.userName.text = "";
-        panelComponents.tokenText.text = "Paste token from browser and click \"ok\"";
         panelComponents.loginSection.SetActive(true);
     }
     protected override void OnLoginFail(string failMessage) {
@@ -108,10 +110,35 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region Setup
+    private void RegisterEvents() {
+        panelComponents.loginSubmitButton.onClick.AddListener(OnLoginSucceed);
+        panelComponents.dataTyepDropdown.onValueChanged.AddListener(SetDataType);
+        panelComponents.reportTabButton.onClick.AddListener(() => { ShowReportPanel(); CreateTicketFromSearch(); });
+        panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
+        panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
+        panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
+        panelComponents.createTicketButton.onClick.AddListener(CreateTicketFromSearch);
+        panelComponents.sendButton.onClick.AddListener(SendData);
+        panelComponents.mentionList.onValueChanged.AddListener(OnDropdownValueChange);
+    }
+    private void UnregisterEvents() {
+        panelComponents.loginSubmitButton.onClick.RemoveAllListeners();
+        panelComponents.loginSubmitButton.onClick.RemoveAllListeners();
+        panelComponents.mentionList.onValueChanged.RemoveAllListeners();
+        panelComponents.reportTabButton.onClick.RemoveAllListeners();
+        panelComponents.searchTabButton.onClick.RemoveAllListeners();
+        panelComponents.loginButton.onClick.RemoveAllListeners();
+        panelComponents.logoutButton.onClick.RemoveAllListeners();
+        panelComponents.createTicketButton.onClick.RemoveAllListeners();
+        panelComponents.sendButton.onClick.RemoveAllListeners();
+    }
 
+    /// <summary>
+    /// Instantiate the api with given type
+    /// </summary>
     public void ConfigureAPI() {
         if (type.Equals(APISettings.APIType.Asana)) {
-            api =  new AsanaAPI();
+            api = new AsanaAPI();
         }
     }
     public void SetDataType(int i) {
@@ -127,6 +154,11 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region Data creation
+
+    /// <summary>
+    /// Called by clicking on "´Report Tab button". Transfer the data from search to report.
+    /// Fill the mention list with mentioned tasks
+    /// </summary>
     public void CreateTicketFromSearch() {
         string titleText = "";
         if (string.IsNullOrWhiteSpace(panelComponents.searchInput.text)) {
@@ -134,16 +166,63 @@ public class UIPopup : UIPopUpBase {
         } else {
             titleText = panelComponents.searchInput.text;
         }
+
+        foreach (string gid in mentionedTask.Keys) {
+            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData() { text = gid };
+            if (panelComponents.mentionList.options.Find(o => o.text == gid) == null) {
+                panelComponents.mentionList.options.Add(optionData);
+            }
+        }
+
+        //look for matching tags and set tag preview action
+        foreach (TagPreview p in tagPreviewList) {
+            p.addTagToTagList = () => SetTag(p.scriptableTag);
+            p.removeFromTagList = () => RemoveTag(p.scriptableTag);
+            p.btn = p.gameObject.GetComponent<Button>();
+            if (titleText.ToLower().Contains(p.scriptableTag.tagName.ToLower())) {
+                SetTag(p.scriptableTag);
+                p.Select();
+            }
+        }
+
         panelComponents.title.text = titleText;
         ShowReportPanel();
     }
+
+    /// <summary>
+    /// Called by changing the mention list value. Instantiate a popup with detailed task informations. 
+    /// </summary>
+    /// <param name="dataId"></param>
+    public void OnDropdownValueChange(int dataId) {
+        TMP_Dropdown.OptionData optionData = panelComponents.mentionList.options[dataId];
+        string gid = optionData.text;
+        TaskModels.AsanaTaskModel task = mentionedTask[gid];
+
+        GameObject popupObject = Instantiate(panelComponents.detailPopup);
+        popupObject.transform.SetParent(panelComponents.reportPanel.transform);
+        popupObject.transform.localPosition = Vector3.zero;
+
+        DetailPopup popup = popupObject.GetComponent<DetailPopup>();
+        popup.title.text = task.name;
+        popup.description.text = task.notes;
+    }
+
     public void SendData() {
+        if (api is AsanaAPI) {
+            var asanaAPI = (AsanaAPI)api;
+            asanaAPI.mentions.AddRange(mentionedTask.Keys);
+        }
+
         PostData(panelComponents.title.text, panelComponents.text.text,
             MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
             currentDataType);
-        panelComponents.title.text = "Enter descriptive Title";
-        panelComponents.text.text = "Description of bug or feedback";
+        foreach (TagPreview p in tagPreviewList) {
+            p.Deselect();
+        }
 
+        panelComponents.title.text = "Descriptive Title";
+        panelComponents.text.text = "Description of bug or feedback";
+        ActiveWindow = WindowType.None;
     }
     #endregion
 

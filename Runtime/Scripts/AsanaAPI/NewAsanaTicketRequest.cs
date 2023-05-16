@@ -1,15 +1,22 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class NewAsanaTicketRequest {
     public class NewTicketData {
-        public string name;
-        public string notes;
-        public string projects;
-        public string workspace;
+        public string name { get; set; }
+        public string notes { get; set; }
+        public string projects { get; set; }
+        public string workspace { get; set; }
+        public Attachment[] attachments { get; set; }
+        public string html_notes { get; set; } 
+
+        public List<string> custom_fields = new List<string>();
+
+    }
+    public class Attachment {
+        public string filename { get; set; }
+        public string contentType { get; set; }
+        public string content { get; set; }
     }
 
-    public NewTicketData data = new NewTicketData();
 }
 

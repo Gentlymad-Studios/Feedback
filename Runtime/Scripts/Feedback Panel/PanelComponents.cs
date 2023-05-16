@@ -13,7 +13,8 @@ public class PanelComponents : MonoBehaviour {
     [Header("Data")]
     public TMP_InputField title;
     public TMP_InputField text;
-    public TMP_Dropdown dropdown;
+    public TMP_Dropdown dataTyepDropdown;
+    public TMP_Dropdown mentionList;
     public Button sendButton;
 
     [Header("Screenshot")]
@@ -21,9 +22,8 @@ public class PanelComponents : MonoBehaviour {
     public RawImage overpaint;
 
     [Header("Token exchange")]
-    public GameObject tokenPanel;
-    public TMP_InputField tokenText;
-    public Button tokenSubmitButton;
+    public GameObject submitLoginPanel;
+    public Button loginSubmitButton;
 
     [Header("Tab Buttons")]
     public Button searchTabButton;
@@ -38,4 +38,7 @@ public class PanelComponents : MonoBehaviour {
     public GameObject scrollviewPreviewLayoutGroup;
     public GameObject ticketPreviewPrefab;
     public GameObject tagPanel;
+
+    [Header("Popup")]
+    public GameObject detailPopup;
 }
