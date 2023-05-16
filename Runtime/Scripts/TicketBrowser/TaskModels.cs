@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 
-public class TicketModels {
+public class TaskModels {
+
+    #region Asana Models
     public class AsanaTaskModel {
         public string gid { get; set; }
-        public string created_at { get; set; }
         public List<CustomField> custom_fields { get; set; }
         public string name { get; set; }
         public string notes { get; set; }
     }
 
-    public class AsanaTicketModels {
+    public class AsanaTaskModels {
         public List<AsanaTaskModel> data { get; set; }
     }
     public class CustomField {
@@ -27,6 +28,6 @@ public class TicketModels {
         public string gid { get; set; }
         public string name { get; set; }
     }
-
+    #endregion
 
 }

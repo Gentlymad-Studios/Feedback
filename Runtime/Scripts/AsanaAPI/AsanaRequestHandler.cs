@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
@@ -19,7 +21,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private AsanaAPISettings asanaAPISettings;
     private HttpWebRequest request;
     private string uniqueId = string.Empty;
-   
 
     public AsanaRequestHandler(AsanaAPI asanaAPI) {
         asanaAPISettings = asanaAPI.asanaSpecificSettings;
@@ -39,31 +40,39 @@ public class AsanaRequestHandler : BaseRequestHandler {
             return;
         }
 
+        Task task = new Task(GetAllDataAsync);
+
+        try {
+            task.Start();
+            await task;
+        } catch (Exception e) {
+            Debug.LogWarning(e.Message);
+        }
+
+    }
+
+    private async void GetAllDataAsync() {
         string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.getAllTaskDataEndpoint}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
         using (Stream stream = response.GetResponseStream())
         using (StreamReader reader = new StreamReader(stream)) {
-            try {
-                List<TicketModels.AsanaTaskModel> ticketModels = new List<TicketModels.AsanaTaskModel>();
-                string result = await reader.ReadToEndAsync();
-                ticketModels = JsonConvert.DeserializeObject<List<TicketModels.AsanaTaskModel>>(result);
-                asanaAPI.ticketModelsBackup.Clear();
-                asanaAPI.ticketModelsBackup.AddRange(ticketModels);
-                asanaAPI.FireTicketsCreated(ticketModels);
-                asanaAPI.lastUpdateTime = DateTime.Now;
-            } catch (Exception e) {
-                Debug.LogWarning(e.Message);
-            }
+            string result = await reader.ReadToEndAsync();
+            List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
+            ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
+            asanaAPI.ticketModelsBackup.Clear();
+            asanaAPI.ticketModelsBackup.AddRange(ticketModels);
+            asanaAPI.FireTicketsCreated(ticketModels);
+            asanaAPI.lastUpdateTime = DateTime.Now;
         }
     }
 
-   /// <summary>
-   /// Post the new data object to AsanaRequestManager
-   /// </summary>
-   /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
-    public async override void PostNewData(RequestData data) {
+    /// <summary>
+    /// Post the new data object to AsanaRequestManager
+    /// </summary>
+    /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
+    public override void PostNewData(RequestData data) {
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.postNewTaskDataEndpoint}{userID}";
         string requestData = BuildTaskData(data);
@@ -100,24 +109,29 @@ public class AsanaRequestHandler : BaseRequestHandler {
         string projectId = asanaAPISettings.bugProjectId;
         if (data.dataType is DataType.Feedback) { projectId = asanaAPISettings.feedbackProjectId; }
 
-        byte[] imageArray = data.screenshot.EncodeToPNG();
-        var result = Convert.ToBase64String(imageArray);
+        //TODO: implement generic attachment functions to support also text/plain content type
+        NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
+        attachment.filename = "screenshot.png";
+        attachment.contentType = "image/png";
+        attachment.content = Convert.ToBase64String(data.screenshot.EncodeToPNG());
+
         BuildCustomFields();
 
-        NewAsanaTicketRequest newTicketRequest = new NewAsanaTicketRequest();
-        newTicketRequest.data.name = data.title;
-        newTicketRequest.data.notes = data.text;
-        newTicketRequest.data.projects = projectId;
-        newTicketRequest.data.workspace = asanaAPISettings.workspaceId;
-        newTicketRequest.data.attachment = result;
-        newTicketRequest.data.custom_fields = asanaAPI.customFields;
+        NewAsanaTicketRequest.NewTicketData newTicketRequest = new NewAsanaTicketRequest.NewTicketData();
+        newTicketRequest.name = data.title;
+        newTicketRequest.notes = data.text;
+        newTicketRequest.projects = projectId;
+        newTicketRequest.workspace = asanaAPISettings.workspaceId;
+        newTicketRequest.custom_fields = asanaAPI.customFields;
+        newTicketRequest.attachments = new[] { attachment };
+        newTicketRequest.html_notes = BuildRichText();
         string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
-        
+
         return output;
     }
 
     private async void BuildCustomFields() {
-        TicketModels.ReportTags reportTags = new TicketModels.ReportTags();
+        TaskModels.ReportTags reportTags = new TaskModels.ReportTags();
         string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.getCustomFields}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
@@ -126,24 +140,33 @@ public class AsanaRequestHandler : BaseRequestHandler {
         using (StreamReader reader = new StreamReader(stream)) {
             try {
                 string result = await reader.ReadToEndAsync();
-                reportTags = JsonConvert.DeserializeObject<TicketModels.ReportTags>(result);
+                reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
                 asanaAPI.customFields.Add(reportTags.gid); //first member of list is always gid of custom field
-                foreach (TicketModels.Tags tag in reportTags.enum_options) {
+                foreach (TaskModels.Tags tag in reportTags.enum_options) {
                     foreach (ScriptableTag stag in tags) {
                         if (stag.tagName.ToLower().Equals(tag.name.ToLower())) {
                             asanaAPI.customFields.Add(tag.gid);
                         }
                     }
-                }  
+                }
             } catch (Exception e) {
                 Debug.LogWarning(e.Message);
             }
         }
 
-       
+
 
     }
 
+    private string BuildRichText() {
+        string front = "<body><strong>Mentions</strong><ul>";
+        string middle = "";
+        string back = "</ul></body>";
+        foreach (string id in asanaAPI.mentions) {
+            middle += $"<li><a data-asana-gid=\"{id}\"/></li>";
+        }
+        return front + middle + back;
+    }
     /// <summary>
     /// Use AsanaRequestHandler upvote endpoint to send upvotes.
     /// </summary>
@@ -161,7 +184,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         using (Stream stream = response.GetResponseStream())
         using (StreamReader reader = new StreamReader(stream)) {
             try {
-                List<TicketModels.AsanaTaskModel> ticketModels = new List<TicketModels.AsanaTaskModel>();
+                List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
                 string result = await reader.ReadToEndAsync();
                 Debug.Log(result);
             } catch (Exception e) {
@@ -200,7 +223,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         uniqueId = Guid.NewGuid().ToString();
         string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.loginEndpoint}{uniqueId}";
         Application.OpenURL(url);
-        
+
     }
 
     /// <summary>
@@ -230,9 +253,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream)) {
+        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+        using (Stream stream = response.GetResponseStream())
+        using (StreamReader reader = new StreamReader(stream)) {
             try {
                 base.user = JsonConvert.DeserializeObject<AuthorizationUser>(reader.ReadToEnd());
                 Debug.Log("<color=green> User: " + base.user.gid + "; " + base.user.name + " successfully logged in. </color>");
@@ -240,12 +263,12 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 Debug.LogWarning(reader.ReadToEnd());
             }
         }
-      
+
         return base.user;
     }
 
     private string CheckForUserGid() {
-        if(base.user is null) {
+        if (base.user is null) {
             return "0";
         } else {
             return base.user.gid;

@@ -37,35 +37,22 @@ public class SearchWithLucene {
         }
     }
 
-    private void SetupLucene() {
-        indexDirectory = new RAMDirectory();
-        // Create an analyzer to process the text
-        analyzer = new StandardAnalyzer(version);
-        var config = new IndexWriterConfig(version, analyzer);
-       
-        if (!DirectoryReader.IndexExists(indexDirectory)) {
-            // Create an index writer if no index exists 
-            writer = new IndexWriter(indexDirectory, config);
-            createIndexDocs = true;
-            Debug.Log("Add lucene index file at directory: " + writer.Directory);
-        }
-    }
     public void Dispose() {
         writer?.Dispose();
         directoryReader?.Dispose();
         indexDirectory?.Dispose();
         Debug.Log("Dispose the lucene stuff");
     }
-
+    //TODO: generic task type
     /// <summary>
     /// Create a new Index at RAM Direcotry and Store all fetched tickets. 
     /// </summary>
     /// <param name="tickets"></param>
-    public void CreateIndex(IEnumerable<TicketModels.AsanaTaskModel> tickets) {
+    public void CreateIndex(IEnumerable<TaskModels.AsanaTaskModel> tickets) {
         SetupLucene();
         string field = "0";
         if (createIndexDocs) {
-            foreach (TicketModels.AsanaTaskModel ticket in tickets) {
+            foreach (TaskModels.AsanaTaskModel ticket in tickets) {
                 var document = new Document();
                 try {
                     document.Add(new TextField("Gid", ticket.gid, Field.Store.YES));
@@ -73,14 +60,12 @@ public class SearchWithLucene {
                     document.Add(new TextField("Notes", ticket.notes.ToString(), Field.Store.YES));
 
                     //Add field with discord likes if it exist
-                    TicketModels.CustomField cf = ticket.custom_fields.Find(field => field.name == "Discord Likes");
+                    TaskModels.CustomField cf = ticket.custom_fields.Find(field => field.name == "Upvotes");
                    
                     if (cf != null) {
                         field = cf.display_value.ToString();
                     }
-
                     document.Add(new TextField("Upvotes", field, Field.Store.YES));
-
                     Profiler.BeginSample("lucene writer sample");
                     writer.AddDocument(document);
                     Profiler.EndSample();
@@ -103,8 +88,8 @@ public class SearchWithLucene {
     /// </summary>
     /// <param name="searchTerm"></param>
     /// <returns></returns>
-    public IEnumerable<TicketModels.AsanaTaskModel> SearchTerm(string searchTerm) {
-        var results = new List<TicketModels.AsanaTaskModel>();
+    public IEnumerable<TaskModels.AsanaTaskModel> SearchTerm(string searchTerm) {
+        var results = new List<TaskModels.AsanaTaskModel>();
         try {
             directoryReader = DirectoryReader.Open(indexDirectory);
             indexSearcher = new IndexSearcher(directoryReader);
@@ -120,12 +105,12 @@ public class SearchWithLucene {
             foreach (ScoreDoc hit in hits) {
                 Document document = indexSearcher.Doc(hit.Doc);
 
-                List<TicketModels.CustomField> customFields = new List<TicketModels.CustomField>();
-                TicketModels.CustomField field = new TicketModels.CustomField();
+                List<TaskModels.CustomField> customFields = new List<TaskModels.CustomField>();
+                TaskModels.CustomField field = new TaskModels.CustomField();
                 field.display_value = document.Get("Upvotes");
                 customFields.Add(field);
 
-                results.Add(new TicketModels.AsanaTaskModel() {
+                results.Add(new TaskModels.AsanaTaskModel() {
                     gid = document.Get("Gid"),
                     name = document.Get("Name"),
                     notes = document.Get("Notes"),
@@ -137,6 +122,23 @@ public class SearchWithLucene {
             Debug.Log(e);
         }
         return results;
+    }
+
+    /// <summary>
+    /// Create Ram directory, config and analyzer
+    /// </summary>
+    private void SetupLucene() {
+        indexDirectory = new RAMDirectory();
+        // Create an analyzer to process the text
+        analyzer = new StandardAnalyzer(version);
+        var config = new IndexWriterConfig(version, analyzer);
+       
+        if (!DirectoryReader.IndexExists(indexDirectory)) {
+            // Create an index writer if no index exists 
+            writer = new IndexWriter(indexDirectory, config);
+            createIndexDocs = true;
+            Debug.Log("Add lucene index file at directory: " + writer.Directory);
+        }
     }
 
     /// <summary>

@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Reflection;
-using TMPro;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TicketBrowser : MonoBehaviour {
 
@@ -17,12 +14,13 @@ public class TicketBrowser : MonoBehaviour {
  
     private int taskPreviewCount = 10;
     private List<GameObject> taskPreviewList = new List<GameObject>();
-   
-    private List<TicketModels.AsanaTaskModel> searchResult = new List<TicketModels.AsanaTaskModel>();
+    private List<TaskModels.AsanaTaskModel> searchResult = new List<TaskModels.AsanaTaskModel>();
+    private List<string> mentions = new List<string>();
 
     private UIPopup uIPopup;
     private void Start() {
         uIPopup = panelComponents.GetComponentInParent<UIPopup>();
+
         //pool all preview objects on start and hide them
         for (int i = 0; i < taskPreviewCount; i++) {
             GameObject ticketPreview = Instantiate(panelComponents.ticketPreviewPrefab);
@@ -47,16 +45,16 @@ public class TicketBrowser : MonoBehaviour {
     }
 
     //Needs to be fired to operate on tickets!
-    private void OnTicketsReceived(List<TicketModels.AsanaTaskModel> tickets) {
+    private void OnTicketsReceived(List<TaskModels.AsanaTaskModel> tickets) {
         Debug.Log("<color=cyan>Tickets are there: </color>" + tickets.Count);
 
         //change nulls to empty strings
-        foreach (TicketModels.AsanaTaskModel ticket in tickets) {
+        foreach (TaskModels.AsanaTaskModel ticket in tickets) {
             for (int i = 0; i < ticket.GetType().GetProperties().Length; i++) {
                 PropertyInfo pinfo = ticket.GetType().GetProperties()[i];
                 if (pinfo.PropertyType == typeof(string)) {
                     if (pinfo.GetValue(ticket) == null) {
-                        pinfo.SetValue(ticket, "");
+                        pinfo.SetValue(ticket, "...");
                     }
                 }
             }
@@ -64,6 +62,7 @@ public class TicketBrowser : MonoBehaviour {
         SearchWithLucene.Instance.CreateIndex(tickets);
     }
 
+    //Search for the change text with lucene text analyzer
     private void Search(string change) {
         if (string.IsNullOrEmpty(change) || string.IsNullOrWhiteSpace(change)) {
             if (!taskPreviewList[0].GetComponent<TicketPreview>().PreviewEmpty()) {
@@ -76,13 +75,25 @@ public class TicketBrowser : MonoBehaviour {
         FillPreview();
     }
 
-
     //fill the preview with lucene search results
     private void FillPreview() {
         for (int i = 0; i < searchResult.Count; i++) {
+            TaskModels.AsanaTaskModel task = searchResult[i];
             TicketPreview preview = taskPreviewList[i].GetComponent<TicketPreview>();
-            preview.SetTicketModel(searchResult[i]);
+            preview = preview.SetTicketModel(task);
+            preview.mentioned = false;
+            
             taskPreviewList[i].SetActive(true);
+            string title = task.name;
+            string notes = task.notes;
+            string gid = task.gid;
+
+            if (uIPopup.mentionedTask.ContainsKey(gid)) {
+                preview.mentioned = true;
+            }
+            preview.openDetailPopup = () => OnClickTicketPreviewAction(preview, title, notes);
+            preview.addToMentions = () => AddToMentionList(gid, task);
+            preview.removeFromMentions = () => RemoveMentionFromList(gid);
         }
     }
 
@@ -93,5 +104,36 @@ public class TicketBrowser : MonoBehaviour {
             preview.ResetTicketModel();
             obj.SetActive(false);
         });
+        searchResult.Clear();
     }
+
+    //Instatniate detail popup with ticket preview content
+    private void OnClickTicketPreviewAction(TicketPreview preview, string title, string description) {
+        if(panelComponents.searchPanel.GetComponentInChildren<DetailPopup>() != null) { return; }
+        GameObject popup = Instantiate(panelComponents.detailPopup);
+        popup.gameObject.transform.SetParent(panelComponents.searchPanel.transform);
+        popup.transform.localPosition = Vector3.zero;
+        DetailPopup detailPopup = popup.GetComponent<DetailPopup>();
+        detailPopup.FillDetailPopup(title, description);
+        detailPopup.onClosePopup += () => OnClickCloseButton(detailPopup, preview);
+    }
+
+    private void OnClickCloseButton(DetailPopup popup, TicketPreview preview) {
+        preview.openDetailPopup -= () => OnClickTicketPreviewAction(preview, popup.title.text, popup.description.text);
+        Destroy(popup.gameObject);
+    }
+
+    private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {
+        mentions.Add(gid);
+        uIPopup.mentionedTask.Add(gid, p);
+    }
+
+    private void RemoveMentionFromList(string gid) {
+        if (mentions.Contains(gid)) {
+            mentions.Remove(gid);
+        }
+        uIPopup.mentionedTask.Remove(gid);
+        panelComponents.mentionList.options.Remove(panelComponents.mentionList.options.Find(o => o.text == gid));
+    }
+
 }

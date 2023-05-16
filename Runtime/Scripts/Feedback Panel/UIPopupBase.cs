@@ -24,6 +24,9 @@ public abstract class UIPopUpBase : MonoBehaviour {
     }
 
     protected virtual void GetData() {
+        //Task erstellen
+        //Task task = new Task(api.requestHandler.GetAllData);
+        //task.Start();
         api.requestHandler.GetAllData();
     }
 
