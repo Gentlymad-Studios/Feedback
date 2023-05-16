@@ -239,6 +239,12 @@ public class UIPopup : UIPopUpBase {
         int width = screenshot.width;
         int height = screenshot.height;
 
+        //resize texture if ratio is larger than HD
+        if (screenshot.width > 1920) {
+            height = (int)(((float) height / width) * 1920);
+            width = 1920;
+        }
+       
         void ResizeOnGPU(Texture2D texA, Texture2D texB, int widthGPU, int heightGPU, FilterMode fmode) {
             //We need the source texture in VRAM because we render with it
             texA.filterMode = fmode;
@@ -266,6 +272,7 @@ public class UIPopup : UIPopUpBase {
         screenshot.Reinitialize(width, height);
         screenshot.ReadPixels(texR, 0, 0, true);
         screenshot.Apply(true);
+
 
         return screenshot;
     }

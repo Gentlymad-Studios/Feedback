@@ -111,9 +111,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
         //TODO: implement generic attachment functions to support also text/plain content type
         NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
-        attachment.filename = "screenshot.png";
-        attachment.contentType = "image/png";
-        attachment.content = Convert.ToBase64String(data.screenshot.EncodeToPNG());
+        attachment.filename = "screenshot.jpg";
+        attachment.contentType = "image/jpg";
+        attachment.content = Convert.ToBase64String(data.screenshot.EncodeToJPG());
 
         BuildCustomFields();
 
