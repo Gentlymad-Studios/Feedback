@@ -119,7 +119,7 @@ public class SearchWithLucene {
             }
 
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.LogException(e);
         }
         return results;
     }

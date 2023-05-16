@@ -143,8 +143,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
                 asanaAPI.customFields.Add(reportTags.gid); //first member of list is always gid of custom field
                 foreach (TaskModels.Tags tag in reportTags.enum_options) {
-                    foreach (ScriptableTag stag in tags) {
-                        if (stag.tagName.ToLower().Equals(tag.name.ToLower())) {
+                    foreach (TagPreview stag in tags) {
+                        if (stag.title.ToLower().Equals(tag.name.ToLower())) {
                             asanaAPI.customFields.Add(tag.gid);
                         }
                     }
@@ -197,7 +197,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// Add a tag to the tag list. 
     /// </summary>
     /// <param name="tag"></param>
-    public override void AddTagToTagList(ScriptableTag tag) {
+    public override void AddTagToTagList(TagPreview tag) {
         if (!tags.Contains(tag)) {
             tags.Add(tag);
         }
@@ -207,7 +207,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// Remove a tag from the tag list. 
     /// </summary>
     /// <param name="tag"></param>
-    public override void RemoveTagFromTagList(ScriptableTag tag) {
+    public override void RemoveTagFromTagList(TagPreview tag) {
         if (tags.Contains(tag)) {
             tags.Remove(tag);
         }

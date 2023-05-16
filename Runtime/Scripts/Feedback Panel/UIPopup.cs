@@ -1,15 +1,16 @@
 using System;
-using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class UIPopup : UIPopUpBase {
-
     public APISettings.APIType type;
     public DrawImage drawImage;
     public PanelComponents panelComponents;
+    public UIDocument uiDocument;
+    public TicketBrowser ticketBrowser;
+    public VisualTreeAsset taskCardUi;
+    public VisualTreeAsset tagLabelUi;
     public Dictionary<string, TaskModels.AsanaTaskModel> mentionedTask = new Dictionary<string, TaskModels.AsanaTaskModel>();
     public WindowType ActiveWindow {
         get {
@@ -24,17 +25,17 @@ public class UIPopup : UIPopUpBase {
             }
             activeWindow = value;
             if (activeWindow == WindowType.Search) {
-                panelComponents.searchPanel.SetActive(true);
-                panelComponents.tabPanel.SetActive(true);
-                panelComponents.reportPanel.SetActive(false);
+                panelComponents.root.style.display = DisplayStyle.Flex;
+                panelComponents.searchTab.style.display = DisplayStyle.Flex;
+                panelComponents.reportTab.style.display = DisplayStyle.None;
             } else if (activeWindow == WindowType.Report) {
-                panelComponents.reportPanel.SetActive(true);
-                panelComponents.tabPanel.SetActive(true);
-                panelComponents.searchPanel.SetActive(false);
+                panelComponents.root.style.display = DisplayStyle.Flex;
+                panelComponents.searchTab.style.display = DisplayStyle.None;
+                panelComponents.reportTab.style.display = DisplayStyle.Flex;
             } else {
-                panelComponents.searchPanel.SetActive(false);
-                panelComponents.reportPanel.SetActive(false);
-                panelComponents.tabPanel.SetActive(false);
+                panelComponents.root.style.display = DisplayStyle.None;
+                panelComponents.searchTab.style.display = DisplayStyle.None;
+                panelComponents.reportTab.style.display = DisplayStyle.None;
             }
 
             if (before == WindowType.None) {
@@ -42,21 +43,59 @@ public class UIPopup : UIPopUpBase {
             }
         }
     }
-    private DataType currentDataType = DataType.Feedback;
+    private string currentDataType;
     private WindowType currentWindowType;
     private WindowType activeWindow = WindowType.Search;
 
     private List<TagPreview> tagPreviewList = new List<TagPreview>();
     private DateTime lastOpenTime;
 
+    //DUMMY
+    Texture2D screenshotDummy;
+    Texture2D overpaintDummy;
+
     private void Awake() {
+        //Fill Dummys -> just for debugging until the paint tool is ported
+        screenshotDummy = new Texture2D(1920, 1080);
+        overpaintDummy = new Texture2D(1920, 1080);
+        //----------------------------------------------------------------
+
+        if (panelComponents == null) {
+            panelComponents = new PanelComponents();
+            panelComponents.Initialize(uiDocument);
+        }
+
         ActiveWindow = WindowType.None;
         currentWindowType = WindowType.Search;
-        panelComponents.submitLoginPanel.SetActive(false);
-        tagPreviewList = panelComponents.tagPanel.GetComponentsInChildren<TagPreview>().ToList();
+        //panelComponents.submitLoginPanel.SetActive(false);
+
+        AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
+
+        //Init Type DropDown
+        panelComponents.taskTypeDrpDwn.choices.Clear();
+        for (int i = 0; i < settings.dataTypes.Count; i++) {
+            panelComponents.taskTypeDrpDwn.choices.Add(settings.dataTypes[i]);
+        }
+        panelComponents.taskTypeDrpDwn.value = settings.dataTypes[0];
+
+        //Init Tags
+        tagPreviewList.Clear();
+        panelComponents.tagContainer.Clear();
+
+        for (int i = 0; i < settings.tags.Count; i++) {
+            VisualElement tagUi = tagLabelUi.Instantiate();
+            panelComponents.tagContainer.Add(tagUi);
+
+            TagPreview tagPreview = new TagPreview(tagUi, settings.tags[i]);
+            tagPreviewList.Add(tagPreview);
+        }
+
         RegisterEvents();
         ConfigureAPI();
+
+        ticketBrowser = new TicketBrowser(this);
     }
+
     protected override void OnShowWindow() {
         base.OnShowWindow();
         base.GetData();
@@ -88,20 +127,20 @@ public class UIPopup : UIPopUpBase {
     public void OnLogInButtonClick() {
         try {
             LogIn();
-            panelComponents.submitLoginPanel.SetActive(true);
+            //panelComponents.submitLoginPanel.SetActive(true);
         } catch (Exception e) {
             OnLoginFail(e.Message);
         }
     }
     private void OnLoginSucceed() {
-        panelComponents.userName.text = api.requestHandler.GetUser()?.name;
-        panelComponents.loginSection.SetActive(false);
-        panelComponents.submitLoginPanel.SetActive(false);
+        //panelComponents.userName.text = api.requestHandler.GetUser()?.name;
+        //panelComponents.loginSection.SetActive(false);
+        //panelComponents.submitLoginPanel.SetActive(false);
     }
     public void OnLogOutButtonClick() {
         LogOut();
-        panelComponents.userName.text = "";
-        panelComponents.loginSection.SetActive(true);
+        //panelComponents.userName.text = "";
+        //panelComponents.loginSection.SetActive(true);
     }
     protected override void OnLoginFail(string failMessage) {
         Debug.LogWarning(failMessage);
@@ -111,26 +150,23 @@ public class UIPopup : UIPopUpBase {
 
     #region Setup
     private void RegisterEvents() {
-        panelComponents.loginSubmitButton.onClick.AddListener(OnLoginSucceed);
-        panelComponents.dataTyepDropdown.onValueChanged.AddListener(SetDataType);
-        panelComponents.reportTabButton.onClick.AddListener(() => { ShowReportPanel(); CreateTicketFromSearch(); });
-        panelComponents.searchTabButton.onClick.AddListener(ShowSearchPanel);
-        panelComponents.loginButton.onClick.AddListener(OnLogInButtonClick);
-        panelComponents.logoutButton.onClick.AddListener(OnLogOutButtonClick);
-        panelComponents.createTicketButton.onClick.AddListener(CreateTicketFromSearch);
-        panelComponents.sendButton.onClick.AddListener(SendData);
-        panelComponents.mentionList.onValueChanged.AddListener(OnDropdownValueChange);
+        UnregisterEvents();
+        panelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
+        panelComponents.reportBtn.RegisterCallback<ClickEvent>(ReportTab_clicked);
+        panelComponents.searchBtn.RegisterCallback<ClickEvent>(SearchTab_clicked);
+        panelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
+        panelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchSubmit_clicked);
+        panelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
+        panelComponents.taskMentionsDrpDwn.RegisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
     }
     private void UnregisterEvents() {
-        panelComponents.loginSubmitButton.onClick.RemoveAllListeners();
-        panelComponents.loginSubmitButton.onClick.RemoveAllListeners();
-        panelComponents.mentionList.onValueChanged.RemoveAllListeners();
-        panelComponents.reportTabButton.onClick.RemoveAllListeners();
-        panelComponents.searchTabButton.onClick.RemoveAllListeners();
-        panelComponents.loginButton.onClick.RemoveAllListeners();
-        panelComponents.logoutButton.onClick.RemoveAllListeners();
-        panelComponents.createTicketButton.onClick.RemoveAllListeners();
-        panelComponents.sendButton.onClick.RemoveAllListeners();
+        panelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
+        panelComponents.reportBtn.UnregisterCallback<ClickEvent>(ReportTab_clicked);
+        panelComponents.searchBtn.UnregisterCallback<ClickEvent>(SearchTab_clicked);
+        panelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
+        panelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchSubmit_clicked);
+        panelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
+        panelComponents.taskMentionsDrpDwn.UnregisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
     }
 
     /// <summary>
@@ -141,8 +177,8 @@ public class UIPopup : UIPopUpBase {
             api = new AsanaAPI();
         }
     }
-    public void SetDataType(int i) {
-        currentDataType = (DataType)i + 1;
+    public void SetDataType(ChangeEvent<string> changeEvent) {
+        currentDataType = changeEvent.newValue;
     }
     private void ShowReportPanel() {
         ActiveWindow = WindowType.Report;
@@ -150,42 +186,65 @@ public class UIPopup : UIPopUpBase {
     private void ShowSearchPanel() {
         ActiveWindow = WindowType.Search;
     }
+    #endregion
 
+    #region Click Events
+    private void SearchTab_clicked(ClickEvent evt) {
+        ShowSearchPanel();
+    }
+
+    private void ReportTab_clicked(ClickEvent evt) {
+        ShowReportPanel();
+        CreateTicketFromSearch();
+    }
+
+    private void LoginBtn_clicked(ClickEvent evt) {
+        OnLogInButtonClick();
+    }
+
+    private void SearchSubmit_clicked(ClickEvent evt) {
+        CreateTicketFromSearch();
+    }
+
+    private void TaskSubmit_clicked(ClickEvent evt) {
+        SendData();
+    }
+
+    private void TaskMentionDrpDwn_clicked(ClickEvent evt) {
+        OnClickMentionDrpDwn();
+    }
     #endregion
 
     #region Data creation
-
     /// <summary>
     /// Called by clicking on "´Report Tab button". Transfer the data from search to report.
     /// Fill the mention list with mentioned tasks
     /// </summary>
     public void CreateTicketFromSearch() {
         string titleText = "";
-        if (string.IsNullOrWhiteSpace(panelComponents.searchInput.text)) {
+        if (string.IsNullOrWhiteSpace(panelComponents.searchTxtFld.text)) {
             titleText = "...";
         } else {
-            titleText = panelComponents.searchInput.text;
+            titleText = panelComponents.searchTxtFld.text;
         }
 
         foreach (string gid in mentionedTask.Keys) {
-            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData() { text = gid };
-            if (panelComponents.mentionList.options.Find(o => o.text == gid) == null) {
-                panelComponents.mentionList.options.Add(optionData);
+            if (!panelComponents.taskMentionsDrpDwn.choices.Contains(gid)) {
+                panelComponents.taskMentionsDrpDwn.choices.Add(gid);
             }
         }
 
         //look for matching tags and set tag preview action
         foreach (TagPreview p in tagPreviewList) {
-            p.addTagToTagList = () => SetTag(p.scriptableTag);
-            p.removeFromTagList = () => RemoveTag(p.scriptableTag);
-            p.btn = p.gameObject.GetComponent<Button>();
-            if (titleText.ToLower().Contains(p.scriptableTag.tagName.ToLower())) {
-                SetTag(p.scriptableTag);
+            p.addTagToTagList = () => SetTag(p);
+            p.removeFromTagList = () => RemoveTag(p);
+            if (titleText.ToLower().Contains(p.title.ToLower())) {
+                SetTag(p);
                 p.Select();
             }
         }
 
-        panelComponents.title.text = titleText;
+        panelComponents.taskTitleTxt.value = titleText;
         ShowReportPanel();
     }
 
@@ -194,17 +253,21 @@ public class UIPopup : UIPopUpBase {
     /// </summary>
     /// <param name="dataId"></param>
     public void OnDropdownValueChange(int dataId) {
-        TMP_Dropdown.OptionData optionData = panelComponents.mentionList.options[dataId];
-        string gid = optionData.text;
-        TaskModels.AsanaTaskModel task = mentionedTask[gid];
+        //TMP_Dropdown.OptionData optionData = panelComponents.mentionList.options[dataId];
+        //string gid = optionData.text;
+        //TaskModels.AsanaTaskModel task = mentionedTask[gid];
 
-        GameObject popupObject = Instantiate(panelComponents.detailPopup);
-        popupObject.transform.SetParent(panelComponents.reportPanel.transform);
-        popupObject.transform.localPosition = Vector3.zero;
+        //GameObject popupObject = Instantiate(panelComponents.detailPopup);
+        //popupObject.transform.SetParent(panelComponents.reportPanel.transform);
+        //popupObject.transform.localPosition = Vector3.zero;
 
-        DetailPopup popup = popupObject.GetComponent<DetailPopup>();
-        popup.title.text = task.name;
-        popup.description.text = task.notes;
+        //DetailPopup popup = popupObject.GetComponent<DetailPopup>();
+        //popup.title.text = task.name;
+        //popup.description.text = task.notes;
+    }
+
+    public void OnClickMentionDrpDwn() {
+        Debug.Log("Mention Dropdown clicked");
     }
 
     public void SendData() {
@@ -213,24 +276,25 @@ public class UIPopup : UIPopUpBase {
             asanaAPI.mentions.AddRange(mentionedTask.Keys);
         }
 
-        PostData(panelComponents.title.text, panelComponents.text.text,
-            MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
-            currentDataType);
+        PostData(panelComponents.taskTitleTxt.text, panelComponents.taskDescriptionTxt.text,
+            MergeTextures(screenshotDummy, overpaintDummy), //MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
+            DataType.Feedback); //------ DUMMY ------- currentDataType is now from type string
         foreach (TagPreview p in tagPreviewList) {
             p.Deselect();
         }
 
-        panelComponents.title.text = "Descriptive Title";
-        panelComponents.text.text = "Description of bug or feedback";
+        panelComponents.taskTitleTxt.value = "Descriptive Title";
+        panelComponents.taskDescriptionTxt.value = "Description of bug or feedback";
         ActiveWindow = WindowType.None;
     }
     #endregion
 
     #region Screenshot
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
-        panelComponents.screenshot.texture = screenshot;
+        //panelComponents.screenshot.texture = screenshot;
+        screenshotDummy = screenshot;
         screenshot.Apply();
-        drawImage.Setup();
+        //drawImage.Setup();
     }
 
     //Combine Screenshot and Drawing to one Texture

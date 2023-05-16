@@ -2,45 +2,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class TicketBrowser : MonoBehaviour {
-
-
+public class TicketBrowser {
     [Header("Ticket Browser Components")]
     public TagList tagList;
-    public PanelComponents panelComponents;
     public List<ScriptableTag> usedTagsScriptableList = new List<ScriptableTag>();
  
     private int taskPreviewCount = 10;
-    private List<GameObject> taskPreviewList = new List<GameObject>();
+    private List<TicketPreview> taskPreviewList = new List<TicketPreview>();
     private List<TaskModels.AsanaTaskModel> searchResult = new List<TaskModels.AsanaTaskModel>();
     private List<string> mentions = new List<string>();
 
     private UIPopup uIPopup;
-    private void Start() {
-        uIPopup = panelComponents.GetComponentInParent<UIPopup>();
+
+    public TicketBrowser(UIPopup uIPopup) {
+        AsanaAPI.TicketsReceivedEvent -= OnTicketsReceived;
+        AsanaAPI.TicketsReceivedEvent += OnTicketsReceived;
+
+        this.uIPopup = uIPopup;
+
+        uIPopup.panelComponents.taskContainer.Clear();
 
         //pool all preview objects on start and hide them
         for (int i = 0; i < taskPreviewCount; i++) {
-            GameObject ticketPreview = Instantiate(panelComponents.ticketPreviewPrefab);
-            ticketPreview.transform.SetParent(panelComponents.scrollviewPreviewLayoutGroup.transform);
-            TicketPreview p = ticketPreview.GetComponent<TicketPreview>();
-            p.sendUpvoteAction = uIPopup.api.requestHandler.PostUpvoteCount;
-            ticketPreview.transform.localScale = Vector3.one;
-            ticketPreview.SetActive(false);
-            taskPreviewList.Add(ticketPreview);
+            //create instance of an taskCard
+            VisualElement taskCard = uIPopup.taskCardUi.Instantiate();
+            //hide it
+            taskCard.style.display = DisplayStyle.None;
+            //add to ui
+            uIPopup.panelComponents.taskContainer.Add(taskCard);
+
+            //create ticketPreview and link ui to it
+            TicketPreview taskPreview = new TicketPreview(taskCard);
+            //add to tasklist
+            taskPreviewList.Add(taskPreview);
+            //add events
+            taskPreview.sendUpvoteAction = uIPopup.api.requestHandler.PostUpvoteCount;
         }
 
         RegisterEvents();
     }
 
-    void Awake() {
-        AsanaAPI.TicketsReceivedEvent -= OnTicketsReceived;
-        AsanaAPI.TicketsReceivedEvent += OnTicketsReceived;
-    }
-
     private void RegisterEvents() {
-        panelComponents.searchInput.onValueChanged.AddListener(Search);
+        uIPopup.panelComponents.searchTxtFld.UnregisterValueChangedCallback(Search);
+        uIPopup.panelComponents.searchTxtFld.RegisterValueChangedCallback(Search);
     }
 
     //Needs to be fired to operate on tickets!
@@ -58,19 +64,20 @@ public class TicketBrowser : MonoBehaviour {
                 }
             }
         }
+
         SearchWithLucene.Instance.CreateIndex(tickets);
     }
 
     //Search for the change text with lucene text analyzer
-    private void Search(string change) {
-        if (string.IsNullOrEmpty(change) || string.IsNullOrWhiteSpace(change)) {
-            if (!taskPreviewList[0].GetComponent<TicketPreview>().PreviewEmpty()) {
+    private void Search(ChangeEvent<string> evt) {
+        if (string.IsNullOrEmpty(evt.newValue) || string.IsNullOrWhiteSpace(evt.newValue)) {
+            if (!taskPreviewList[0].PreviewEmpty()) {
                 ResetPreview();
             }
             return;
         }
 
-        searchResult = SearchWithLucene.Instance.SearchTerm(change).ToList();
+        searchResult = SearchWithLucene.Instance.SearchTerm(evt.newValue).ToList();
         FillPreview();
     }
 
@@ -78,7 +85,7 @@ public class TicketBrowser : MonoBehaviour {
     private void FillPreview() {
         for (int i = 0; i < searchResult.Count; i++) {
             TaskModels.AsanaTaskModel task = searchResult[i];
-            TicketPreview preview = taskPreviewList[i].GetComponent<TicketPreview>();
+            TicketPreview preview = taskPreviewList[i];
             preview = preview.SetTicketModel(task);
             preview.mentioned = false;
             
@@ -98,28 +105,27 @@ public class TicketBrowser : MonoBehaviour {
 
     //Reset the preview objects (hide them and clear the text fields)
     private void ResetPreview() {
-        taskPreviewList.ForEach(obj => {
-            TicketPreview preview = obj.GetComponent<TicketPreview>();
+        taskPreviewList.ForEach(preview => {
             preview.ResetTicketModel();
-            obj.SetActive(false);
+            preview.SetActive(false);
         });
         searchResult.Clear();
     }
 
     //Instatniate detail popup with ticket preview content
     private void OnClickTicketPreviewAction(TicketPreview preview, string title, string description) {
-        if(panelComponents.searchPanel.GetComponentInChildren<DetailPopup>() != null) { return; }
-        GameObject popup = Instantiate(panelComponents.detailPopup);
-        popup.gameObject.transform.SetParent(panelComponents.searchPanel.transform);
-        popup.transform.localPosition = Vector3.zero;
-        DetailPopup detailPopup = popup.GetComponent<DetailPopup>();
-        detailPopup.FillDetailPopup(title, description);
-        detailPopup.onClosePopup += () => OnClickCloseButton(detailPopup, preview);
+        //if(panelComponents.searchPanel.GetComponentInChildren<DetailPopup>() != null) { return; }
+        //GameObject popup = Instantiate(panelComponents.detailPopup);
+        //popup.gameObject.transform.SetParent(panelComponents.searchPanel.transform);
+        //popup.transform.localPosition = Vector3.zero;
+        //DetailPopup detailPopup = popup.GetComponent<DetailPopup>();
+        //detailPopup.FillDetailPopup(title, description);
+        //detailPopup.onClosePopup += () => OnClickCloseButton(detailPopup, preview);
     }
 
     private void OnClickCloseButton(DetailPopup popup, TicketPreview preview) {
         preview.openDetailPopup -= () => OnClickTicketPreviewAction(preview, popup.title.text, popup.description.text);
-        Destroy(popup.gameObject);
+        //Close the popup
     }
 
     private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {
@@ -132,7 +138,7 @@ public class TicketBrowser : MonoBehaviour {
             mentions.Remove(gid);
         }
         uIPopup.mentionedTask.Remove(gid);
-        panelComponents.mentionList.options.Remove(panelComponents.mentionList.options.Find(o => o.text == gid));
+        uIPopup.panelComponents.taskMentionsDrpDwn.choices.Remove(gid);
     }
 
 }

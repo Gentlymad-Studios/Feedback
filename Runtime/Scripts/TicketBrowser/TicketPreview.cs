@@ -1,9 +1,9 @@
 using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-public class TicketPreview : MonoBehaviour {
+public class TicketPreview {
+    public VisualElement ui;
 
     public Action<string,int> sendUpvoteAction;
     public Action openDetailPopup;
@@ -11,38 +11,34 @@ public class TicketPreview : MonoBehaviour {
     public Action removeFromMentions;
     public bool mentioned = false;
 
-    [SerializeField] public TMP_Text ticketName;
-    [SerializeField] public TMP_Text notes;
-    [SerializeField] private TMP_Text upvotes;
-    [SerializeField] private Button voteButton;
-    [SerializeField] private Button mentionButton;
+    public Label taskTitleLbl;
+    public Label taskDescriptionLbl;
+    private Label upvoteLbl;
+    private Button mentionBtn;
 
     private string gid;
-    private Button taskButton;
     private TaskModels.AsanaTaskModel ticketModel;
     private Action<TaskModels.AsanaTaskModel> fillPreview;
     private Action resetPreview;
 
     private bool voted = false;
 
+    public TicketPreview(VisualElement ui) {
+        taskTitleLbl = ui.Q("taskTitleLbl") as Label;
+        taskDescriptionLbl = ui.Q("taskDescriptionLbl") as Label;
+        upvoteLbl = ui.Q("upvoteLbl") as Label;
+        mentionBtn = ui.Q("mentionBtn") as Button;
 
-    private void Start() {
-
-        taskButton = GetComponent<Button>();
-        taskButton.onClick.AddListener(() => openDetailPopup.Invoke());
-
-        voted = false;
-        voteButton.onClick.AddListener(() => {
-            Vote();
-            sendUpvoteAction.Invoke(gid, int.Parse(upvotes.text));
-        });
-
-        mentionButton.onClick.AddListener(Mention);
-    }
-
-    private void OnEnable() {
         fillPreview = FillPreview;
         resetPreview = ResetPreview;
+
+        this.ui = ui;
+        ui.RegisterCallback<ClickEvent>(Card_clicked);
+
+        voted = false;
+        upvoteLbl.RegisterCallback<ClickEvent>(Upvote_clicked);
+
+        mentionBtn.RegisterCallback<ClickEvent>(Mention_clicked);
     }
 
     private void OnDestroy() {
@@ -50,22 +46,37 @@ public class TicketPreview : MonoBehaviour {
         openDetailPopup = null;
     }
 
+    #region ClickEvents
+    private void Card_clicked(ClickEvent evt) {
+        openDetailPopup.Invoke();
+    }
+
+    private void Upvote_clicked(ClickEvent evt) {
+        Vote();
+        sendUpvoteAction.Invoke(gid, int.Parse(upvoteLbl.text));
+    }
+
+    private void Mention_clicked(ClickEvent evt) {
+        Mention();
+    }
+    #endregion
+
     private void FillPreview(TaskModels.AsanaTaskModel ticketModel) {
-        ticketName.text = ticketModel.name;
+        taskTitleLbl.text = ticketModel.name;
         gid = ticketModel.gid;
-        notes.text = ticketModel.notes;
-        upvotes.text = ticketModel.custom_fields[0]?.display_value.ToString();
+        taskDescriptionLbl.text = ticketModel.notes;
+        upvoteLbl.text = ticketModel.custom_fields[0]?.display_value.ToString();
     }
     private void ResetPreview() {
-        ticketName.text = string.Empty;
-        notes.text = string.Empty;
+        taskTitleLbl.text = string.Empty;
+        taskDescriptionLbl.text = string.Empty;
         gid = string.Empty;
-        upvotes.text = "0";
+        upvoteLbl.text = "0";
         mentioned = false;
     }
     public string Vote() {
         int value;
-        int.TryParse(upvotes.text.ToString(), out value);
+        int.TryParse(upvoteLbl.text.ToString(), out value);
         Debug.Log(value);
 
         if (!voted) {
@@ -75,7 +86,7 @@ public class TicketPreview : MonoBehaviour {
             value -= 1;
             voted = false;
         }
-        upvotes.text = value.ToString();
+        upvoteLbl.text = value.ToString();
         return value.ToString();
     }
 
@@ -97,7 +108,7 @@ public class TicketPreview : MonoBehaviour {
         ticketModel = null;
     }
     public bool PreviewEmpty() {
-        if (ticketName.text.Equals(string.Empty)) {
+        if (taskTitleLbl.text.Equals(string.Empty)) {
             return true;
         }
         return false;
@@ -105,13 +116,20 @@ public class TicketPreview : MonoBehaviour {
 
     public void Select() {
         mentioned = true;
-        mentionButton.GetComponentInChildren<TMP_Text>().text = "mentioned";
+        mentionBtn.text = "mentioned";
         addToMentions.Invoke();
     }
     public void Deselect() {
         mentioned = false;
-        mentionButton.GetComponentInChildren<TMP_Text>().text = "not mentioned";
+        mentionBtn.text = "not mentioned";
         removeFromMentions.Invoke();
     }
 
+    public void SetActive(bool active) {
+        if (active) {
+            ui.style.display = DisplayStyle.Flex;
+        } else {
+            ui.style.display = DisplayStyle.None;
+        }
+    }
 }

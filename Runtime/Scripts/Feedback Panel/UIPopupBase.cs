@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public abstract class UIPopUpBase : MonoBehaviour {
@@ -42,10 +41,10 @@ public abstract class UIPopUpBase : MonoBehaviour {
     public void LogOut() {
        api.requestHandler.LogOut();
     }
-    public void SetTag(ScriptableTag tag) {
+    public void SetTag(TagPreview tag) {
         api.requestHandler.AddTagToTagList(tag);
     }
-    public void RemoveTag(ScriptableTag tag) {
+    public void RemoveTag(TagPreview tag) {
         api.requestHandler.RemoveTagFromTagList(tag);
     }
 

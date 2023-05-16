@@ -4,8 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TopbarButtons : MonoBehaviour
-{
+public class TopbarButtons : MonoBehaviour {
     UIDocument topbar;
     Button searchBtn;
     Button reportBtn;

@@ -1,46 +1,46 @@
 using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-public class TagPreview : MonoBehaviour {
+public class TagPreview {
+    public VisualElement ui;
 
-    public ScriptableTag scriptableTag;
     public Action addTagToTagList;
     public Action removeFromTagList;
-    public Button btn;
+    public Label tagLbl;
+    public string title;
 
-    private TMP_Text text;
     private bool selected = false;
 
-    private void Start() {
-        text = gameObject.GetComponentInChildren<TMP_Text>();
-        text.text = scriptableTag.tagName;
-        btn = gameObject.GetComponent<Button>();
-        btn.onClick.AddListener(onClick);
+    public TagPreview(VisualElement ui, string title) {
+        this.ui = ui.Q("tagRoot");
+        this.title = title;
+
+        tagLbl = ui.Q("tagLbl") as Label;
+        tagLbl.text = title;
+
+        ui.RegisterCallback<ClickEvent>(TagLbl_clicked);
     }
 
-    private void onClick() {
+    private void TagLbl_clicked(ClickEvent evt) {
         if (!selected) {
             Select();
         } else {
             Deselect();
         }
     }
+
     public void Select() {
         selected = true;
-        ColorBlock colors = btn.colors;
-        colors.normalColor = new Color(111, 111, 111, 255);
-        colors.highlightedColor = new Color(111, 111, 111, 255);
-        btn.colors = colors;
+        ui.RemoveFromClassList("tagLabel");
+        ui.AddToClassList("tagLabelSelected");
         addTagToTagList.Invoke();
     }
+
     public void Deselect() {
         selected = false;
-        ColorBlock colors = btn.colors;
-        colors.normalColor = Color.white;
-        colors.highlightedColor = new Color32(225, 225, 225, 255);
-        btn.colors = colors;
+        ui.AddToClassList("tagLabel");
+        ui.RemoveFromClassList("tagLabelSelected");
         removeFromTagList.Invoke();
     }
 

@@ -1,44 +1,65 @@
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-public class PanelComponents : MonoBehaviour {
+public class PanelComponents {
+    public UIDocument uiDocument;
+    public VisualElement root;
 
-    [Header("Login Information")]
-    public GameObject loginSection;
-    public Button loginButton;
-    public Button logoutButton;
-    public TMP_Text userName;
+    // Tab Buttons
+    public VisualElement searchTab;
+    public VisualElement reportTab;
+    public Button searchBtn;
+    public Button reportBtn;
 
-    [Header("Data")]
-    public TMP_InputField title;
-    public TMP_InputField text;
-    public TMP_Dropdown dataTyepDropdown;
-    public TMP_Dropdown mentionList;
-    public Button sendButton;
+    // Login Section
+    public Button loginBtn;
+    public Button logoutBtn;
 
-    [Header("Screenshot")]
-    public RawImage screenshot;
-    public RawImage overpaint;
+    // Search Section
+    public TextField searchTxtFld;
+    public Button searchSubmitBtn;
+    public VisualElement tagContainer;
+    public ScrollView taskContainer;
 
-    [Header("Token exchange")]
-    public GameObject submitLoginPanel;
-    public Button loginSubmitButton;
+    // Report Section
+    public DropdownField taskTypeDrpDwn;
+    public DropdownField taskMentionsDrpDwn;
+    public TextField taskTitleTxt;
+    public TextField taskDescriptionTxt;
+    public Button taskSubmitBtn;
 
-    [Header("Tab Buttons")]
-    public Button searchTabButton;
-    public Button reportTabButton;
-    public GameObject reportPanel;
-    public GameObject searchPanel;
+    // Screenshot Section
+    public VisualElement screenshotContainer;
 
-    [Header("TicketBrowser")]
-    public Button createTicketButton;
-    public TMP_InputField searchInput;
-    public GameObject tabPanel;
-    public GameObject scrollviewPreviewLayoutGroup;
-    public GameObject ticketPreviewPrefab;
-    public GameObject tagPanel;
+    public void Initialize(UIDocument uiDocument) {
+        this.uiDocument = uiDocument;
 
-    [Header("Popup")]
-    public GameObject detailPopup;
+        root = uiDocument.rootVisualElement;
+
+        searchTab = uiDocument.rootVisualElement.Q("SearchTab");
+        reportTab = uiDocument.rootVisualElement.Q("ReportTab");
+        searchBtn = uiDocument.rootVisualElement.Q("searchBtn") as Button;
+        reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
+
+        loginBtn = uiDocument.rootVisualElement.Q("loginBtn") as Button;
+
+        searchTxtFld = uiDocument.rootVisualElement.Q("searchTxt") as TextField;
+        searchSubmitBtn = uiDocument.rootVisualElement.Q("searchSubmitBtn") as Button;
+        tagContainer = uiDocument.rootVisualElement.Q("tagContainer");
+        taskContainer = uiDocument.rootVisualElement.Q("taskContainer") as ScrollView;
+
+        taskTypeDrpDwn = uiDocument.rootVisualElement.Q("taskTypeDrpDwn") as DropdownField;
+        taskMentionsDrpDwn = uiDocument.rootVisualElement.Q("taskMentionsDrpDwn") as DropdownField;
+        taskTitleTxt = uiDocument.rootVisualElement.Q("taskTitleTxt") as TextField;
+        taskDescriptionTxt = uiDocument.rootVisualElement.Q("taskDescriptionTxt") as TextField;
+        taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
+
+        screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");
+    }
+
+    //[Header("Screenshot")]
+    //public RawImage screenshot;
+    //public RawImage overpaint;
+
+    //[Header("Popup")]
+    //public GameObject detailPopup;
 }

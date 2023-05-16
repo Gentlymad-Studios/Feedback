@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]
@@ -18,4 +19,7 @@ public class AsanaAPISettings : APISettings {
     public string feedbackProjectId;
     public string workspaceId;
 
+    [Header("Task Settings")]
+    public List<string> tags;
+    public List<string> dataTypes;
 }
