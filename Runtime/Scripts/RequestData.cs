@@ -8,9 +8,9 @@ public class RequestData  {
     public string title;
     public string text;
     public Texture2D screenshot;
-    public DataType dataType;
+    public string dataType;
 
-    public RequestData(string title, string text,Texture2D screenshot, DataType dataType) {
+    public RequestData(string title, string text,Texture2D screenshot, string dataType) {
         this.title = title;
         this.text = text;
         this.screenshot = screenshot;

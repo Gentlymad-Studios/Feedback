@@ -23,13 +23,10 @@ public abstract class UIPopUpBase : MonoBehaviour {
     }
 
     protected virtual void GetData() {
-        //Task erstellen
-        //Task task = new Task(api.requestHandler.GetAllData);
-        //task.Start();
         api.requestHandler.GetAllData();
     }
 
-    protected virtual void PostData(string title, string text, Texture2D screenshot, DataType type) {
+    protected virtual void PostData(string title, string text, Texture2D screenshot, string type) {
         RequestData data = new RequestData(title, text, screenshot, type);
         api.requestHandler.PostNewData(data);
     }

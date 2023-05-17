@@ -37,13 +37,10 @@ public class UIPopup : UIPopUpBase {
                 panelComponents.searchTab.style.display = DisplayStyle.None;
                 panelComponents.reportTab.style.display = DisplayStyle.None;
             }
-
-            if (before == WindowType.None) {
-                //base.GetData();
-            }
         }
     }
-    private string currentDataType;
+
+    private string currentDataType = "Feedback";
     private WindowType currentWindowType;
     private WindowType activeWindow = WindowType.Search;
 
@@ -248,24 +245,6 @@ public class UIPopup : UIPopUpBase {
         ShowReportPanel();
     }
 
-    /// <summary>
-    /// Called by changing the mention list value. Instantiate a popup with detailed task informations. 
-    /// </summary>
-    /// <param name="dataId"></param>
-    public void OnDropdownValueChange(int dataId) {
-        //TMP_Dropdown.OptionData optionData = panelComponents.mentionList.options[dataId];
-        //string gid = optionData.text;
-        //TaskModels.AsanaTaskModel task = mentionedTask[gid];
-
-        //GameObject popupObject = Instantiate(panelComponents.detailPopup);
-        //popupObject.transform.SetParent(panelComponents.reportPanel.transform);
-        //popupObject.transform.localPosition = Vector3.zero;
-
-        //DetailPopup popup = popupObject.GetComponent<DetailPopup>();
-        //popup.title.text = task.name;
-        //popup.description.text = task.notes;
-    }
-
     public void OnClickMentionDrpDwn() {
         Debug.Log("Mention Dropdown clicked");
     }
@@ -278,7 +257,7 @@ public class UIPopup : UIPopUpBase {
 
         PostData(panelComponents.taskTitleTxt.text, panelComponents.taskDescriptionTxt.text,
             MergeTextures(screenshotDummy, overpaintDummy), //MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
-            DataType.Feedback); //------ DUMMY ------- currentDataType is now from type string
+            currentDataType);
         foreach (TagPreview p in tagPreviewList) {
             p.Deselect();
         }

@@ -5,9 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
 
 //query builder https://developers.asana.com/reference/searchtasksforworkspace
@@ -30,11 +28,10 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     /// <summary>
     /// Get all tasks from AsanaRequestManager, 
-    /// fire TicketsRecievedEvent to create lucene index wihth tickets.
+    /// fire TicketsRecievedEvent to create lucene index with tickets.
     /// </summary>
     public async override void GetAllData() {
 
-        //include an update intervall
         if (asanaAPI.lastUpdateTime.AddMinutes(2) > DateTime.Now) {
             asanaAPI.FireTicketsCreated(asanaAPI.ticketModelsBackup);
             return;
@@ -69,7 +66,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     /// <summary>
-    /// Post the new data object to AsanaRequestManager
+    /// Post the new data object to AsanaRequestManager.
     /// </summary>
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
     public override void PostNewData(RequestData data) {
@@ -101,14 +98,14 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     /// <summary>
     /// Build a task data object out of the user input. 
-    /// The object contains a name, notes the project id and the workspace id.
+    /// The object contains a name, notes the project id, the workspace id, a tag list and an attachment.                                                                   
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
     private string BuildTaskData(RequestData data) {
         string projectId = asanaAPISettings.bugProjectId;
-        if (data.dataType is DataType.Feedback) { projectId = asanaAPISettings.feedbackProjectId; }
-
+        if (data.dataType.Equals("Feedback")) { projectId = asanaAPISettings.feedbackProjectId; }
+        
         //TODO: implement generic attachment functions to support also text/plain content type
         NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
         attachment.filename = "screenshot.jpg";
