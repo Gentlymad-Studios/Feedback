@@ -47,16 +47,10 @@ public class UIPopup : UIPopUpBase {
     private List<TagPreview> tagPreviewList = new List<TagPreview>();
     private DateTime lastOpenTime;
 
-    //DUMMY
-    Texture2D screenshotDummy;
-    Texture2D overpaintDummy;
+    Texture2D screenshot;
+    Length fullPercent = new Length(100, LengthUnit.Percent);
 
     private void Awake() {
-        //Fill Dummys -> just for debugging until the paint tool is ported
-        screenshotDummy = new Texture2D(1920, 1080);
-        overpaintDummy = new Texture2D(1920, 1080);
-        //----------------------------------------------------------------
-
         if (panelComponents == null) {
             panelComponents = new PanelComponents();
             panelComponents.Initialize(uiDocument);
@@ -90,6 +84,7 @@ public class UIPopup : UIPopUpBase {
         RegisterEvents();
         ConfigureAPI();
 
+        drawImage = new DrawImage();
         ticketBrowser = new TicketBrowser(this);
     }
 
@@ -256,7 +251,7 @@ public class UIPopup : UIPopUpBase {
         }
 
         PostData(panelComponents.taskTitleTxt.text, panelComponents.taskDescriptionTxt.text,
-            MergeTextures(screenshotDummy, overpaintDummy), //MergeTextures((Texture2D)panelComponents.screenshot.texture, (Texture2D)panelComponents.overpaint.texture),
+            MergeTextures(screenshot, drawImage.drawSurfaceTexture),
             currentDataType);
         foreach (TagPreview p in tagPreviewList) {
             p.Deselect();
@@ -270,10 +265,38 @@ public class UIPopup : UIPopUpBase {
 
     #region Screenshot
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
-        //panelComponents.screenshot.texture = screenshot;
-        screenshotDummy = screenshot;
+        panelComponents.screenshotContainer.style.backgroundImage = screenshot;
+        panelComponents.imageContainer.RegisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
+        this.screenshot = screenshot;
         screenshot.Apply();
-        //drawImage.Setup();
+        drawImage.Setup(panelComponents);
+    }
+
+    private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {
+        float uiWidth = panelComponents.imageContainer.layout.width;
+        float uiHeight = panelComponents.imageContainer.layout.height;
+
+        float calculatedHeight = (float)screenshot.height / screenshot.width * uiWidth;
+
+        if (calculatedHeight < uiHeight) {
+            //width = 100% | height = calculated in px
+            Length height = new Length(calculatedHeight, LengthUnit.Pixel);
+
+            panelComponents.screenshotContainer.style.width = fullPercent;
+            panelComponents.screenshotContainer.style.height = height;
+            panelComponents.overpaintContainer.style.width = fullPercent;
+            panelComponents.overpaintContainer.style.height = height;
+        } else {
+            float calculatedWdith = (float)screenshot.width /screenshot.height * uiHeight;
+
+            //width = calculated in px| height = 100%
+            Length width = new Length(calculatedWdith, LengthUnit.Pixel);
+
+            panelComponents.screenshotContainer.style.width = width;
+            panelComponents.screenshotContainer.style.height = fullPercent;
+            panelComponents.overpaintContainer.style.width = width;
+            panelComponents.overpaintContainer.style.height = fullPercent;
+        }
     }
 
     //Combine Screenshot and Drawing to one Texture

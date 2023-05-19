@@ -28,7 +28,9 @@ public class PanelComponents {
     public Button taskSubmitBtn;
 
     // Screenshot Section
+    public VisualElement imageContainer;
     public VisualElement screenshotContainer;
+    public VisualElement overpaintContainer;
 
     public void Initialize(UIDocument uiDocument) {
         this.uiDocument = uiDocument;
@@ -53,12 +55,10 @@ public class PanelComponents {
         taskDescriptionTxt = uiDocument.rootVisualElement.Q("taskDescriptionTxt") as TextField;
         taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
 
+        imageContainer = uiDocument.rootVisualElement.Q("imageContainer");
         screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");
+        overpaintContainer = uiDocument.rootVisualElement.Q("overpaintContainer");
     }
-
-    //[Header("Screenshot")]
-    //public RawImage screenshot;
-    //public RawImage overpaint;
 
     //[Header("Popup")]
     //public GameObject detailPopup;

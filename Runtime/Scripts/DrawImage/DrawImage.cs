@@ -2,23 +2,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DrawImage : MonoBehaviour {
+public class DrawImage {
     //Toolbar UI Elements
-    public DrawToolbar toolbar;
+    //public DrawToolbar toolbar;
+
+    private PanelComponents panelComponents;
 
     //Pen Settings
     public int drawWidth;
     public Color drawColor = Color.black;
     public float[,] drawKernel;
     public float sigma = 1; //describes the pen fallof / hardness
-
-    public float test = 1;
+    public Texture2D drawSurfaceTexture;
 
     private Color tempDrawColor = Color.black;
     private Color pickedColor = Color.red;
 
     private RectTransform drawSurfaceRectTransform;
-    private Texture2D drawSurfaceTexture;
     private float drawSurfaceWidth;
     private float drawSurfaceHeight;
 
@@ -43,16 +43,18 @@ public class DrawImage : MonoBehaviour {
     float[] max_opacity;
     bool isEraser = false;
 
-    public void Setup() {
+    public void Setup(PanelComponents panelComponents) {
+        this.panelComponents = panelComponents;
+        return;
         ToolbarSetup();
 
         //for correct size, multiply width canvas scale, use screensize or use screenshot size
-        drawSurfaceRectTransform = this.gameObject.GetComponent<RectTransform>();
+        //drawSurfaceRectTransform = this.gameObject.GetComponent<RectTransform>();
         drawSurfaceWidth = drawSurfaceRectTransform.rect.width;
         drawSurfaceHeight = drawSurfaceRectTransform.rect.height;
         drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight);
         drawSurfaceTexture.filterMode = FilterMode.Point; //prevent grey outlines for now
-        this.gameObject.GetComponent<RawImage>().texture = drawSurfaceTexture;
+        //this.gameObject.GetComponent<RawImage>().texture = drawSurfaceTexture;
 
         // Reset all pixels color to transparent
         Color32 resetColor = new Color32(0, 0, 0, 0);
@@ -103,32 +105,32 @@ public class DrawImage : MonoBehaviour {
     }
 
     private void ToolbarSetup() {
-        toolbar.penButton.onClick.AddListener(() => {
-            isEraser = false;
-            SetPenColor(pickedColor);
-        });
+        //toolbar.penButton.onClick.AddListener(() => {
+        //    isEraser = false;
+        //    SetPenColor(pickedColor);
+        //});
 
-        toolbar.eraserButton.onClick.AddListener(() => {
-            isEraser = true;
-            SetPenColor(Color.clear);
-        });
+        //toolbar.eraserButton.onClick.AddListener(() => {
+        //    isEraser = true;
+        //    SetPenColor(Color.clear);
+        //});
 
-        toolbar.chooseColorButton.onClick.AddListener(() => {
-            pickedColor = Color.green;
-            SetPenColor(pickedColor);
-        });
+        //toolbar.chooseColorButton.onClick.AddListener(() => {
+        //    pickedColor = Color.green;
+        //    SetPenColor(pickedColor);
+        //});
 
-        toolbar.clearButton.onClick.AddListener(() => {
-            ResetCanvas();
-        });
+        //toolbar.clearButton.onClick.AddListener(() => {
+        //    ResetCanvas();
+        //});
 
-        toolbar.shrinkButton.onClick.AddListener(() => {
-            SetPenSize(drawWidth - 1);
-        });
+        //toolbar.shrinkButton.onClick.AddListener(() => {
+        //    SetPenSize(drawWidth - 1);
+        //});
 
-        toolbar.enlargeButton.onClick.AddListener(() => {
-            SetPenSize(drawWidth + 1);
-        });
+        //toolbar.enlargeButton.onClick.AddListener(() => {
+        //    SetPenSize(drawWidth + 1);
+        //});
 
         // call it to calculate the first kernel
         SetPenSize(drawWidth);
