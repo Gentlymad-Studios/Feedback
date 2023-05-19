@@ -7,7 +7,6 @@ using Lucene.Net.Store;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -17,15 +16,14 @@ public class SearchWithLucene {
 
     private LuceneVersion version = LuceneVersion.LUCENE_48;
 
-    private bool createIndexDocs = false;
     private IndexWriter writer;
-
     private StandardAnalyzer analyzer;
     private DirectoryReader directoryReader;
     private IndexSearcher indexSearcher;
-
-    private string[] fieldsIncluded = { "Name", "Notes" };
     private Directory indexDirectory;
+
+    private bool createIndexDocs = false;
+    private string[] fieldsIncluded = { "Name", "Notes" };
 
 
     private static SearchWithLucene instance;

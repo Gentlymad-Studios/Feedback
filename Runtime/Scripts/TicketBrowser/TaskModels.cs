@@ -10,9 +10,6 @@ public class TaskModels {
         public string notes { get; set; }
     }
 
-    public class AsanaTaskModels {
-        public List<AsanaTaskModel> data { get; set; }
-    }
     public class CustomField {
         public string gid { get; set; }
         public string name { get; set; }

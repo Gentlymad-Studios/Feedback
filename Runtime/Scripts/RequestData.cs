@@ -5,21 +5,17 @@ using UnityEngine;
 /// </summary>
 public class RequestData  {
 
-    public string title;
-    public string text;
-    public Texture2D screenshot;
-    public string dataType;
+    public string Title;
+    public string Text;
+    public Texture2D Screenshot;
+    public string DataType;
 
     public RequestData(string title, string text,Texture2D screenshot, string dataType) {
-        this.title = title;
-        this.text = text;
-        this.screenshot = screenshot;
-        this.dataType = dataType;
+        this.Title = title;
+        this.Text = text;
+        this.Screenshot = screenshot;
+        this.DataType = dataType;
     }
 }
 
-public enum DataType {
-    Feedback = 1,
-    Bug = 2,
-}
 

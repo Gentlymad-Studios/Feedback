@@ -8,41 +8,36 @@ public abstract class UIPopUpBase : MonoBehaviour {
 
     [Serializable]
     public class LoginFailMessage {
-        public LoginFailReason reason;
-        public string message;
+        public LoginFailReason Reason;
+        public string Message;
     }
 
-    public BaseAPI api = null;
-    public List<LoginFailMessage> loginFailMessages;
+    public BaseAPI Api = null;
+    public List<LoginFailMessage> LoginFailMessages;
 
     private Dictionary<LoginFailReason, string> loginFailMessagesLookup = new Dictionary<LoginFailReason, string>();
     private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
     
-
-    private void Awake() {
+    protected void GetData() {
+        Api.RequestHandler.GetAllData();
     }
 
-    protected virtual void GetData() {
-        api.requestHandler.GetAllData();
+    protected void PostData(RequestData data) {
+        Api.RequestHandler.PostNewData(data);
     }
 
-    protected virtual void PostData(string title, string text, Texture2D screenshot, string type) {
-        RequestData data = new RequestData(title, text, screenshot, type);
-        api.requestHandler.PostNewData(data);
+    protected void LogIn() {
+       Api.RequestHandler.LogIn();
     }
 
-    public void LogIn() {
-       api.requestHandler.LogIn();
+    protected void LogOut() {
+       Api.RequestHandler.LogOut();
     }
-
-    public void LogOut() {
-       api.requestHandler.LogOut();
+    protected void SetTag(TagPreview tag) {
+        Api.RequestHandler.AddTagToTagList(tag);
     }
-    public void SetTag(TagPreview tag) {
-        api.requestHandler.AddTagToTagList(tag);
-    }
-    public void RemoveTag(TagPreview tag) {
-        api.requestHandler.RemoveTagFromTagList(tag);
+    protected void RemoveTag(TagPreview tag) {
+        Api.RequestHandler.RemoveTagFromTagList(tag);
     }
 
     /// <summary>
@@ -79,24 +74,24 @@ public abstract class UIPopUpBase : MonoBehaviour {
     }
 
     /// <summary>
-    /// called when the window was hidden
-    /// </summary>
-    protected abstract void OnHideWindow();
-
-    /// <summary>
     /// Method called when the window was opened
     /// </summary>
     protected virtual void OnShowWindow() {
         StartCoroutine(CaptureScreenshot(OnAfterScreenshotCapture));
     }
 
+
+    /// <summary>
+    /// called when the window was hidden
+    /// </summary>
+    protected abstract void OnHideWindow();
+
+   
     /// <summary>
     /// Called when a screenshot was captured
     /// </summary>
     /// <param name="screenshot">the captured screenshot</param>
-    protected virtual void OnAfterScreenshotCapture(Texture2D screenshot) {
-       
-    }
+    protected abstract void OnAfterScreenshotCapture(Texture2D screenshot);
 
 
     /// <summary>

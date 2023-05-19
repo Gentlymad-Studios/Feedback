@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 public class UIPopup : UIPopUpBase {
-    public APISettings.APIType type;
-    public DrawImage drawImage;
-    public PanelComponents panelComponents;
-    public UIDocument uiDocument;
-    public TicketBrowser ticketBrowser;
-    public VisualTreeAsset taskCardUi;
-    public VisualTreeAsset tagLabelUi;
-    public Dictionary<string, TaskModels.AsanaTaskModel> mentionedTask = new Dictionary<string, TaskModels.AsanaTaskModel>();
+    public APISettings.APIType Type;
+    public DrawImage DrawImage;
+    public PanelComponents PanelComponents;
+    public UIDocument UIDocument;
+    public TicketBrowser TicketBrowser;
+    public VisualTreeAsset TaskCardUi;
+    public VisualTreeAsset TagLabelUi;
+    public Dictionary<string, TaskModels.AsanaTaskModel> MentionedTask = new Dictionary<string, TaskModels.AsanaTaskModel>();
     public WindowType ActiveWindow {
         get {
             return activeWindow;
@@ -25,17 +25,17 @@ public class UIPopup : UIPopUpBase {
             }
             activeWindow = value;
             if (activeWindow == WindowType.Search) {
-                panelComponents.root.style.display = DisplayStyle.Flex;
-                panelComponents.searchTab.style.display = DisplayStyle.Flex;
-                panelComponents.reportTab.style.display = DisplayStyle.None;
+                PanelComponents.root.style.display = DisplayStyle.Flex;
+                PanelComponents.searchTab.style.display = DisplayStyle.Flex;
+                PanelComponents.reportTab.style.display = DisplayStyle.None;
             } else if (activeWindow == WindowType.Report) {
-                panelComponents.root.style.display = DisplayStyle.Flex;
-                panelComponents.searchTab.style.display = DisplayStyle.None;
-                panelComponents.reportTab.style.display = DisplayStyle.Flex;
+                PanelComponents.root.style.display = DisplayStyle.Flex;
+                PanelComponents.searchTab.style.display = DisplayStyle.None;
+                PanelComponents.reportTab.style.display = DisplayStyle.Flex;
             } else {
-                panelComponents.root.style.display = DisplayStyle.None;
-                panelComponents.searchTab.style.display = DisplayStyle.None;
-                panelComponents.reportTab.style.display = DisplayStyle.None;
+                PanelComponents.root.style.display = DisplayStyle.None;
+                PanelComponents.searchTab.style.display = DisplayStyle.None;
+                PanelComponents.reportTab.style.display = DisplayStyle.None;
             }
         }
     }
@@ -51,9 +51,9 @@ public class UIPopup : UIPopUpBase {
     Length fullPercent = new Length(100, LengthUnit.Percent);
 
     private void Awake() {
-        if (panelComponents == null) {
-            panelComponents = new PanelComponents();
-            panelComponents.Initialize(uiDocument);
+        if (PanelComponents == null) {
+            PanelComponents = new PanelComponents();
+            PanelComponents.Initialize(UIDocument);
         }
 
         ActiveWindow = WindowType.None;
@@ -63,29 +63,29 @@ public class UIPopup : UIPopUpBase {
         AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
 
         //Init Type DropDown
-        panelComponents.taskTypeDrpDwn.choices.Clear();
-        for (int i = 0; i < settings.dataTypes.Count; i++) {
-            panelComponents.taskTypeDrpDwn.choices.Add(settings.dataTypes[i]);
+        PanelComponents.taskTypeDrpDwn.choices.Clear();
+        for (int i = 0; i < settings.DataTypes.Count; i++) {
+            PanelComponents.taskTypeDrpDwn.choices.Add(settings.DataTypes[i]);
         }
-        panelComponents.taskTypeDrpDwn.value = settings.dataTypes[0];
+        PanelComponents.taskTypeDrpDwn.value = settings.DataTypes[0];
 
         //Init Tags
         tagPreviewList.Clear();
-        panelComponents.tagContainer.Clear();
+        PanelComponents.tagContainer.Clear();
 
-        for (int i = 0; i < settings.tags.Count; i++) {
-            VisualElement tagUi = tagLabelUi.Instantiate();
-            panelComponents.tagContainer.Add(tagUi);
+        for (int i = 0; i < settings.Tags.Count; i++) {
+            VisualElement tagUi = TagLabelUi.Instantiate();
+            PanelComponents.tagContainer.Add(tagUi);
 
-            TagPreview tagPreview = new TagPreview(tagUi, settings.tags[i]);
+            TagPreview tagPreview = new TagPreview(tagUi, settings.Tags[i]);
             tagPreviewList.Add(tagPreview);
         }
 
         RegisterEvents();
         ConfigureAPI();
 
-        drawImage = new DrawImage();
-        ticketBrowser = new TicketBrowser(this);
+        DrawImage = new DrawImage();
+        TicketBrowser = new TicketBrowser(this);
     }
 
     protected override void OnShowWindow() {
@@ -143,30 +143,30 @@ public class UIPopup : UIPopUpBase {
     #region Setup
     private void RegisterEvents() {
         UnregisterEvents();
-        panelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
-        panelComponents.reportBtn.RegisterCallback<ClickEvent>(ReportTab_clicked);
-        panelComponents.searchBtn.RegisterCallback<ClickEvent>(SearchTab_clicked);
-        panelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
-        panelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchSubmit_clicked);
-        panelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
-        panelComponents.taskMentionsDrpDwn.RegisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
+        PanelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
+        PanelComponents.reportBtn.RegisterCallback<ClickEvent>(ReportTab_clicked);
+        PanelComponents.searchBtn.RegisterCallback<ClickEvent>(SearchTab_clicked);
+        PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
+        PanelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchSubmit_clicked);
+        PanelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
+        PanelComponents.taskMentionsDrpDwn.RegisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
     }
     private void UnregisterEvents() {
-        panelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
-        panelComponents.reportBtn.UnregisterCallback<ClickEvent>(ReportTab_clicked);
-        panelComponents.searchBtn.UnregisterCallback<ClickEvent>(SearchTab_clicked);
-        panelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
-        panelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchSubmit_clicked);
-        panelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
-        panelComponents.taskMentionsDrpDwn.UnregisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
+        PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
+        PanelComponents.reportBtn.UnregisterCallback<ClickEvent>(ReportTab_clicked);
+        PanelComponents.searchBtn.UnregisterCallback<ClickEvent>(SearchTab_clicked);
+        PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
+        PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchSubmit_clicked);
+        PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
+        PanelComponents.taskMentionsDrpDwn.UnregisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
     }
 
     /// <summary>
     /// Instantiate the api with given type
     /// </summary>
     public void ConfigureAPI() {
-        if (type.Equals(APISettings.APIType.Asana)) {
-            api = new AsanaAPI();
+        if (Type.Equals(APISettings.APIType.Asana)) {
+            Api = new AsanaAPI();
         }
     }
     public void SetDataType(ChangeEvent<string> changeEvent) {
@@ -212,17 +212,17 @@ public class UIPopup : UIPopUpBase {
     /// Called by clicking on "´Report Tab button". Transfer the data from search to report.
     /// Fill the mention list with mentioned tasks
     /// </summary>
-    public void CreateTicketFromSearch() {
+    private void CreateTicketFromSearch() {
         string titleText = "";
-        if (string.IsNullOrWhiteSpace(panelComponents.searchTxtFld.text)) {
+        if (string.IsNullOrWhiteSpace(PanelComponents.searchTxtFld.text)) {
             titleText = "...";
         } else {
-            titleText = panelComponents.searchTxtFld.text;
+            titleText = PanelComponents.searchTxtFld.text;
         }
 
-        foreach (string gid in mentionedTask.Keys) {
-            if (!panelComponents.taskMentionsDrpDwn.choices.Contains(gid)) {
-                panelComponents.taskMentionsDrpDwn.choices.Add(gid);
+        foreach (string gid in MentionedTask.Keys) {
+            if (!PanelComponents.taskMentionsDrpDwn.choices.Contains(gid)) {
+                PanelComponents.taskMentionsDrpDwn.choices.Add(gid);
             }
         }
 
@@ -236,7 +236,7 @@ public class UIPopup : UIPopUpBase {
             }
         }
 
-        panelComponents.taskTitleTxt.value = titleText;
+        PanelComponents.taskTitleTxt.value = titleText;
         ShowReportPanel();
     }
 
@@ -244,37 +244,38 @@ public class UIPopup : UIPopUpBase {
         Debug.Log("Mention Dropdown clicked");
     }
 
-    public void SendData() {
-        if (api is AsanaAPI) {
-            var asanaAPI = (AsanaAPI)api;
-            asanaAPI.mentions.AddRange(mentionedTask.Keys);
+    private void SendData() {
+        if (Api is AsanaAPI) {
+            var asanaAPI = (AsanaAPI)Api;
+            asanaAPI.Mentions.AddRange(MentionedTask.Keys);
         }
 
-        PostData(panelComponents.taskTitleTxt.text, panelComponents.taskDescriptionTxt.text,
-            MergeTextures(screenshot, drawImage.drawSurfaceTexture),
-            currentDataType);
+        RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text,
+            MergeTextures(screenshot, DrawImage.drawSurfaceTexture), currentDataType);
+
+        PostData(data);
         foreach (TagPreview p in tagPreviewList) {
             p.Deselect();
         }
 
-        panelComponents.taskTitleTxt.value = "Descriptive Title";
-        panelComponents.taskDescriptionTxt.value = "Description of bug or feedback";
+        PanelComponents.taskTitleTxt.value = "Descriptive Title";
+        PanelComponents.taskDescriptionTxt.value = "Description of bug or feedback";
         ActiveWindow = WindowType.None;
     }
     #endregion
 
     #region Screenshot
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
-        panelComponents.screenshotContainer.style.backgroundImage = screenshot;
-        panelComponents.imageContainer.RegisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
+        PanelComponents.screenshotContainer.style.backgroundImage = screenshot;
+        PanelComponents.imageContainer.RegisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
         this.screenshot = screenshot;
         screenshot.Apply();
-        drawImage.Setup(panelComponents);
+        DrawImage.Setup(PanelComponents);
     }
 
     private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {
-        float uiWidth = panelComponents.imageContainer.layout.width;
-        float uiHeight = panelComponents.imageContainer.layout.height;
+        float uiWidth = PanelComponents.imageContainer.layout.width;
+        float uiHeight = PanelComponents.imageContainer.layout.height;
 
         float calculatedHeight = (float)screenshot.height / screenshot.width * uiWidth;
 
@@ -282,20 +283,20 @@ public class UIPopup : UIPopUpBase {
             //width = 100% | height = calculated in px
             Length height = new Length(calculatedHeight, LengthUnit.Pixel);
 
-            panelComponents.screenshotContainer.style.width = fullPercent;
-            panelComponents.screenshotContainer.style.height = height;
-            panelComponents.overpaintContainer.style.width = fullPercent;
-            panelComponents.overpaintContainer.style.height = height;
+            PanelComponents.screenshotContainer.style.width = fullPercent;
+            PanelComponents.screenshotContainer.style.height = height;
+            PanelComponents.overpaintContainer.style.width = fullPercent;
+            PanelComponents.overpaintContainer.style.height = height;
         } else {
             float calculatedWdith = (float)screenshot.width /screenshot.height * uiHeight;
 
             //width = calculated in px| height = 100%
             Length width = new Length(calculatedWdith, LengthUnit.Pixel);
 
-            panelComponents.screenshotContainer.style.width = width;
-            panelComponents.screenshotContainer.style.height = fullPercent;
-            panelComponents.overpaintContainer.style.width = width;
-            panelComponents.overpaintContainer.style.height = fullPercent;
+            PanelComponents.screenshotContainer.style.width = width;
+            PanelComponents.screenshotContainer.style.height = fullPercent;
+            PanelComponents.overpaintContainer.style.width = width;
+            PanelComponents.overpaintContainer.style.height = fullPercent;
         }
     }
 

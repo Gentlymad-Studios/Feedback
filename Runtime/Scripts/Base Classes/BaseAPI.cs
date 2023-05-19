@@ -4,14 +4,10 @@ using UnityEngine;
 /// <summary>
 /// The base api class defines all fields of the following derived api instances and their preferred handling methods
 /// </summary>
-public class BaseAPI {
+public abstract class BaseAPI {
 
-    public APISettings settings;
-    public BaseRequestHandler requestHandler;
-    protected BaseRequestHandler CreateRequestHandler(BaseRequestHandler handler) {
-        this.requestHandler = handler;
-        return requestHandler;
-    }
+    public APISettings Settings;
+    public BaseRequestHandler RequestHandler;
 
     public virtual void CreateAPISpecificSettings() { }
 }

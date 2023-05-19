@@ -327,11 +327,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loginFailMessages: []
-  type: 1
-  drawImage: {fileID: 0}
-  uiDocument: {fileID: 279013734}
-  taskCardUi: {fileID: 9197481963319205126, guid: f9ff20ae4ac9991499394e701e7d50ca, type: 3}
-  tagLabelUi: {fileID: 9197481963319205126, guid: 0f6b51c5f72f934469779b1b27bba378, type: 3}
+  Type: 1
+  UIDocument: {fileID: 279013734}
+  TaskCardUi: {fileID: 9197481963319205126, guid: f9ff20ae4ac9991499394e701e7d50ca, type: 3}
+  TagLabelUi: {fileID: 9197481963319205126, guid: 0f6b51c5f72f934469779b1b27bba378, type: 3}
 --- !u!1 &1509757846
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,33 +6,33 @@ using System.Collections.Generic;
 /// </summary>
 public class AsanaAPI : BaseAPI {
 
-    public delegate void TicketsReceived(List<TaskModels.AsanaTaskModel> tickets);
-    public static event TicketsReceived TicketsReceivedEvent;
+    public delegate void TasksReceived(List<TaskModels.AsanaTaskModel> tasks);
+    public static event TasksReceived TasksReceivedEvent;
 
-    public AsanaAPISettings asanaSpecificSettings;
-    public List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
-    public List<TaskModels.AsanaTaskModel> ticketModelsBackup = new List<TaskModels.AsanaTaskModel>();
-    public List<string> customFields = new List<string>();
-    public List<string> mentions = new List<string>();
+    public AsanaAPISettings AsanaSpecificSettings;
+    public List<TaskModels.AsanaTaskModel> TicketModels = new List<TaskModels.AsanaTaskModel>();
+    public List<TaskModels.AsanaTaskModel> TicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
+    public List<string> CustomFields = new List<string>();
+    public List<string> Mentions = new List<string>();
 
     public DateTime lastUpdateTime;
 
     public AsanaAPI(){
         CreateAPISpecificSettings();
-        CreateRequestHandler(new AsanaRequestHandler(this));
+        base.RequestHandler = new AsanaRequestHandler(this);
     }
 
     public void SetMentionList(List<string> mentions) {
-        this.mentions = mentions;   
+        this.Mentions = mentions;   
     }
 
     public override void CreateAPISpecificSettings() {
-        asanaSpecificSettings = APISettings.LoadSettings<AsanaAPISettings>();
-        settings = asanaSpecificSettings;
+        AsanaSpecificSettings = APISettings.LoadSettings<AsanaAPISettings>();
+        Settings = AsanaSpecificSettings;
     }
 
-    public void FireTicketsCreated(List<TaskModels.AsanaTaskModel> tickets) {
-        TicketsReceivedEvent.Invoke(tickets);
+    public void FireTasksCreated(List<TaskModels.AsanaTaskModel> tickets) {
+        TasksReceivedEvent.Invoke(tickets);
     }
 }
 

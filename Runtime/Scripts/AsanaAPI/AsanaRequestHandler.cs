@@ -21,7 +21,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private string uniqueId = string.Empty;
 
     public AsanaRequestHandler(AsanaAPI asanaAPI) {
-        asanaAPISettings = asanaAPI.asanaSpecificSettings;
+        asanaAPISettings = asanaAPI.AsanaSpecificSettings;
         this.asanaAPI = asanaAPI;
         request = default(HttpWebRequest);
     }
@@ -33,7 +33,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     public async override void GetAllData() {
 
         if (asanaAPI.lastUpdateTime.AddMinutes(2) > DateTime.Now) {
-            asanaAPI.FireTicketsCreated(asanaAPI.ticketModelsBackup);
+            asanaAPI.FireTasksCreated(asanaAPI.TicketModelsBackup);
             return;
         }
 
@@ -49,7 +49,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     private async void GetAllDataAsync() {
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.getAllTaskDataEndpoint}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetAllTaskDataEndpoint}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -58,9 +58,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
             string result = await reader.ReadToEndAsync();
             List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
             ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
-            asanaAPI.ticketModelsBackup.Clear();
-            asanaAPI.ticketModelsBackup.AddRange(ticketModels);
-            asanaAPI.FireTicketsCreated(ticketModels);
+            asanaAPI.TicketModelsBackup.Clear();
+            asanaAPI.TicketModelsBackup.AddRange(ticketModels);
+            asanaAPI.FireTasksCreated(ticketModels);
             asanaAPI.lastUpdateTime = DateTime.Now;
         }
     }
@@ -71,7 +71,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
     public override void PostNewData(RequestData data) {
         string userID = CheckForUserGid();
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.postNewTaskDataEndpoint}{userID}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
         string requestData = BuildTaskData(data);
 
         request = (HttpWebRequest)WebRequest.Create(url);
@@ -89,8 +89,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
             StreamReader sr = new StreamReader(request.GetResponse().GetResponseStream());
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             Debug.Log(sr.ReadToEnd());
-            asanaAPI.customFields.Clear();
-            tags.Clear();
+            asanaAPI.CustomFields.Clear();
+            Tags.Clear();
         } catch (Exception e) {
             Debug.LogError("An error occured while posting new task: " + e.Message);
         }
@@ -103,23 +103,23 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// <param name="data"></param>
     /// <returns></returns>
     private string BuildTaskData(RequestData data) {
-        string projectId = asanaAPISettings.bugProjectId;
-        if (data.dataType.Equals("Feedback")) { projectId = asanaAPISettings.feedbackProjectId; }
+        string projectId = asanaAPISettings.BugProjectId;
+        if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
         
         //TODO: implement generic attachment functions to support also text/plain content type
         NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
         attachment.filename = "screenshot.jpg";
         attachment.contentType = "image/jpg";
-        attachment.content = Convert.ToBase64String(data.screenshot.EncodeToJPG());
+        attachment.content = Convert.ToBase64String(data.Screenshot.EncodeToJPG());
 
         BuildCustomFields();
 
         NewAsanaTicketRequest.NewTicketData newTicketRequest = new NewAsanaTicketRequest.NewTicketData();
-        newTicketRequest.name = data.title;
-        newTicketRequest.notes = data.text;
+        newTicketRequest.name = data.Title;
+        newTicketRequest.notes = data.Text;
         newTicketRequest.projects = projectId;
-        newTicketRequest.workspace = asanaAPISettings.workspaceId;
-        newTicketRequest.custom_fields = asanaAPI.customFields;
+        newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
+        newTicketRequest.custom_fields = asanaAPI.CustomFields;
         newTicketRequest.attachments = new[] { attachment };
         newTicketRequest.html_notes = BuildRichText();
         string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
@@ -129,7 +129,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
     private async void BuildCustomFields() {
         TaskModels.ReportTags reportTags = new TaskModels.ReportTags();
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.getCustomFields}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -138,11 +138,11 @@ public class AsanaRequestHandler : BaseRequestHandler {
             try {
                 string result = await reader.ReadToEndAsync();
                 reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
-                asanaAPI.customFields.Add(reportTags.gid); //first member of list is always gid of custom field
+                asanaAPI.CustomFields.Add(reportTags.gid); //first member of list is always gid of custom field
                 foreach (TaskModels.Tags tag in reportTags.enum_options) {
-                    foreach (TagPreview stag in tags) {
+                    foreach (TagPreview stag in Tags) {
                         if (stag.title.ToLower().Equals(tag.name.ToLower())) {
-                            asanaAPI.customFields.Add(tag.gid);
+                            asanaAPI.CustomFields.Add(tag.gid);
                         }
                     }
                 }
@@ -150,16 +150,13 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 Debug.LogWarning(e.Message);
             }
         }
-
-
-
     }
 
     private string BuildRichText() {
         string front = "<body><strong>Mentions</strong><ul>";
         string middle = "";
         string back = "</ul></body>";
-        foreach (string id in asanaAPI.mentions) {
+        foreach (string id in asanaAPI.Mentions) {
             middle += $"<li><a data-asana-gid=\"{id}\"/></li>";
         }
         return front + middle + back;
@@ -170,7 +167,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// <param name="ticket"></param>
     public async override void PostUpvoteCount(string ticketId, int count) {
         string userID = CheckForUserGid();
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.updateUpvotesEndpoint}{userID}/{ticketId}/{count}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.UpdateUpvotesEndpoint}{userID}/{ticketId}/{count}";
 
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
@@ -195,8 +192,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="tag"></param>
     public override void AddTagToTagList(TagPreview tag) {
-        if (!tags.Contains(tag)) {
-            tags.Add(tag);
+        if (!Tags.Contains(tag)) {
+            Tags.Add(tag);
         }
     }
 
@@ -205,8 +202,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="tag"></param>
     public override void RemoveTagFromTagList(TagPreview tag) {
-        if (tags.Contains(tag)) {
-            tags.Remove(tag);
+        if (Tags.Contains(tag)) {
+            Tags.Remove(tag);
         }
     }
 
@@ -218,7 +215,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     public override void LogIn() {
         uniqueId = Guid.NewGuid().ToString();
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.loginEndpoint}{uniqueId}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.LoginEndpoint}{uniqueId}";
         Application.OpenURL(url);
 
     }
@@ -228,7 +225,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// delete client object with passing uniqueId
     /// </summary>
     public override void LogOut() {
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.logoutEndpoint}{uniqueId}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.LogoutEndpoint}{uniqueId}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -236,7 +233,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         using (StreamReader reader = new StreamReader(stream)) {
             Debug.Log(reader.ReadToEnd());
         }
-        base.user = null;
+        base.User = null;
         uniqueId = "";
     }
 
@@ -246,7 +243,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <returns></returns>
     public override AuthorizationUser GetUser() {
-        string url = $"{asanaAPISettings.baseUrl}{asanaAPISettings.getUserWithUniqueId}{uniqueId}";
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
 
@@ -254,36 +251,31 @@ public class AsanaRequestHandler : BaseRequestHandler {
         using (Stream stream = response.GetResponseStream())
         using (StreamReader reader = new StreamReader(stream)) {
             try {
-                base.user = JsonConvert.DeserializeObject<AuthorizationUser>(reader.ReadToEnd());
-                Debug.Log("<color=green> User: " + base.user.gid + "; " + base.user.name + " successfully logged in. </color>");
+                base.User = JsonConvert.DeserializeObject<AuthorizationUser>(reader.ReadToEnd());
+                Debug.Log("<color=green> User: " + base.User.gid + "; " + base.User.name + " successfully logged in. </color>");
             } catch (Exception e) {
                 Debug.LogWarning(reader.ReadToEnd());
             }
         }
 
-        return base.user;
+        return base.User;
     }
 
     private string CheckForUserGid() {
-        if (base.user is null) {
+        if (base.User is null) {
             return "0";
         } else {
-            return base.user.gid;
+            return base.User.gid;
         }
     }
 
     #endregion
 }
 
-#region Response objects 
-public class AuthorizationInfo {
-    public string unique_id;
-    public AuthorizationUser data;
-}
 
 public class AuthorizationUser {
     public string gid;
     public string name;
     public string email;
 }
-#endregion
+

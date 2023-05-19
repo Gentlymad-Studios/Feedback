@@ -5,67 +5,63 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 public class TicketBrowser {
-    [Header("Ticket Browser Components")]
-    public TagList tagList;
-    public List<ScriptableTag> usedTagsScriptableList = new List<ScriptableTag>();
  
     private int taskPreviewCount = 10;
+    private UIPopup uIPopup;
     private List<TicketPreview> taskPreviewList = new List<TicketPreview>();
     private List<TaskModels.AsanaTaskModel> searchResult = new List<TaskModels.AsanaTaskModel>();
     private List<string> mentions = new List<string>();
 
-    private UIPopup uIPopup;
-
     public TicketBrowser(UIPopup uIPopup) {
-        AsanaAPI.TicketsReceivedEvent -= OnTicketsReceived;
-        AsanaAPI.TicketsReceivedEvent += OnTicketsReceived;
+        AsanaAPI.TasksReceivedEvent -= OnTasksReceived;
+        AsanaAPI.TasksReceivedEvent += OnTasksReceived;
 
         this.uIPopup = uIPopup;
 
-        uIPopup.panelComponents.taskContainer.Clear();
+        uIPopup.PanelComponents.taskContainer.Clear();
 
         //pool all preview objects on start and hide them
         for (int i = 0; i < taskPreviewCount; i++) {
             //create instance of an taskCard
-            VisualElement taskCard = uIPopup.taskCardUi.Instantiate();
+            VisualElement taskCard = uIPopup.TaskCardUi.Instantiate();
             //hide it
             taskCard.style.display = DisplayStyle.None;
             //add to ui
-            uIPopup.panelComponents.taskContainer.Add(taskCard);
+            uIPopup.PanelComponents.taskContainer.Add(taskCard);
 
             //create ticketPreview and link ui to it
             TicketPreview taskPreview = new TicketPreview(taskCard);
             //add to tasklist
             taskPreviewList.Add(taskPreview);
             //add events
-            taskPreview.sendUpvoteAction = uIPopup.api.requestHandler.PostUpvoteCount;
+            taskPreview.sendUpvoteAction = uIPopup.Api.RequestHandler.PostUpvoteCount;
         }
 
         RegisterEvents();
     }
 
     private void RegisterEvents() {
-        uIPopup.panelComponents.searchTxtFld.UnregisterValueChangedCallback(Search);
-        uIPopup.panelComponents.searchTxtFld.RegisterValueChangedCallback(Search);
+        uIPopup.PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Search);
+        uIPopup.PanelComponents.searchTxtFld.RegisterValueChangedCallback(Search);
     }
 
     //Needs to be fired to operate on tickets!
-    private void OnTicketsReceived(List<TaskModels.AsanaTaskModel> tickets) {
-        Debug.Log("<color=cyan>Tickets are there: </color>" + tickets.Count);
+    private void OnTasksReceived(List<TaskModels.AsanaTaskModel> tasks) {
+        Debug.Log("<color=cyan>All Tasks received: </color>" + tasks.Count);
 
         //change nulls to empty strings
-        foreach (TaskModels.AsanaTaskModel ticket in tickets) {
-            for (int i = 0; i < ticket.GetType().GetProperties().Length; i++) {
-                PropertyInfo pinfo = ticket.GetType().GetProperties()[i];
+        foreach (TaskModels.AsanaTaskModel task in tasks) {
+            for (int i = 0; i < task.GetType().GetProperties().Length; i++) {
+                PropertyInfo pinfo = task.GetType().GetProperties()[i];
                 if (pinfo.PropertyType == typeof(string)) {
-                    if (pinfo.GetValue(ticket) == null) {
-                        pinfo.SetValue(ticket, "...");
+                    if (pinfo.GetValue(task) == null) {
+                        pinfo.SetValue(task, "...");
                     }
                 }
             }
         }
 
-        SearchWithLucene.Instance.CreateIndex(tickets);
+        SearchWithLucene.Instance.CreateIndex(tasks);
     }
 
     //Search for the change text with lucene text analyzer
@@ -94,7 +90,7 @@ public class TicketBrowser {
             string notes = task.notes;
             string gid = task.gid;
 
-            if (uIPopup.mentionedTask.ContainsKey(gid)) {
+            if (uIPopup.MentionedTask.ContainsKey(gid)) {
                 preview.mentioned = true;
             }
             preview.openDetailPopup = () => OnClickTicketPreviewAction(preview, title, notes);
@@ -130,15 +126,15 @@ public class TicketBrowser {
 
     private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {
         mentions.Add(gid);
-        uIPopup.mentionedTask.Add(gid, p);
+        uIPopup.MentionedTask.Add(gid, p);
     }
 
     private void RemoveMentionFromList(string gid) {
         if (mentions.Contains(gid)) {
             mentions.Remove(gid);
         }
-        uIPopup.mentionedTask.Remove(gid);
-        uIPopup.panelComponents.taskMentionsDrpDwn.choices.Remove(gid);
+        uIPopup.MentionedTask.Remove(gid);
+        uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(gid);
     }
 
 }
