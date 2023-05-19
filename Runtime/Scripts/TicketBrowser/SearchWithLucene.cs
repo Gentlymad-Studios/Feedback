@@ -7,13 +7,13 @@ using Lucene.Net.Store;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Profiling;
 using Directory = Lucene.Net.Store.Directory;
 
 public class SearchWithLucene {
-
 
     private LuceneVersion version = LuceneVersion.LUCENE_48;
 
@@ -25,7 +25,7 @@ public class SearchWithLucene {
     private IndexSearcher indexSearcher;
 
     private string[] fieldsIncluded = { "Name", "Notes" };
-    private  Directory indexDirectory;
+    private Directory indexDirectory;
 
 
     private static SearchWithLucene instance;
@@ -37,12 +37,25 @@ public class SearchWithLucene {
         }
     }
 
-    public void Dispose() {
-        writer?.Dispose();
-        directoryReader?.Dispose();
-        indexDirectory?.Dispose();
+    public async void Dispose() {
+
+        long size = GC.GetTotalMemory(false);
+
+        Task t = new Task(() => {
+            indexDirectory?.Dispose();
+            directoryReader?.Dispose();
+        });
+
+        t.Start();
+        await t;
+        t.Dispose();
+
+        Debug.Log(size - GC.GetTotalMemory(false));
+
         Debug.Log("Dispose the lucene stuff");
     }
+
+ 
     //TODO: generic task type
     /// <summary>
     /// Create a new Index at RAM Direcotry and Store all fetched tickets. 
@@ -65,23 +78,24 @@ public class SearchWithLucene {
                     if (cf != null) {
                         field = cf.display_value.ToString();
                     }
+
                     document.Add(new TextField("Upvotes", field, Field.Store.YES));
-                    Profiler.BeginSample("lucene writer sample");
+
+                    //Write the new dokument to the directory
                     writer.AddDocument(document);
-                    Profiler.EndSample();
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
             }
 
-            Profiler.BeginSample("lucene commit sample");
+            //Apply all changes so index
             writer.Commit();
-            Debug.Log("write to index");
-            Profiler.EndSample();
+
+            //Dispose writer, no changes possible till new initalisation of index writer
+            writer.Dispose();
         }
     }
 
-    //public void UpdateIndex() { }
 
     /// <summary>
     /// Search the search term in the lucene index. 
@@ -95,12 +109,9 @@ public class SearchWithLucene {
             indexSearcher = new IndexSearcher(directoryReader);
             QueryParser queryParser = new MultiFieldQueryParser(version, fieldsIncluded, analyzer);
             queryParser.AllowLeadingWildcard = true;
-            Query searchQuery = queryParser.Parse(QueryParserBase.Escape(searchTerm));
-           
+            Query searchQuery = queryParser.Parse(QueryParserBase.Escape(searchTerm) + "*");
 
-            Debug.Log(searchQuery.ToString());
             ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 10).ScoreDocs;
-
           
             foreach (ScoreDoc hit in hits) {
                 Document document = indexSearcher.Doc(hit.Doc);
@@ -126,19 +137,17 @@ public class SearchWithLucene {
 
     /// <summary>
     /// Create Ram directory, config and analyzer
+    /// https://lucenenet.apache.org/docs/4.8.0-beta00016/api/core/Lucene.Net.Store.RAMDirectory.html
+    /// The RAMDirectory will probably not work with huge indexes(up to several 100 hundred megabytes)
     /// </summary>
     private void SetupLucene() {
         indexDirectory = new RAMDirectory();
-        // Create an analyzer to process the text
         analyzer = new StandardAnalyzer(version);
         var config = new IndexWriterConfig(version, analyzer);
-       
-        if (!DirectoryReader.IndexExists(indexDirectory)) {
-            // Create an index writer if no index exists 
-            writer = new IndexWriter(indexDirectory, config);
-            createIndexDocs = true;
-            Debug.Log("Add lucene index file at directory: " + writer.Directory);
-        }
+        config.OpenMode = OpenMode.CREATE_OR_APPEND;
+        writer = new IndexWriter(indexDirectory, config);
+        createIndexDocs = true;
+        Debug.Log("Add lucene index file at directory: " + writer.Directory);
     }
 
     /// <summary>
