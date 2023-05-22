@@ -84,8 +84,8 @@ public class UIPopup : UIPopUpBase {
         RegisterEvents();
         ConfigureAPI();
 
-        DrawImage = new DrawImage();
         TicketBrowser = new TicketBrowser(this);
+        DrawImage = new DrawImage();
     }
 
     protected override void OnShowWindow() {
@@ -270,7 +270,7 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.imageContainer.RegisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
         this.screenshot = screenshot;
         screenshot.Apply();
-        DrawImage.Setup(PanelComponents);
+        DrawImage.Setup(PanelComponents, screenshot.width, screenshot.height);
     }
 
     private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {
