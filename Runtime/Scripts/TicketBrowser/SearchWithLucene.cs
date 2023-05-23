@@ -35,23 +35,12 @@ public class SearchWithLucene {
         }
     }
 
-    public async void Dispose() {
+    public void Dispose() {
 
-        long size = GC.GetTotalMemory(false);
-
-        Task t = new Task(() => {
-            indexDirectory?.Dispose();
-            directoryReader?.Dispose();
-            analyzer?.Dispose();
-        });
-
-        t.Start();
-        await t;
-        t.Dispose();
-
-        Debug.Log(size - GC.GetTotalMemory(false));
-
-        Debug.Log("Dispose the lucene stuff");
+        indexDirectory?.Dispose();
+        directoryReader?.Dispose();
+        analyzer?.Dispose();
+        Debug.LogError("Dispose the lucene stuff");
     }
 
 
@@ -83,7 +72,6 @@ public class SearchWithLucene {
 
             //Dispose writer, no changes possible till new initalisation of index writer
         }
-        writer.Dispose();
     }
 
 

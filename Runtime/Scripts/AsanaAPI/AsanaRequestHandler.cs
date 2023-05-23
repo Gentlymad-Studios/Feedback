@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -69,7 +71,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// Post the new data object to AsanaRequestManager.
     /// </summary>
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
-    public override void PostNewData(RequestData data) {
+    public override void PostNewData<T1, T2>(RequestData<T1, T2> data) {
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
         string requestData = BuildTaskData(data);
@@ -102,7 +104,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    private string BuildTaskData(RequestData data) {
+    private string BuildTaskData<T1, T2>(RequestData<T1, T2> data) {
         string projectId = asanaAPISettings.BugProjectId;
         if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
 
@@ -127,9 +129,16 @@ public class AsanaRequestHandler : BaseRequestHandler {
         return output;
     }
 
-    //private NewAsanaTicketRequest.Attachment BuildAttachment(attachmentData) {
+    private NewAsanaTicketRequest.Attachment BuildAttachment<T>(T attachmentData) {
+        using (var ms = new MemoryStream()) {
+            if (!attachmentData.GetType().IsSerializable) { return null; }
+            new BinaryFormatter().Serialize(ms, attachmentData);
+            //ms.ToAd
+            //string base64 = Convert.ToBase64String(ms, Base64FormattingOptions.None);
+        }
 
-    //}
+        return null;
+    }
 
     private async void BuildCustomFields() {
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
@@ -266,6 +275,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 base.User = JsonConvert.DeserializeObject<AuthorizationUser>(reader.ReadToEnd());
                 Debug.Log("<color=green> User: " + base.User.gid + "; " + base.User.name + " successfully logged in. </color>");
             } catch (Exception e) {
+                Debug.Log(e.Message);
                 Debug.LogWarning(reader.ReadToEnd());
             }
         }

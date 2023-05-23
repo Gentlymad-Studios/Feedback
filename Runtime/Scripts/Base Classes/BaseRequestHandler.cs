@@ -7,7 +7,7 @@ public abstract class BaseRequestHandler : IRequestHandler {
    
     protected string contentType = "application/json; charset=UTF-8";
     public abstract void GetAllData();
-    public abstract void PostNewData(RequestData data);
+    public abstract void PostNewData<T1, T2>(RequestData<T1, T2> data);
     public abstract void PostUpvoteCount(string id, int count);
     public abstract AuthorizationUser GetUser();
     public abstract void AddTagToTagList(TagPreview tag);

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -42,6 +43,11 @@ public class DrawImage {
     float[] max_opacity;
     bool isEraser = false;
 
+    public void Dispose() {
+        panelComponents.overpaintContainer.style.backgroundImage = null;
+        UnityEngine.Object.Destroy(drawSurfaceTexture);
+    }
+
     public void Setup(PanelComponents panelComponents, float width, float height) {
         this.panelComponents = panelComponents;
 
@@ -54,6 +60,8 @@ public class DrawImage {
         drawSurfaceWidth = width;
         drawSurfaceHeight = height;
         drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight);
+        drawSurfaceTexture.name = "DrawSurfaceTex";
+        drawSurfaceTexture.hideFlags = HideFlags.HideAndDontSave;
         drawSurfaceTexture.filterMode = FilterMode.Point; //prevent grey outlines for now
 
         // Reset all pixels color to transparent

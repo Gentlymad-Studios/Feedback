@@ -17,8 +17,9 @@ public class AsanaAPI : BaseAPI {
 
     public DateTime lastUpdateTime;
 
-    public AsanaAPI(){
-        CreateAPISpecificSettings();
+    public AsanaAPI(AsanaAPISettings s){
+        //CreateAPISpecificSettings();
+        AsanaSpecificSettings = s;
         base.RequestHandler = new AsanaRequestHandler(this);
     }
 
@@ -27,7 +28,7 @@ public class AsanaAPI : BaseAPI {
     }
 
     public override void CreateAPISpecificSettings() {
-        AsanaSpecificSettings = APISettings.LoadSettings<AsanaAPISettings>();
+        //AsanaSpecificSettings = APISettings.LoadSettings<AsanaAPISettings>();
         Settings = AsanaSpecificSettings;
     }
 

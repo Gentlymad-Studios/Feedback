@@ -22,7 +22,7 @@ public abstract class UIPopUpBase : MonoBehaviour {
         Api.RequestHandler.GetAllData();
     }
 
-    protected void PostData(RequestData data) {
+    protected void PostData<T1,T2>(RequestData<T1, T2> data) {
         Api.RequestHandler.PostNewData(data);
     }
 

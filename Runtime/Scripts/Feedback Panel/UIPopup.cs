@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using System.Linq;
 
 public class UIPopup : UIPopUpBase {
     public APISettings.APIType Type;
@@ -11,6 +12,10 @@ public class UIPopup : UIPopUpBase {
     public TicketBrowser TicketBrowser;
     public VisualTreeAsset TaskCardUi;
     public VisualTreeAsset TagLabelUi;
+
+    //implement settings provider with editor helper
+    public AsanaAPISettings asanaSpecificSettings;
+
     public Dictionary<string, TaskModels.AsanaTaskModel> MentionedTask = new Dictionary<string, TaskModels.AsanaTaskModel>();
     public WindowType ActiveWindow {
         get {
@@ -60,7 +65,8 @@ public class UIPopup : UIPopUpBase {
         currentWindowType = WindowType.Search;
         //panelComponents.submitLoginPanel.SetActive(false);
 
-        AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
+        //AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
+        AsanaAPISettings settings = asanaSpecificSettings;
 
         //Init Type DropDown
         PanelComponents.taskTypeDrpDwn.choices.Clear();
@@ -93,7 +99,15 @@ public class UIPopup : UIPopUpBase {
         base.GetData();
     }
     protected override void OnHideWindow() {
+
+        Destroy(screenshot);
+        DrawImage?.Dispose();
         SearchWithLucene.Instance.Dispose();
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
     }
 
     private void Update() {
@@ -166,7 +180,7 @@ public class UIPopup : UIPopUpBase {
     /// </summary>
     public void ConfigureAPI() {
         if (Type.Equals(APISettings.APIType.Asana)) {
-            Api = new AsanaAPI();
+            Api = new AsanaAPI(asanaSpecificSettings);
         }
     }
     public void SetDataType(ChangeEvent<string> changeEvent) {
@@ -250,8 +264,19 @@ public class UIPopup : UIPopUpBase {
             asanaAPI.Mentions.AddRange(MentionedTask.Keys);
         }
 
-        RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text,
-            MergeTextures(screenshot, DrawImage.drawSurfaceTexture), currentDataType);
+        List<Texture2D> textureList = new List<Texture2D>();
+        textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
+
+        List<string> fileList = new List<string>();
+        fileList.Add("hi");
+
+        //Create the dictonary with two different types of list
+        Dictionary<List<Texture2D>, List<string>> text2 = new Dictionary<List<Texture2D>, List<string>>();
+        text2.Add(textureList, fileList);
+
+        
+        RequestData<Texture2D, string> data = new RequestData<Texture2D, string>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text,
+            MergeTextures(screenshot, DrawImage.drawSurfaceTexture), text2, currentDataType);
 
         PostData(data);
         foreach (TagPreview p in tagPreviewList) {
@@ -269,6 +294,8 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.screenshotContainer.style.backgroundImage = screenshot;
         PanelComponents.imageContainer.RegisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
         this.screenshot = screenshot;
+        screenshot.hideFlags = HideFlags.HideAndDontSave;
+        screenshot.name = "Screenshot";
         screenshot.Apply();
         DrawImage.Setup(PanelComponents, screenshot.width, screenshot.height);
     }
@@ -288,7 +315,7 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.overpaintContainer.style.width = fullPercent;
             PanelComponents.overpaintContainer.style.height = height;
         } else {
-            float calculatedWdith = (float)screenshot.width /screenshot.height * uiHeight;
+            float calculatedWdith = (float)screenshot.width / screenshot.height * uiHeight;
 
             //width = calculated in px| height = 100%
             Length width = new Length(calculatedWdith, LengthUnit.Pixel);
@@ -308,10 +335,10 @@ public class UIPopup : UIPopUpBase {
 
         //resize texture if ratio is larger than HD
         if (screenshot.width > 1920) {
-            height = (int)(((float) height / width) * 1920);
+            height = (int)(((float)height / width) * 1920);
             width = 1920;
         }
-       
+
         void ResizeOnGPU(Texture2D texA, Texture2D texB, int widthGPU, int heightGPU, FilterMode fmode) {
             //We need the source texture in VRAM because we render with it
             texA.filterMode = fmode;
@@ -338,6 +365,7 @@ public class UIPopup : UIPopUpBase {
         // Update new texture
         screenshot.Reinitialize(width, height);
         screenshot.ReadPixels(texR, 0, 0, true);
+        screenshot.hideFlags = HideFlags.HideAndDontSave;
         screenshot.Apply(true);
 
 

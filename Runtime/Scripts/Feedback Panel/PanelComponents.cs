@@ -34,7 +34,7 @@ public class PanelComponents {
 
     public void Initialize(UIDocument uiDocument) {
         this.uiDocument = uiDocument;
-
+        
         root = uiDocument.rootVisualElement;
 
         searchTab = uiDocument.rootVisualElement.Q("SearchTab");
