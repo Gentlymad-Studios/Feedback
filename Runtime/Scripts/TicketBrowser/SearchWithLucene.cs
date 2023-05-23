@@ -42,6 +42,7 @@ public class SearchWithLucene {
         Task t = new Task(() => {
             indexDirectory?.Dispose();
             directoryReader?.Dispose();
+            analyzer?.Dispose();
         });
 
         t.Start();
@@ -53,45 +54,36 @@ public class SearchWithLucene {
         Debug.Log("Dispose the lucene stuff");
     }
 
- 
+
     //TODO: generic task type
     /// <summary>
     /// Create a new Index at RAM Direcotry and Store all fetched tickets. 
     /// </summary>
-    /// <param name="tickets"></param>
-    public void CreateIndex(IEnumerable<TaskModels.AsanaTaskModel> tickets) {
+    /// <param name="tasks"></param>
+    public void CreateIndex(IEnumerable<TaskModels.AsanaTaskModel> tasks) {
         SetupLucene();
-        string field = "0";
-        if (createIndexDocs) {
-            foreach (TaskModels.AsanaTaskModel ticket in tickets) {
-                var document = new Document();
-                try {
-                    document.Add(new TextField("Gid", ticket.gid, Field.Store.YES));
-                    document.Add(new TextField("Name", ticket.name, Field.Store.YES));
-                    document.Add(new TextField("Notes", ticket.notes.ToString(), Field.Store.YES));
+        foreach (TaskModels.AsanaTaskModel task in tasks) {
+            var document = new Document();
+            try {
+                document.Add(new TextField("Gid", task.gid, Field.Store.YES));
+                document.Add(new TextField("Name", task.name, Field.Store.YES));
+                document.Add(new TextField("Notes", task.notes.ToString(), Field.Store.YES));
 
-                    //Add field with discord likes if it exist
-                    TaskModels.CustomField cf = ticket.custom_fields.Find(field => field.name == "Upvotes");
-                   
-                    if (cf != null) {
-                        field = cf.display_value.ToString();
-                    }
+                TaskModels.CustomField cf = task.custom_fields.Find(field => field.name == "Upvotes");
+                string field = cf.display_value.ToString();
+                document.Add(new TextField("Upvotes", field, Field.Store.YES));
 
-                    document.Add(new TextField("Upvotes", field, Field.Store.YES));
-
-                    //Write the new dokument to the directory
-                    writer.AddDocument(document);
-                } catch (Exception e) {
-                    Debug.Log(e);
-                }
+                writer.AddDocument(document);
+            } catch (Exception e) {
+                Debug.Log(e);
             }
 
             //Apply all changes so index
             writer.Commit();
 
             //Dispose writer, no changes possible till new initalisation of index writer
-            writer.Dispose();
         }
+        writer.Dispose();
     }
 
 
@@ -110,7 +102,7 @@ public class SearchWithLucene {
             Query searchQuery = queryParser.Parse(QueryParserBase.Escape(searchTerm) + "*");
 
             ScoreDoc[] hits = indexSearcher.Search(searchQuery, null, 10).ScoreDocs;
-          
+
             foreach (ScoreDoc hit in hits) {
                 Document document = indexSearcher.Doc(hit.Doc);
 
@@ -139,13 +131,17 @@ public class SearchWithLucene {
     /// The RAMDirectory will probably not work with huge indexes(up to several 100 hundred megabytes)
     /// </summary>
     private void SetupLucene() {
-        indexDirectory = new RAMDirectory();
-        analyzer = new StandardAnalyzer(version);
-        var config = new IndexWriterConfig(version, analyzer);
-        config.OpenMode = OpenMode.CREATE_OR_APPEND;
-        writer = new IndexWriter(indexDirectory, config);
-        createIndexDocs = true;
-        Debug.Log("Add lucene index file at directory: " + writer.Directory);
+        try {
+            indexDirectory = new RAMDirectory();
+            analyzer = new StandardAnalyzer(version);
+            var config = new IndexWriterConfig(version, analyzer);
+            config.OpenMode = OpenMode.CREATE_OR_APPEND;
+            writer = new IndexWriter(indexDirectory, config);
+            createIndexDocs = true;
+            Debug.Log("Add lucene index file at directory: " + writer.Directory);
+        } catch (Exception e) {
+            Debug.LogException(e);
+        }
     }
 
     /// <summary>

@@ -105,7 +105,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     private string BuildTaskData(RequestData data) {
         string projectId = asanaAPISettings.BugProjectId;
         if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
-        
+
         //TODO: implement generic attachment functions to support also text/plain content type
         NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
         attachment.filename = "screenshot.jpg";
@@ -121,14 +121,17 @@ public class AsanaRequestHandler : BaseRequestHandler {
         newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
         newTicketRequest.custom_fields = asanaAPI.CustomFields;
         newTicketRequest.attachments = new[] { attachment };
-        newTicketRequest.html_notes = BuildRichText();
+        newTicketRequest.html_notes = BuildRichText(data.Text);
         string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
 
         return output;
     }
 
+    //private NewAsanaTicketRequest.Attachment BuildAttachment(attachmentData) {
+
+    //}
+
     private async void BuildCustomFields() {
-        TaskModels.ReportTags reportTags = new TaskModels.ReportTags();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
@@ -136,9 +139,11 @@ public class AsanaRequestHandler : BaseRequestHandler {
         using (Stream stream = response.GetResponseStream())
         using (StreamReader reader = new StreamReader(stream)) {
             try {
+                TaskModels.ReportTags reportTags = new TaskModels.ReportTags();
                 string result = await reader.ReadToEndAsync();
                 reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
-                asanaAPI.CustomFields.Add(reportTags.gid); //first member of list is always gid of custom field
+                //first member of list is always gid of custom field
+                asanaAPI.CustomFields.Add(reportTags.gid);
                 foreach (TaskModels.Tags tag in reportTags.enum_options) {
                     foreach (TagPreview stag in Tags) {
                         if (stag.title.ToLower().Equals(tag.name.ToLower())) {
@@ -152,15 +157,23 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
     }
 
-    private string BuildRichText() {
-        string front = "<body><strong>Mentions</strong><ul>";
+    private string BuildRichText(string notes) {
+        string front = "<body>";
         string middle = "";
-        string back = "</ul></body>";
-        foreach (string id in asanaAPI.Mentions) {
-            middle += $"<li><a data-asana-gid=\"{id}\"/></li>";
+        string back = "</body>";
+
+        if (asanaAPI.Mentions.Count != 0) {
+            front += "<strong>Mentions</strong><ul>";
+
+            foreach (string id in asanaAPI.Mentions) {
+                middle += $"<li><a data-asana-gid=\"{id}\"/></li>";
+            }
+            middle += "</ul>";
         }
+        middle += notes;
         return front + middle + back;
     }
+
     /// <summary>
     /// Use AsanaRequestHandler upvote endpoint to send upvotes.
     /// </summary>
@@ -217,7 +230,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
         uniqueId = Guid.NewGuid().ToString();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.LoginEndpoint}{uniqueId}";
         Application.OpenURL(url);
-
     }
 
     /// <summary>

@@ -271,7 +271,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279013733}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff23cb47a8fd0134eb4b64e5a78346d9, type: 3}
   m_Name: 
@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e31fe043b5b1a1c4c9437e36555d944e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginFailMessages: []
+  LoginFailMessages: []
   Type: 1
   UIDocument: {fileID: 279013734}
   TaskCardUi: {fileID: 9197481963319205126, guid: f9ff20ae4ac9991499394e701e7d50ca, type: 3}
