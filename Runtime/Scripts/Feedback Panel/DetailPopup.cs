@@ -1,18 +1,28 @@
-using System;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-public class DetailPopup : MonoBehaviour {
+public class DetailPopup : VisualElement {
 
-    public TMP_Text title;
-    public TMP_Text description;
+    public Label title;
+    public Label description;
+    public VisualElement popup;
     public Button closeButton;
-    public Action onClosePopup;
 
-    private void Start() {
-        onClosePopup += OnCloseDefault;
-        closeButton.onClick.AddListener(() => onClosePopup.Invoke());
+    public DetailPopup(VisualTreeAsset vta) {
+        Add(vta.Instantiate());
+
+        name = "taskDetail";
+        style.position = Position.Absolute;
+        style.height = new Length(100, LengthUnit.Percent);
+        style.width = new Length(100, LengthUnit.Percent);
+
+        title = this.Q("taskTitleLbl") as Label;
+        description = this.Q("taskDescriptionLbl") as Label;
+        closeButton = this.Q("closeBtn") as Button;
+        popup = this.Q("popup");
+
+        closeButton.clicked += Hide;
+
+        RegisterCallback<MouseDownEvent>(Click);
     }
 
     public void FillDetailPopup(string title, string description) {
@@ -20,9 +30,17 @@ public class DetailPopup : MonoBehaviour {
         this.description.text = description;
     }
 
-    private void OnCloseDefault() {
-        title.text = "";
-        description.text = "";
-        Destroy(this.gameObject);
+    public void Show() {
+        style.display = DisplayStyle.Flex;
+    }
+
+    public void Hide() {
+        style.display = DisplayStyle.None;
+    }
+
+    public void Click(MouseDownEvent evt) {
+        if (!popup.layout.Contains(evt.mousePosition)) {
+            Hide();
+        }
     }
 }

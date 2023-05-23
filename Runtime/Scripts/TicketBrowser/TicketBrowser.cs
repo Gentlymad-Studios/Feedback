@@ -8,6 +8,7 @@ public class TicketBrowser {
  
     private int taskPreviewCount = 10;
     private UIPopup uIPopup;
+    private DetailPopup detailPopup;
     private List<TicketPreview> taskPreviewList = new List<TicketPreview>();
     private List<TaskModels.AsanaTaskModel> searchResult = new List<TaskModels.AsanaTaskModel>();
     private List<string> mentions = new List<string>();
@@ -93,7 +94,7 @@ public class TicketBrowser {
             if (uIPopup.MentionedTask.ContainsKey(gid)) {
                 preview.mentioned = true;
             }
-            preview.openDetailPopup = () => OnClickTicketPreviewAction(preview, title, notes);
+            preview.openDetailPopup = () => OnClickTicketPreviewAction(title, notes);
             preview.addToMentions = () => AddToMentionList(gid, task);
             preview.removeFromMentions = () => RemoveMentionFromList(gid);
         }
@@ -108,20 +109,15 @@ public class TicketBrowser {
         searchResult.Clear();
     }
 
-    //Instatniate detail popup with ticket preview content
-    private void OnClickTicketPreviewAction(TicketPreview preview, string title, string description) {
-        //if(panelComponents.searchPanel.GetComponentInChildren<DetailPopup>() != null) { return; }
-        //GameObject popup = Instantiate(panelComponents.detailPopup);
-        //popup.gameObject.transform.SetParent(panelComponents.searchPanel.transform);
-        //popup.transform.localPosition = Vector3.zero;
-        //DetailPopup detailPopup = popup.GetComponent<DetailPopup>();
-        //detailPopup.FillDetailPopup(title, description);
-        //detailPopup.onClosePopup += () => OnClickCloseButton(detailPopup, preview);
-    }
+    //Instantiate detail popup with ticket preview content
+    public void OnClickTicketPreviewAction(string title, string description) {
+        if (detailPopup == null) {
+            detailPopup = new DetailPopup(uIPopup.TaskDetailCardUi);
+        }
 
-    private void OnClickCloseButton(DetailPopup popup, TicketPreview preview) {
-        preview.openDetailPopup -= () => OnClickTicketPreviewAction(preview, popup.title.text, popup.description.text);
-        //Close the popup
+        detailPopup.FillDetailPopup(title, description);
+        detailPopup.Show();
+        uIPopup.PanelComponents.root.Add(detailPopup);
     }
 
     private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {

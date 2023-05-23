@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
-using System.Linq;
 
 public class UIPopup : UIPopUpBase {
     public APISettings.APIType Type;
@@ -12,6 +11,8 @@ public class UIPopup : UIPopUpBase {
     public TicketBrowser TicketBrowser;
     public VisualTreeAsset TaskCardUi;
     public VisualTreeAsset TagLabelUi;
+    public VisualTreeAsset TaskDetailCardUi;
+    public VisualTreeAsset PromptUi;
 
     //implement settings provider with editor helper
     public AsanaAPISettings asanaSpecificSettings;
@@ -163,7 +164,7 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
         PanelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchSubmit_clicked);
         PanelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
-        PanelComponents.taskMentionsDrpDwn.RegisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
+        PanelComponents.taskMentionsDrpDwn.RegisterValueChangedCallback(TaskMentionDrpDwn_changed);
     }
     private void UnregisterEvents() {
         PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
@@ -172,7 +173,7 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
         PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchSubmit_clicked);
         PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
-        PanelComponents.taskMentionsDrpDwn.UnregisterCallback<ClickEvent>(TaskMentionDrpDwn_clicked);
+        PanelComponents.taskMentionsDrpDwn.UnregisterValueChangedCallback(TaskMentionDrpDwn_changed);
     }
 
     /// <summary>
@@ -216,8 +217,8 @@ public class UIPopup : UIPopUpBase {
         SendData();
     }
 
-    private void TaskMentionDrpDwn_clicked(ClickEvent evt) {
-        OnClickMentionDrpDwn();
+    private void TaskMentionDrpDwn_changed(ChangeEvent<string> evt) {
+        OnClickMentionDrpDwn(evt.newValue);
     }
     #endregion
 
@@ -254,8 +255,11 @@ public class UIPopup : UIPopUpBase {
         ShowReportPanel();
     }
 
-    public void OnClickMentionDrpDwn() {
-        Debug.Log("Mention Dropdown clicked");
+    public void OnClickMentionDrpDwn(string value) {
+        TaskModels.AsanaTaskModel task = MentionedTask[value];
+        TicketBrowser.OnClickTicketPreviewAction(task.name, task.notes);
+
+        PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify(string.Empty);
     }
 
     private void SendData() {

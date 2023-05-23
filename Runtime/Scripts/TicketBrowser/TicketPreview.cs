@@ -41,11 +41,6 @@ public class TicketPreview {
         mentionBtn.RegisterCallback<ClickEvent>(Mention_clicked);
     }
 
-    private void OnDestroy() {
-        sendUpvoteAction = null;
-        openDetailPopup = null;
-    }
-
     #region ClickEvents
     private void Card_clicked(ClickEvent evt) {
         openDetailPopup.Invoke();
@@ -58,6 +53,7 @@ public class TicketPreview {
 
     private void Mention_clicked(ClickEvent evt) {
         Mention();
+        evt.StopPropagation();
     }
     #endregion
 

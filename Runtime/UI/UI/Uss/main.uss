@@ -66,3 +66,9 @@
  .tagLabelSelected:hover {
      background-color: var(--tagLabel_selectedHover);
  }
+
+ .popup {
+     position: absolut;
+     height: 100%;
+     width: 100%;
+ }

@@ -1,23 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(241, 241, 241, 0); min-height: 100%; max-height: 100%; max-width: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 100%; align-items: center; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; align-self: auto; justify-content: center; width: 100%; height: 100%;">
-        <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgb(241, 241, 241); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 70%; min-height: 80%; width: 70%; height: 80%; max-height: 80%; max-width: 100%; align-items: auto; justify-content: flex-start; align-self: auto;">
-            <ui:VisualElement name="Header" style="flex-grow: 1; background-color: rgb(161, 161, 161); max-width: 100%; min-width: 100%; max-height: 20%; min-height: 20%; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; width: 100%; height: 20%;">
+        <ui:VisualElement name="popup" style="flex-grow: 1; background-color: rgb(241, 241, 241); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 70%; min-height: 80%; width: 70%; height: 80%; max-height: 80%; max-width: 100%; align-items: auto;">
+            <ui:VisualElement name="Header" style="flex-grow: 1; background-color: rgb(161, 161, 161); max-width: 100%; min-width: 100%; max-height: 20%; min-height: 20%; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; width: 100%; height: 20%; flex-direction: row;">
                 <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row;">
                     <ui:Label tabindex="-1" text="HEADLINE" display-tooltip-when-elided="true" name="taskTitleLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-font-style: bold; color: rgb(250, 250, 250); font-size: 15px;" />
                 </ui:VisualElement>
-                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 10px;" />
+                <ui:Button text="X" display-tooltip-when-elided="true" name="closeBtn" />
             </ui:VisualElement>
-            <ui:VisualElement name="Content" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); max-width: 100%; min-width: 100%; max-height: 70%; height: 70%; width: 100%; min-height: 70%; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
-                <ui:Label tabindex="-1" text="CONTENT TEXT" display-tooltip-when-elided="true" name="taskDescriptionLbl" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="Footer" style="flex-grow: 1; background-color: rgb(204, 204, 204); width: 100%; height: 10%; max-width: 100%; min-height: 10%; max-height: 10%; flex-direction: row; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; min-width: 100%; align-self: flex-end; -unity-text-align: middle-left;">
-                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; max-width: 20%; min-width: 20%; min-height: 100%; max-height: 100%;">
-                    <ui:Label tabindex="-1" text="UPVOTES" display-tooltip-when-elided="true" name="upvoteLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; -unity-text-align: middle-center; max-height: 100%; min-height: 100%; max-width: 100%; min-width: 100%;" />
-                </ui:VisualElement>
-                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); min-width: 80%; max-width: 80%; max-height: 100%; min-height: 100%; align-items: flex-end;">
-                    <ui:Button text="not mentioned" display-tooltip-when-elided="true" name="mentionBtn" />
-                </ui:VisualElement>
-            </ui:VisualElement>
+            <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="ScrollView" style="flex-grow: 1; min-width: 100%;">
+                <ui:Label tabindex="-1" text="CONTENT TEXT" display-tooltip-when-elided="true" name="taskDescriptionLbl" style="flex-grow: 1;" />
+            </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

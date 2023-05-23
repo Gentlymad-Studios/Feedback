@@ -59,7 +59,4 @@ public class PanelComponents {
         screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");
         overpaintContainer = uiDocument.rootVisualElement.Q("overpaintContainer");
     }
-
-    //[Header("Popup")]
-    //public GameObject detailPopup;
 }
