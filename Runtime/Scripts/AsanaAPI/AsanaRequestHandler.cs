@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
@@ -109,10 +110,20 @@ public class AsanaRequestHandler : BaseRequestHandler {
         if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
 
         //TODO: implement generic attachment functions to support also text/plain content type
-        NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
-        attachment.filename = "screenshot.jpg";
-        attachment.contentType = "image/jpg";
-        attachment.content = Convert.ToBase64String(data.Screenshot.EncodeToJPG());
+        //NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
+        //attachment.filename = "screenshot.jpg";
+        //attachment.contentType = "image/jpg";
+        //attachment.content = Convert.ToBase64String(data.Screenshot.EncodeToJPG());
+        List<NewAsanaTicketRequest.Attachment> attachments = new List<NewAsanaTicketRequest.Attachment>();
+
+        foreach (var dictonarySet in data.Attachments) {
+            foreach (T1 typOneListEntry in dictonarySet.Key) {
+                attachments.Add(BuildAttachment(typOneListEntry));
+            }
+            foreach (T2 typeTwoListEntry in dictonarySet.Value) {
+                attachments.Add(BuildAttachment(typeTwoListEntry));
+            }
+        }
 
         BuildCustomFields();
 
@@ -122,7 +133,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         newTicketRequest.projects = projectId;
         newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
         newTicketRequest.custom_fields = asanaAPI.CustomFields;
-        newTicketRequest.attachments = new[] { attachment };
+        newTicketRequest.attachments = attachments.ToArray();
         newTicketRequest.html_notes = BuildRichText(data.Text);
         string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
 
@@ -130,14 +141,37 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     private NewAsanaTicketRequest.Attachment BuildAttachment<T>(T attachmentData) {
+        string filename = "attachment";
+        string fileEnding = ".txt";
+        string contentType = "text/plain";
+        string content = "";
+
         using (var ms = new MemoryStream()) {
-            if (!attachmentData.GetType().IsSerializable) { return null; }
-            new BinaryFormatter().Serialize(ms, attachmentData);
-            //ms.ToAd
-            //string base64 = Convert.ToBase64String(ms, Base64FormattingOptions.None);
+            if (attachmentData is Texture2D tex) {
+                content = Convert.ToBase64String(tex.EncodeToJPG());
+            } else {
+                try {
+                    new BinaryFormatter().Serialize(ms, attachmentData);
+                    byte[] byteArray = ms.ToArray();
+                    content = Convert.ToBase64String(byteArray, Base64FormattingOptions.None);
+                } catch (Exception e) {
+                    Debug.LogException(e);
+                }
+            }
         }
 
-        return null;
+        if (attachmentData is Texture2D) {
+            fileEnding = ".jpg";
+            contentType = "image/jpg";
+        }
+
+        NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment() {
+            filename = filename + fileEnding,
+            contentType = contentType,
+            content = content
+        };
+
+        return attachment;
     }
 
     private async void BuildCustomFields() {
