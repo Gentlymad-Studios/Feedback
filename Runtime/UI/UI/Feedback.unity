@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PanelSettings: {fileID: 11400000, guid: 81a6d5fe6a14f5c4cb29af809917b09e, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: aa81c09556d6b7e4da982bee7d344ee2, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 94909b173a1b78c4e901845c92a1ae5e, type: 3}
   m_SortingOrder: 0
@@ -376,7 +376,9 @@ MonoBehaviour:
   UIDocument: {fileID: 279013734}
   TaskCardUi: {fileID: 9197481963319205126, guid: f9ff20ae4ac9991499394e701e7d50ca, type: 3}
   TagLabelUi: {fileID: 9197481963319205126, guid: 0f6b51c5f72f934469779b1b27bba378, type: 3}
-  asanaSpecificSettings: {fileID: 11400000, guid: dc130a304f5725a4581e92ae55eeecf1, type: 2}
+  TaskDetailCardUi: {fileID: 9197481963319205126, guid: cb1098e4dd31d87429f9bb5d92b27b7f, type: 3}
+  PromptUi: {fileID: 9197481963319205126, guid: 827754a872212cb4d809e2a569bda06c, type: 3}
+  asanaSpecificSettings: {fileID: 11400000, guid: 77fba8932b6001c42a7ca6eb3098e071, type: 2}
 --- !u!1 &1509757846
 GameObject:
   m_ObjectHideFlags: 0

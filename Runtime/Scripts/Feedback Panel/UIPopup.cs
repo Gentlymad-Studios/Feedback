@@ -9,6 +9,7 @@ public class UIPopup : UIPopUpBase {
     public PanelComponents PanelComponents;
     public UIDocument UIDocument;
     public TicketBrowser TicketBrowser;
+    public Prompt Prompt;
     public VisualTreeAsset TaskCardUi;
     public VisualTreeAsset TagLabelUi;
     public VisualTreeAsset TaskDetailCardUi;
@@ -93,6 +94,11 @@ public class UIPopup : UIPopUpBase {
 
         TicketBrowser = new TicketBrowser(this);
         DrawImage = new DrawImage();
+
+        if (Prompt == null) {
+            Prompt = new Prompt(PromptUi);
+            PanelComponents.root.Add(Prompt);
+        }
     }
 
     protected override void OnShowWindow() {
@@ -132,23 +138,25 @@ public class UIPopup : UIPopUpBase {
 
     #region Auth and login
     public void OnLogInButtonClick() {
-        try {
-            LogIn();
-            //panelComponents.submitLoginPanel.SetActive(true);
-        } catch (Exception e) {
-            OnLoginFail(e.Message);
+        if (Api.RequestHandler.User == null) {
+            try {
+                LogIn();
+                Prompt.Show("Login", "Login erfolgreich", OnLoginSucceed);
+            } catch (Exception e) {
+                OnLoginFail(e.Message);
+            }
+        } else {
+            LogOut();
+            PanelComponents.loginBtn.text = "Login";
         }
     }
+
     private void OnLoginSucceed() {
-        //panelComponents.userName.text = api.requestHandler.GetUser()?.name;
-        //panelComponents.loginSection.SetActive(false);
-        //panelComponents.submitLoginPanel.SetActive(false);
+        if (Api.RequestHandler.GetUser() != null) {
+            PanelComponents.loginBtn.text = "Logout";
+        }
     }
-    public void OnLogOutButtonClick() {
-        LogOut();
-        //panelComponents.userName.text = "";
-        //panelComponents.loginSection.SetActive(true);
-    }
+
     protected override void OnLoginFail(string failMessage) {
         Debug.LogWarning(failMessage);
     }
