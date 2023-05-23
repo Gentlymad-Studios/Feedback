@@ -274,13 +274,11 @@ public class UIPopup : UIPopUpBase {
         List<string> fileList = new List<string>();
         fileList.Add("hi");
 
-        //Create the dictonary with two different types of list
-        Dictionary<List<Texture2D>, List<string>> text2 = new Dictionary<List<Texture2D>, List<string>>();
-        text2.Add(textureList, fileList);
+        Dictionary<List<string>, List<Texture2D>> attachmentSet = new Dictionary<List<string>,List<Texture2D>>();
+        attachmentSet.Add(fileList, textureList);
 
-        
-        RequestData<Texture2D, string> data = new RequestData<Texture2D, string>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text,
-            MergeTextures(screenshot, DrawImage.drawSurfaceTexture), text2, currentDataType);
+        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, 
+            attachmentSet, currentDataType);
 
         PostData(data);
         foreach (TagPreview p in tagPreviewList) {
