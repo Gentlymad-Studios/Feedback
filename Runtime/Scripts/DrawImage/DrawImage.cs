@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class DrawImage {
     //Toolbar UI Elements
@@ -9,7 +9,7 @@ public class DrawImage {
     private PanelComponents panelComponents;
 
     //Pen Settings
-    public int drawWidth;
+    public int drawWidth = 12;
     public Color drawColor = Color.black;
     public float[,] drawKernel;
     public float sigma = 1; //describes the pen fallof / hardness
@@ -18,7 +18,6 @@ public class DrawImage {
     private Color tempDrawColor = Color.black;
     private Color pickedColor = Color.red;
 
-    private RectTransform drawSurfaceRectTransform;
     private float drawSurfaceWidth;
     private float drawSurfaceHeight;
 
@@ -43,18 +42,19 @@ public class DrawImage {
     float[] max_opacity;
     bool isEraser = false;
 
-    public void Setup(PanelComponents panelComponents) {
+    public void Setup(PanelComponents panelComponents, float width, float height) {
         this.panelComponents = panelComponents;
-        return;
+
+        panelComponents.overpaintContainer.RegisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
+        panelComponents.overpaintContainer.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+
         ToolbarSetup();
 
         //for correct size, multiply width canvas scale, use screensize or use screenshot size
-        //drawSurfaceRectTransform = this.gameObject.GetComponent<RectTransform>();
-        drawSurfaceWidth = drawSurfaceRectTransform.rect.width;
-        drawSurfaceHeight = drawSurfaceRectTransform.rect.height;
+        drawSurfaceWidth = width;
+        drawSurfaceHeight = height;
         drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight);
         drawSurfaceTexture.filterMode = FilterMode.Point; //prevent grey outlines for now
-        //this.gameObject.GetComponent<RawImage>().texture = drawSurfaceTexture;
 
         // Reset all pixels color to transparent
         Color32 resetColor = new Color32(0, 0, 0, 0);
@@ -72,26 +72,16 @@ public class DrawImage {
 
         current_brush = PenBrush;
         isEraser = false;
+
+        panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
     }
 
-    void Update() {
+    private void OnPointerMoveEvent(PointerMoveEvent evt) {
         if (Input.GetMouseButton(0)) {
-            if (RectTransformUtility.RectangleContainsScreenPoint(drawSurfaceRectTransform, Input.mousePosition, null)) {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(drawSurfaceRectTransform, Input.mousePosition, null, out localPointerPosition);
-                current_brush(localPointerPosition);
-                color_changed = true;
-            } else {
-                // We're not over our destination texture
-                previous_drag_position = Vector2.zero;
-                if (!mouse_was_previously_held_down) {
-                    // This is a new drag where the user is left clicking off the canvas
-                    // Ensure no drawing happens until a new drag is started
-                    no_drawing_on_current_drag = true;
-                }
-            }
-        }
-        // Mouse is released
-        else if (!Input.GetMouseButton(0)) {
+            localPointerPosition = CalculatePointerPosition(evt.localPosition);
+            current_brush(localPointerPosition);
+            color_changed = true;
+        } else {
             previous_drag_position = Vector2.zero;
             no_drawing_on_current_drag = false;
 
@@ -101,7 +91,18 @@ public class DrawImage {
                 ResetMaxOpacity();
             }
         }
+
         mouse_was_previously_held_down = Input.GetMouseButton(0);
+    }
+
+    private void OnPointerLeaveEvent(PointerLeaveEvent evt) {
+        // We're not over our destination texture
+        previous_drag_position = Vector2.zero;
+        if (!mouse_was_previously_held_down) {
+            // This is a new drag where the user is left clicking off the canvas
+            // Ensure no drawing happens until a new drag is started
+            no_drawing_on_current_drag = true;
+        }
     }
 
     private void ToolbarSetup() {
@@ -183,6 +184,13 @@ public class DrawImage {
     }
     #endregion
 
+    private Vector2 CalculatePointerPosition(Vector2 pos) {
+        pos.x = pos.x / panelComponents.overpaintContainer.layout.width * drawSurfaceWidth;
+        pos.y = Math.Abs(pos.y / panelComponents.overpaintContainer.layout.height * drawSurfaceHeight - drawSurfaceHeight);
+
+        return pos;
+    }
+
     private void PenBrush(Vector2 pos) {
         cur_colors = drawSurfaceTexture.GetPixels32();
 
@@ -209,7 +217,7 @@ public class DrawImage {
         Vector2 cur_position = start_point;
 
         // Calculate how many times we should interpolate between start_point and end_point based on the amount of time that has passed since the last update
-        float lerp_steps = 1 / distance;
+        float lerp_steps = 1 / distance * (drawWidth / 4);
 
         for (float lerp = 0; lerp <= 1; lerp += lerp_steps) {
             cur_position = Vector2.Lerp(start_point, end_point, lerp);
@@ -219,12 +227,12 @@ public class DrawImage {
 
     private void MarkPixelsToColour(Vector2 center_pixel, int pen_thickness, Color color_of_pen) {
         // Figure out how many pixels we need to colour in each direction (x and y)
-        int center_x = (int)(center_pixel.x + (drawSurfaceWidth / 2));
-        int center_y = (int)(center_pixel.y + (drawSurfaceHeight / 2));
+        int center_x = (int)center_pixel.x;
+        int center_y = (int)center_pixel.y;
 
         for (int x = center_x - pen_thickness, i = 0; x <= center_x + pen_thickness; x++, i++) {
             // Check if the X wraps around the image, so we don't draw pixels on the other side of the image
-            if (x >= (int)drawSurfaceRectTransform.rect.width || x < 0)
+            if (x >= (int)drawSurfaceWidth || x < 0)
                 continue;
 
             for (int y = center_y - pen_thickness, j = 0; y <= center_y + pen_thickness; y++, j++) {
@@ -240,7 +248,7 @@ public class DrawImage {
 
     private void MarkPixelToChange(int x, int y, Color color) {
         // Need to transform x and y coordinates to flat coordinates of array
-        int array_pos = y * (int)drawSurfaceRectTransform.rect.width + x;
+        int array_pos = y * (int)drawSurfaceWidth + x;
 
         // Check if this is a valid position
         if (array_pos > cur_colors.Length || array_pos < 0)
@@ -281,5 +289,4 @@ public class DrawImage {
             max_opacity[i] = 0;
         }
     }
-
 }
