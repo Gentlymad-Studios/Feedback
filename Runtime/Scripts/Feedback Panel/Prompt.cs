@@ -6,6 +6,7 @@ public class Prompt : VisualElement {
     public Label description;
     public VisualElement popup;
     public Button okButton;
+    public Action callback;
 
     public Prompt(VisualTreeAsset vta) {
         Add(vta.Instantiate());
@@ -19,7 +20,7 @@ public class Prompt : VisualElement {
         description = this.Q("promptDescriptionLbl") as Label;
         okButton = this.Q("okButton") as Button;
 
-        okButton.clicked += Hide;
+        RegisterEvents();
 
         Hide();
     }
@@ -29,13 +30,25 @@ public class Prompt : VisualElement {
         this.description.text = description;
         okButton.text = buttonText;
 
-        okButton.clicked -= callback;
-        okButton.clicked += callback;
+        this.callback = callback;
+
+        RegisterEvents();
 
         style.display = DisplayStyle.Flex;
     }
 
     public void Hide() {
         style.display = DisplayStyle.None;
+    }
+
+    public void RegisterEvents() {
+        UnregisterEvents();
+        okButton.clicked += Hide;
+        okButton.clicked += callback;
+    }
+
+    public void UnregisterEvents() {
+        okButton.clicked -= Hide;
+        okButton.clicked -= callback;
     }
 }

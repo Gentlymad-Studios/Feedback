@@ -20,9 +20,7 @@ public class DetailPopup : VisualElement {
         closeButton = this.Q("closeBtn") as Button;
         popup = this.Q("popup");
 
-        closeButton.clicked += Hide;
-
-        RegisterCallback<MouseDownEvent>(Click);
+        RegisterEvents();
     }
 
     public void FillDetailPopup(string title, string description) {
@@ -42,5 +40,16 @@ public class DetailPopup : VisualElement {
         if (!popup.layout.Contains(evt.mousePosition)) {
             Hide();
         }
+    }
+
+    public void RegisterEvents() {
+        UnregisterEvents();
+        closeButton.clicked += Hide;
+        RegisterCallback<MouseDownEvent>(Click);
+    }
+
+    public void UnregisterEvents() {
+        closeButton.clicked -= Hide;
+        UnregisterCallback<MouseDownEvent>(Click);
     }
 }

@@ -44,6 +44,7 @@ public class DrawImage {
     bool isEraser = false;
 
     public void Dispose() {
+        UnregisterEvents();
         panelComponents.overpaintContainer.style.backgroundImage = null;
         UnityEngine.Object.Destroy(drawSurfaceTexture);
     }
@@ -51,8 +52,7 @@ public class DrawImage {
     public void Setup(PanelComponents panelComponents, float width, float height) {
         this.panelComponents = panelComponents;
 
-        panelComponents.overpaintContainer.RegisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
-        panelComponents.overpaintContainer.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+        RegisterEvents();
 
         ToolbarSetup();
 
@@ -82,6 +82,17 @@ public class DrawImage {
         isEraser = false;
 
         panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
+    }
+
+    private void RegisterEvents() {
+        UnregisterEvents();
+        panelComponents.overpaintContainer.RegisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
+        panelComponents.overpaintContainer.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+    }
+
+    private void UnregisterEvents() {
+        panelComponents.overpaintContainer.UnregisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
+        panelComponents.overpaintContainer.UnregisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
     }
 
     private void OnPointerMoveEvent(PointerMoveEvent evt) {

@@ -33,12 +33,23 @@ public class TicketPreview {
         resetPreview = ResetPreview;
 
         this.ui = ui;
-        ui.RegisterCallback<ClickEvent>(Card_clicked);
 
         voted = false;
-        upvoteLbl.RegisterCallback<ClickEvent>(Upvote_clicked);
+        RegisterEvents();
+    }
 
+    public void RegisterEvents() {
+        UnregisterEvents();
+        ui.RegisterCallback<ClickEvent>(Card_clicked);
+        upvoteLbl.RegisterCallback<ClickEvent>(Upvote_clicked);
         mentionBtn.RegisterCallback<ClickEvent>(Mention_clicked);
+    }
+
+    public void UnregisterEvents() {
+        ui.UnregisterCallback<ClickEvent>(Card_clicked);
+        upvoteLbl.UnregisterCallback<ClickEvent>(Upvote_clicked);
+        mentionBtn.UnregisterCallback<ClickEvent>(Mention_clicked);
+
     }
 
     #region ClickEvents

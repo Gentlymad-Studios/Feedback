@@ -41,9 +41,37 @@ public class TicketBrowser {
         RegisterEvents();
     }
 
+    public void InitEvents() {
+        if (taskPreviewList != null) {
+            for (int i = 0; i < taskPreviewList.Count; i++) {
+                taskPreviewList[i].RegisterEvents();
+            }
+        }
+
+        detailPopup?.RegisterEvents();
+
+        RegisterEvents();
+    }
+
+    public void Dispose() {
+        if (taskPreviewList != null) {
+            for (int i = 0; i < taskPreviewList.Count; i++) {
+                taskPreviewList[i].UnregisterEvents();
+            }
+        }
+
+        detailPopup?.UnregisterEvents();
+
+        UnregisterEvents();
+    }
+
     private void RegisterEvents() {
-        uIPopup.PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Search);
+        UnregisterEvents();
         uIPopup.PanelComponents.searchTxtFld.RegisterValueChangedCallback(Search);
+    }
+
+    private void UnregisterEvents() {
+        uIPopup.PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Search);
     }
 
     //Needs to be fired to operate on tickets!

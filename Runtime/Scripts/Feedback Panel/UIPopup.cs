@@ -26,7 +26,7 @@ public class UIPopup : UIPopUpBase {
         set {
             WindowType before = activeWindow;
             if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
-                base.OnShowWindow();
+                OnShowWindow();
             } else if (activeWindow != WindowType.None && value == WindowType.None) {
                 OnHideWindow();
             }
@@ -102,11 +102,17 @@ public class UIPopup : UIPopUpBase {
 
     protected override void OnShowWindow() {
         base.OnShowWindow();
-        base.GetData();
+
+        RegisterEvents();
+        TicketBrowser?.InitEvents();
     }
+
     protected override void OnHideWindow() {
+        UnregisterEvents();
+
         Destroy(screenshot);
         DrawImage?.Dispose();
+        TicketBrowser?.Dispose();
         SearchWithLucene.Instance.Dispose();
 
         GC.Collect();
@@ -178,6 +184,7 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchSubmit_clicked);
         PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
         PanelComponents.taskMentionsDrpDwn.UnregisterValueChangedCallback(TaskMentionDrpDwn_changed);
+        PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
     }
 
     /// <summary>
@@ -299,6 +306,7 @@ public class UIPopup : UIPopUpBase {
     #region Screenshot
     protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
         PanelComponents.screenshotContainer.style.backgroundImage = screenshot;
+        PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
         PanelComponents.imageContainer.RegisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
         this.screenshot = screenshot;
         screenshot.hideFlags = HideFlags.HideAndDontSave;
