@@ -65,7 +65,6 @@ public class UIPopup : UIPopUpBase {
 
         ActiveWindow = WindowType.None;
         currentWindowType = WindowType.Search;
-        //panelComponents.submitLoginPanel.SetActive(false);
 
         //AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
         AsanaAPISettings settings = asanaSpecificSettings;
@@ -106,7 +105,6 @@ public class UIPopup : UIPopUpBase {
         base.GetData();
     }
     protected override void OnHideWindow() {
-
         Destroy(screenshot);
         DrawImage?.Dispose();
         SearchWithLucene.Instance.Dispose();
@@ -114,7 +112,6 @@ public class UIPopup : UIPopUpBase {
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
-
     }
 
     private void Update() {
@@ -133,7 +130,6 @@ public class UIPopup : UIPopUpBase {
                 lastOpenTime = DateTime.Now;
             }
         }
-
     }
 
     #region Auth and login
@@ -295,7 +291,8 @@ public class UIPopup : UIPopUpBase {
 
         PanelComponents.taskTitleTxt.value = "Descriptive Title";
         PanelComponents.taskDescriptionTxt.value = "Description of bug or feedback";
-        ActiveWindow = WindowType.None;
+
+        Prompt.Show("Feedback", "Feedback gesendet", () => ActiveWindow = WindowType.None);
     }
     #endregion
 
@@ -311,6 +308,10 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {
+        if (screenshot == null) {
+            return;
+        }
+
         float uiWidth = PanelComponents.imageContainer.layout.width;
         float uiHeight = PanelComponents.imageContainer.layout.height;
 
