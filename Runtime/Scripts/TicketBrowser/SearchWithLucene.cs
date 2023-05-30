@@ -37,7 +37,6 @@ public class SearchWithLucene {
 
     public void Dispose() {
         indexDirectory?.Dispose();
-        directoryReader?.Dispose();
         analyzer?.Dispose();
     }
 
@@ -67,9 +66,8 @@ public class SearchWithLucene {
 
             //Apply all changes so index
             writer.Commit();
-
-            //Dispose writer, no changes possible till new initalisation of index writer
         }
+        //Dispose writer, no changes possible till new initalisation of index writer
         writer.Dispose();
     }
 

@@ -76,6 +76,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
         string requestData = BuildTaskData(data);
+        Debug.Log(requestData);
 
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.POST.ToString();
@@ -109,11 +110,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
         string projectId = asanaAPISettings.BugProjectId;
         if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
 
-        //TODO: implement generic attachment functions to support also text/plain content type
-        //NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment();
-        //attachment.filename = "screenshot.jpg";
-        //attachment.contentType = "image/jpg";
-        //attachment.content = Convert.ToBase64String(data.Screenshot.EncodeToJPG());
         List<NewAsanaTicketRequest.Attachment> attachments = new List<NewAsanaTicketRequest.Attachment>();
 
         foreach (var dictonarySet in data.Attachments) {

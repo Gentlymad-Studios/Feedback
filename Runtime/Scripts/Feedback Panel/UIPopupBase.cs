@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public abstract class UIPopUpBase : MonoBehaviour {
@@ -17,21 +18,21 @@ public abstract class UIPopUpBase : MonoBehaviour {
 
     private Dictionary<LoginFailReason, string> loginFailMessagesLookup = new Dictionary<LoginFailReason, string>();
     private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
-    
+
     protected void GetData() {
         Api.RequestHandler.GetAllData();
     }
 
-    protected void PostData<T1,T2>(RequestData<T1, T2> data) {
+    protected void PostData<T1, T2>(RequestData<T1, T2> data) {
         Api.RequestHandler.PostNewData(data);
     }
 
     protected void LogIn() {
-       Api.RequestHandler.LogIn();
+        Api.RequestHandler.LogIn();
     }
 
     protected void LogOut() {
-       Api.RequestHandler.LogOut();
+        Api.RequestHandler.LogOut();
     }
     protected void SetTag(TagPreview tag) {
         Api.RequestHandler.AddTagToTagList(tag);
@@ -86,7 +87,7 @@ public abstract class UIPopUpBase : MonoBehaviour {
     /// </summary>
     protected abstract void OnHideWindow();
 
-   
+
     /// <summary>
     /// Called when a screenshot was captured
     /// </summary>

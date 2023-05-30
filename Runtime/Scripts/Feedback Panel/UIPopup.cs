@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using System.Threading.Tasks;
 
 public class UIPopup : UIPopUpBase {
     public APISettings.APIType Type;
@@ -24,26 +25,12 @@ public class UIPopup : UIPopUpBase {
             return activeWindow;
         }
         set {
-            WindowType before = activeWindow;
             if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
                 OnShowWindow();
             } else if (activeWindow != WindowType.None && value == WindowType.None) {
                 OnHideWindow();
             }
             activeWindow = value;
-            if (activeWindow == WindowType.Search) {
-                PanelComponents.root.style.display = DisplayStyle.Flex;
-                PanelComponents.searchTab.style.display = DisplayStyle.Flex;
-                PanelComponents.reportTab.style.display = DisplayStyle.None;
-            } else if (activeWindow == WindowType.Report) {
-                PanelComponents.root.style.display = DisplayStyle.Flex;
-                PanelComponents.searchTab.style.display = DisplayStyle.None;
-                PanelComponents.reportTab.style.display = DisplayStyle.Flex;
-            } else {
-                PanelComponents.root.style.display = DisplayStyle.None;
-                PanelComponents.searchTab.style.display = DisplayStyle.None;
-                PanelComponents.reportTab.style.display = DisplayStyle.None;
-            }
         }
     }
 
@@ -65,6 +52,8 @@ public class UIPopup : UIPopUpBase {
 
         ActiveWindow = WindowType.None;
         currentWindowType = WindowType.Search;
+
+        SetWindowTypes();
 
         //AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
         AsanaAPISettings settings = asanaSpecificSettings;
@@ -100,15 +89,31 @@ public class UIPopup : UIPopUpBase {
         }
     }
 
+    private void SetWindowTypes() {
+        if (activeWindow == WindowType.Search) {
+            PanelComponents.root.style.display = DisplayStyle.Flex;
+            PanelComponents.searchTab.style.display = DisplayStyle.Flex;
+            PanelComponents.reportTab.style.display = DisplayStyle.None;
+        } else if (activeWindow == WindowType.Report) {
+            PanelComponents.root.style.display = DisplayStyle.Flex;
+            PanelComponents.searchTab.style.display = DisplayStyle.None;
+            PanelComponents.reportTab.style.display = DisplayStyle.Flex;
+        } else {
+            PanelComponents.root.style.display = DisplayStyle.None;
+            PanelComponents.searchTab.style.display = DisplayStyle.None;
+            PanelComponents.reportTab.style.display = DisplayStyle.None;
+        }
+    }
+
     protected override void OnShowWindow() {
         base.OnShowWindow();
-
         RegisterEvents();
         TicketBrowser?.InitEvents();
     }
 
     protected override void OnHideWindow() {
         UnregisterEvents();
+        SetWindowTypes();
 
         Destroy(screenshot);
         DrawImage?.Dispose();
@@ -200,9 +205,11 @@ public class UIPopup : UIPopUpBase {
     }
     private void ShowReportPanel() {
         ActiveWindow = WindowType.Report;
+        SetWindowTypes();
     }
     private void ShowSearchPanel() {
         ActiveWindow = WindowType.Search;
+        SetWindowTypes();
     }
     #endregion
 
@@ -285,10 +292,10 @@ public class UIPopup : UIPopUpBase {
         List<string> fileList = new List<string>();
         fileList.Add("hi");
 
-        Dictionary<List<string>, List<Texture2D>> attachmentSet = new Dictionary<List<string>,List<Texture2D>>();
+        Dictionary<List<string>, List<Texture2D>> attachmentSet = new Dictionary<List<string>, List<Texture2D>>();
         attachmentSet.Add(fileList, textureList);
 
-        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, 
+        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text,
             attachmentSet, currentDataType);
 
         PostData(data);
@@ -313,6 +320,8 @@ public class UIPopup : UIPopUpBase {
         screenshot.name = "Screenshot";
         screenshot.Apply();
         DrawImage.Setup(PanelComponents, screenshot.width, screenshot.height);
+        SetWindowTypes();
+      
     }
 
     private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {

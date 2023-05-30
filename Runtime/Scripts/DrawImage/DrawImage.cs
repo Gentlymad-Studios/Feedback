@@ -11,12 +11,12 @@ public class DrawImage {
 
     //Pen Settings
     public int drawWidth = 12;
-    public Color drawColor = Color.black;
+    public Color drawColor = Color.green;
     public float[,] drawKernel;
     public float sigma = 1; //describes the pen fallof / hardness
     public Texture2D drawSurfaceTexture;
 
-    private Color tempDrawColor = Color.black;
+    private Color tempDrawColor = Color.green;
     private Color pickedColor = Color.red;
 
     private float drawSurfaceWidth;
