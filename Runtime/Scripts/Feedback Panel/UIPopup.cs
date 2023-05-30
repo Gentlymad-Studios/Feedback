@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class UIPopup : UIPopUpBase {
     public APISettings.APIType Type;
@@ -43,6 +45,9 @@ public class UIPopup : UIPopUpBase {
 
     Texture2D screenshot;
     Length fullPercent = new Length(100, LengthUnit.Percent);
+
+    Stopwatch sp = new Stopwatch();
+
 
     private void Awake() {
         if (PanelComponents == null) {
@@ -127,6 +132,7 @@ public class UIPopup : UIPopUpBase {
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.F1)) {
+            sp.Start();
             Debug.Log(ActiveWindow);
             if (ActiveWindow != WindowType.None) {
                 currentWindowType = ActiveWindow;
@@ -232,6 +238,8 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void TaskSubmit_clicked(ClickEvent evt) {
+        sp.Stop();
+        Debug.LogError(sp.Elapsed.TotalSeconds);
         SendData();
     }
 
