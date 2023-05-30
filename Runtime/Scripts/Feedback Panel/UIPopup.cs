@@ -117,8 +117,8 @@ public class UIPopup : UIPopUpBase {
     }
 
     protected override void OnHideWindow() {
+        
         UnregisterEvents();
-        SetWindowTypes();
 
         Destroy(screenshot);
         DrawImage?.Dispose();
@@ -137,6 +137,7 @@ public class UIPopup : UIPopUpBase {
             if (ActiveWindow != WindowType.None) {
                 currentWindowType = ActiveWindow;
                 ActiveWindow = WindowType.None;
+                SetWindowTypes();
             } else {
                 ActiveWindow = currentWindowType;
                 if (lastOpenTime.AddSeconds(4.0) > DateTime.Now) {
@@ -329,7 +330,6 @@ public class UIPopup : UIPopUpBase {
         screenshot.Apply();
         DrawImage.Setup(PanelComponents, screenshot.width, screenshot.height);
         SetWindowTypes();
-      
     }
 
     private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {
