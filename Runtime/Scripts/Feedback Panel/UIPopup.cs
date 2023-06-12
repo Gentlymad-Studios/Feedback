@@ -1,9 +1,7 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 public class UIPopup : UIPopUpBase {
@@ -45,8 +43,6 @@ public class UIPopup : UIPopUpBase {
 
     Texture2D screenshot;
     Length fullPercent = new Length(100, LengthUnit.Percent);
-
-    Stopwatch sp = new Stopwatch();
 
 
     private void Awake() {
@@ -131,13 +127,12 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void Update() {
+        var before = ActiveWindow;
         if (Input.GetKeyDown(KeyCode.F1)) {
-            sp.Start();
-            Debug.Log(ActiveWindow);
             if (ActiveWindow != WindowType.None) {
-                currentWindowType = ActiveWindow;
                 ActiveWindow = WindowType.None;
                 SetWindowTypes();
+                currentWindowType = before;
             } else {
                 ActiveWindow = currentWindowType;
                 if (lastOpenTime.AddSeconds(4.0) > DateTime.Now) {
@@ -239,8 +234,7 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void TaskSubmit_clicked(ClickEvent evt) {
-        sp.Stop();
-        Debug.LogError(sp.Elapsed.TotalSeconds);
+        Debug.Log("1");
         SendData();
     }
 
@@ -290,6 +284,7 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void SendData() {
+        Debug.Log("2");
         if (Api is AsanaAPI) {
             var asanaAPI = (AsanaAPI)Api;
             asanaAPI.Mentions.AddRange(MentionedTask.Keys);
@@ -299,12 +294,13 @@ public class UIPopup : UIPopUpBase {
         textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
 
         List<string> fileList = new List<string>();
-        fileList.Add("hi");
+        fileList.Add("Test text to represent textual data");
 
         Dictionary<List<string>, List<Texture2D>> attachmentSet = new Dictionary<List<string>, List<Texture2D>>();
         attachmentSet.Add(fileList, textureList);
 
-        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text,
+        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, 
+            PanelComponents.taskDescriptionTxt.text,
             attachmentSet, currentDataType);
 
         PostData(data);
@@ -315,7 +311,10 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.taskTitleTxt.value = "Descriptive Title";
         PanelComponents.taskDescriptionTxt.value = "Description of bug or feedback";
 
-        Prompt.Show("Feedback", "Feedback gesendet", () => ActiveWindow = WindowType.None);
+        Prompt.Show("Feedback", "Feedback gesendet", () => {
+            ActiveWindow = WindowType.None;
+            SetWindowTypes();
+        });
     }
     #endregion
 

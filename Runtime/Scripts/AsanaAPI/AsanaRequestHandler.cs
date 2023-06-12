@@ -2,10 +2,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -45,6 +43,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
         try {
             task.Start();
             await task;
+            return;
+
         } catch (Exception e) {
             Debug.LogWarning(e.Message);
         }
@@ -73,8 +73,10 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
     public override void PostNewData<T1, T2>(RequestData<T1, T2> data) {
+        Debug.Log("3");
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
+       
         string requestData = BuildTaskData(data);
         Debug.Log(requestData);
 
@@ -83,21 +85,19 @@ public class AsanaRequestHandler : BaseRequestHandler {
         request.ContentType = "application/json";
         request.Timeout = 5000;
 
-        try {
+        //try {
             byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
 
             using (Stream postStream = request.GetRequestStream()) {
                 postStream.Write(dataBytes11, 0, dataBytes11.Length);
             }
-
-            StreamReader sr = new StreamReader(request.GetResponse().GetResponseStream());
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Debug.Log(sr.ReadToEnd());
             asanaAPI.CustomFields.Clear();
             Tags.Clear();
-        } catch (Exception e) {
-            Debug.LogError("An error occured while posting new task: " + e.Message);
-        }
+            return;
+
+        //} catch (Exception e) {
+        //    Debug.LogError("An error occured while posting new task: " + e.Message);
+        //}
     }
 
     /// <summary>
@@ -107,6 +107,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// <param name="data"></param>
     /// <returns></returns>
     private string BuildTaskData<T1, T2>(RequestData<T1, T2> data) {
+        Debug.Log("4");
+
         string projectId = asanaAPISettings.BugProjectId;
         if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
 
@@ -190,8 +192,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
                         }
                     }
                 }
+                return;
             } catch (Exception e) {
-                Debug.LogWarning(e.Message);
+                Debug.LogWarning("An exception occured while building custom field object " + e.Message);
             }
         }
     }
@@ -233,8 +236,10 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
                 string result = await reader.ReadToEndAsync();
                 Debug.Log(result);
+                response.Close();
+                return;
             } catch (Exception e) {
-                Debug.LogWarning(e.Message);
+                Debug.LogError("An error occoured while posting increased upvote count: " + e.Message);
             }
         }
     }
@@ -305,8 +310,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 base.User = JsonConvert.DeserializeObject<AuthorizationUser>(reader.ReadToEnd());
                 Debug.Log("<color=green> User: " + base.User.gid + "; " + base.User.name + " successfully logged in. </color>");
             } catch (Exception e) {
-                Debug.Log(e.Message);
-                Debug.LogWarning(reader.ReadToEnd());
+                Debug.LogError("An error occured while logging in user: " + e);
             }
         }
 
