@@ -15,6 +15,7 @@ public class UIPopup : UIPopUpBase {
     public VisualTreeAsset TagLabelUi;
     public VisualTreeAsset TaskDetailCardUi;
     public VisualTreeAsset PromptUi;
+    public VisualTreeAsset LoadingUi;
 
     //implement settings provider with editor helper
     public AsanaAPISettings asanaSpecificSettings;
@@ -40,6 +41,12 @@ public class UIPopup : UIPopUpBase {
 
     private List<TagPreview> tagPreviewList = new List<TagPreview>();
     private DateTime lastOpenTime;
+
+    private float animationTime;
+    private float duration = 1f;
+    private bool currentlyLoading = false;
+    private VisualElement rotationTarget;
+    private AnimationCurve rotationCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
     Texture2D screenshot;
     Length fullPercent = new Length(100, LengthUnit.Percent);
@@ -88,8 +95,45 @@ public class UIPopup : UIPopUpBase {
             Prompt = new Prompt(PromptUi);
             PanelComponents.root.Add(Prompt);
         }
+
+        rotationTarget = LoadingUi.Instantiate();
+        rotationTarget.name = "LoadWH";
+        rotationTarget.style.position = Position.Absolute;
+        rotationTarget.style.display = DisplayStyle.Flex;
+        rotationTarget.style.height = new Length(100, LengthUnit.Percent);
+        rotationTarget.style.width = new Length(100, LengthUnit.Percent);
+        PanelComponents.root.Add(rotationTarget);
+    }
+    private void Update() {
+        var before = ActiveWindow;
+        if (Input.GetKeyDown(KeyCode.F1)) {
+            if (ActiveWindow != WindowType.None) {
+                ActiveWindow = WindowType.None;
+                SetWindowTypes();
+                currentWindowType = before;
+            } else {
+                ActiveWindow = currentWindowType;
+                LockTimeHandler.CheckSpam(AbortOpen);
+                if (LockTimeHandler.locked) { return; }
+                base.GetData();
+                LockTimeHandler.SetOpenTime();
+            }
+        }
+
+        if (currentlyLoading) {
+            if (rotationTarget.style.display.Equals(DisplayStyle.None)) {
+                rotationTarget.style.display = DisplayStyle.Flex;
+            }
+            SpinLoadingIcon();
+        }
+        if (!currentlyLoading && rotationTarget != null && !ActiveWindow.Equals(WindowType.None)) {
+            if (rotationTarget.style.display.Equals(DisplayStyle.Flex)) {
+                rotationTarget.style.display = DisplayStyle.None;
+            }
+        }
     }
 
+    #region Manage Windows
     private void SetWindowTypes() {
         if (activeWindow == WindowType.Search) {
             PanelComponents.root.style.display = DisplayStyle.Flex;
@@ -105,15 +149,14 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.reportTab.style.display = DisplayStyle.None;
         }
     }
-
     protected override void OnShowWindow() {
+        SetLoading(true);
         base.OnShowWindow();
         RegisterEvents();
         TicketBrowser?.InitEvents();
     }
-
     protected override void OnHideWindow() {
-        
+        SetLoading(false);
         UnregisterEvents();
 
         Destroy(screenshot);
@@ -125,25 +168,20 @@ public class UIPopup : UIPopUpBase {
         GC.WaitForPendingFinalizers();
         GC.Collect();
     }
-
-    private void Update() {
-        var before = ActiveWindow;
-        if (Input.GetKeyDown(KeyCode.F1)) {
-            if (ActiveWindow != WindowType.None) {
-                ActiveWindow = WindowType.None;
-                SetWindowTypes();
-                currentWindowType = before;
-            } else {
-                ActiveWindow = currentWindowType;
-                if (lastOpenTime.AddSeconds(4.0) > DateTime.Now) {
-                    Debug.LogWarning("No F1 Spaming please ._.");
-                    return;
-                }
-                base.GetData();
-                lastOpenTime = DateTime.Now;
-            }
-        }
+    private void ShowReportPanel() {
+        ActiveWindow = WindowType.Report;
+        SetWindowTypes();
     }
+    private void ShowSearchPanel() {
+        ActiveWindow = WindowType.Search;
+        SetWindowTypes();
+    }
+
+    private void AbortOpen() {
+        ActiveWindow = WindowType.None;
+        SetWindowTypes();
+    }
+    #endregion
 
     #region Auth and login
     public void OnLogInButtonClick() {
@@ -172,7 +210,7 @@ public class UIPopup : UIPopUpBase {
 
     #endregion
 
-    #region Setup
+    #region Setup Events and API
     private void RegisterEvents() {
         UnregisterEvents();
         PanelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
@@ -193,10 +231,6 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.taskMentionsDrpDwn.UnregisterValueChangedCallback(TaskMentionDrpDwn_changed);
         PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
     }
-
-    /// <summary>
-    /// Instantiate the api with given type
-    /// </summary>
     public void ConfigureAPI() {
         if (Type.Equals(APISettings.APIType.Asana)) {
             Api = new AsanaAPI(asanaSpecificSettings);
@@ -204,14 +238,6 @@ public class UIPopup : UIPopUpBase {
     }
     public void SetDataType(ChangeEvent<string> changeEvent) {
         currentDataType = changeEvent.newValue;
-    }
-    private void ShowReportPanel() {
-        ActiveWindow = WindowType.Report;
-        SetWindowTypes();
-    }
-    private void ShowSearchPanel() {
-        ActiveWindow = WindowType.Search;
-        SetWindowTypes();
     }
     #endregion
 
@@ -234,16 +260,21 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void TaskSubmit_clicked(ClickEvent evt) {
-        Debug.Log("1");
         SendData();
     }
 
     private void TaskMentionDrpDwn_changed(ChangeEvent<string> evt) {
         OnClickMentionDrpDwn(evt.newValue);
     }
+    public void OnClickMentionDrpDwn(string value) {
+        TaskModels.AsanaTaskModel task = MentionedTask[value];
+        TicketBrowser.OnClickTicketPreviewAction(task.name, task.notes);
+
+        PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify(string.Empty);
+    }
     #endregion
 
-    #region Data creation
+    #region Handle Send Data 
     /// <summary>
     /// Called by clicking on "´Report Tab button". Transfer the data from search to report.
     /// Fill the mention list with mentioned tasks
@@ -276,15 +307,8 @@ public class UIPopup : UIPopUpBase {
         ShowReportPanel();
     }
 
-    public void OnClickMentionDrpDwn(string value) {
-        TaskModels.AsanaTaskModel task = MentionedTask[value];
-        TicketBrowser.OnClickTicketPreviewAction(task.name, task.notes);
-
-        PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify(string.Empty);
-    }
 
     private void SendData() {
-        Debug.Log("2");
         if (Api is AsanaAPI) {
             var asanaAPI = (AsanaAPI)Api;
             asanaAPI.Mentions.AddRange(MentionedTask.Keys);
@@ -299,7 +323,7 @@ public class UIPopup : UIPopUpBase {
         Dictionary<List<string>, List<Texture2D>> attachmentSet = new Dictionary<List<string>, List<Texture2D>>();
         attachmentSet.Add(fileList, textureList);
 
-        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, 
+        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text,
             PanelComponents.taskDescriptionTxt.text,
             attachmentSet, currentDataType);
 
@@ -368,12 +392,6 @@ public class UIPopup : UIPopUpBase {
         int width = screenshot.width;
         int height = screenshot.height;
 
-        //resize texture if ratio is larger than HD
-        if (screenshot.width > 1920) {
-            height = (int)(((float)height / width) * 1920);
-            width = 1920;
-        }
-
         void ResizeOnGPU(Texture2D texA, Texture2D texB, int widthGPU, int heightGPU, FilterMode fmode) {
             //We need the source texture in VRAM because we render with it
             texA.filterMode = fmode;
@@ -397,14 +415,28 @@ public class UIPopup : UIPopUpBase {
         Rect texR = new Rect(0, 0, width, height);
         ResizeOnGPU(screenshot, overpaint, width, height, mode);
 
-        // Update new texture
-        screenshot.Reinitialize(width, height);
         screenshot.ReadPixels(texR, 0, 0, true);
         screenshot.hideFlags = HideFlags.HideAndDontSave;
         screenshot.Apply(true);
 
-
         return screenshot;
+    }
+    #endregion
+
+    #region Loading
+    public void SetLoading(bool loading) {
+        currentlyLoading = loading;
+    }
+
+    private void SpinLoadingIcon() {
+        while (animationTime > duration) {
+            animationTime -= duration;
+        }
+        var t = animationTime / duration;
+        var angle = rotationCurve.Evaluate(t) * 360f;
+        var rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        rotationTarget.transform.rotation = rotation;
+        animationTime += Time.deltaTime;
     }
     #endregion
 }

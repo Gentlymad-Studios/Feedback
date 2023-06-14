@@ -358,13 +358,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e31fe043b5b1a1c4c9437e36555d944e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoginFailMessages: []
   Type: 1
   UIDocument: {fileID: 279013734}
   TaskCardUi: {fileID: 9197481963319205126, guid: f9ff20ae4ac9991499394e701e7d50ca, type: 3}
   TagLabelUi: {fileID: 9197481963319205126, guid: 0f6b51c5f72f934469779b1b27bba378, type: 3}
   TaskDetailCardUi: {fileID: 9197481963319205126, guid: cb1098e4dd31d87429f9bb5d92b27b7f, type: 3}
   PromptUi: {fileID: 9197481963319205126, guid: 827754a872212cb4d809e2a569bda06c, type: 3}
+  LoadingUi: {fileID: 9197481963319205126, guid: 58e07396e23839a45ad0024b4936ffe3, type: 3}
   asanaSpecificSettings: {fileID: 11400000, guid: dc130a304f5725a4581e92ae55eeecf1, type: 2}
 --- !u!1 &1365583149
 GameObject:

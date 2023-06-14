@@ -49,7 +49,6 @@ public class TicketBrowser {
         }
 
         detailPopup?.RegisterEvents();
-
         RegisterEvents();
     }
 
@@ -61,7 +60,6 @@ public class TicketBrowser {
         }
 
         detailPopup?.UnregisterEvents();
-
         UnregisterEvents();
     }
 
@@ -89,8 +87,8 @@ public class TicketBrowser {
                 }
             }
         }
-
         SearchWithLucene.Instance.CreateIndex(tasks);
+        uIPopup.SetLoading(false);
     }
 
     //Search for the change text with lucene text analyzer

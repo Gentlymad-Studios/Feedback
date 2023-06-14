@@ -33,13 +33,12 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     public async override void GetAllData() {
 
-        if (asanaAPI.lastUpdateTime.AddMinutes(2) > DateTime.Now) {
+        if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now) {
             asanaAPI.FireTasksCreated(asanaAPI.TicketModelsBackup);
             return;
         }
 
         Task task = new Task(GetAllDataAsync);
-
         try {
             task.Start();
             await task;
@@ -73,10 +72,10 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
     public override void PostNewData<T1, T2>(RequestData<T1, T2> data) {
-        Debug.Log("3");
+   
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
-       
+
         string requestData = BuildTaskData(data);
         Debug.Log(requestData);
 
@@ -85,19 +84,27 @@ public class AsanaRequestHandler : BaseRequestHandler {
         request.ContentType = "application/json";
         request.Timeout = 5000;
 
-        //try {
+        try {
             byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
-
+           
             using (Stream postStream = request.GetRequestStream()) {
                 postStream.Write(dataBytes11, 0, dataBytes11.Length);
             }
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            Stream stream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(stream);
+
+            Debug.Log(reader.ReadToEnd());
+            response.Close();
+
             asanaAPI.CustomFields.Clear();
             Tags.Clear();
             return;
 
-        //} catch (Exception e) {
-        //    Debug.LogError("An error occured while posting new task: " + e.Message);
-        //}
+        } catch (Exception e) {
+            Debug.LogError("An error occured while posting new task: " + e.Message);
+        }
     }
 
     /// <summary>
@@ -107,8 +114,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// <param name="data"></param>
     /// <returns></returns>
     private string BuildTaskData<T1, T2>(RequestData<T1, T2> data) {
-        Debug.Log("4");
-
         string projectId = asanaAPISettings.BugProjectId;
         if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
 

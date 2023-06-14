@@ -53,7 +53,7 @@ public class SearchWithLucene {
             try {
                 document.Add(new TextField("Gid", task.gid, Field.Store.YES));
                 document.Add(new TextField("Name", task.name, Field.Store.YES));
-                document.Add(new TextField("Notes", task.notes.ToString(), Field.Store.YES));
+                document.Add(new TextField("Notes", task.notes, Field.Store.YES));
 
                 TaskModels.CustomField cf = task.custom_fields.Find(field => field.name == "Upvotes");
                 string field = cf.display_value.ToString();
@@ -121,7 +121,6 @@ public class SearchWithLucene {
             config.OpenMode = OpenMode.CREATE_OR_APPEND;
             writer = new IndexWriter(indexDirectory, config);
             createIndexDocs = true;
-            Debug.Log("Add lucene index file at directory: " + writer.Directory);
         } catch (Exception e) {
             Debug.LogException(e);
         }

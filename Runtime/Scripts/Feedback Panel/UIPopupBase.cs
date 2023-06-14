@@ -6,14 +6,8 @@ using UnityEngine;
 
 public abstract class UIPopUpBase : MonoBehaviour {
 
-    [Serializable]
-    public class LoginFailMessage {
-        public LoginFailReason Reason;
-        public string Message;
-    }
 
     public BaseAPI Api = null;
-    public List<LoginFailMessage> LoginFailMessages;
 
     private Dictionary<LoginFailReason, string> loginFailMessagesLookup = new Dictionary<LoginFailReason, string>();
     private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
@@ -38,21 +32,6 @@ public abstract class UIPopUpBase : MonoBehaviour {
     }
     protected void RemoveTag(TagPreview tag) {
         Api.RequestHandler.RemoveTagFromTagList(tag);
-    }
-
-    /// <summary>
-    /// Called when there was an error while processing the login request
-    /// </summary>
-    /// <param name="error"></param>
-    private void OnLoginFail(HttpWebResponse error) {
-        LoginFailReason reason = LoginFailReason.UnknownError;
-        if (error.StatusCode.Equals(HttpStatusCode.NotFound)) {
-            reason = LoginFailReason.WrongUsernameOrMail;
-        } else if (error.StatusCode.Equals(System.Net.HttpStatusCode.Forbidden)) {
-            reason = LoginFailReason.WrongPassword;
-        }
-        // retrieve the correct fail message from the lookup and call the defined & specific fail method
-        OnLoginFail(loginFailMessagesLookup[reason]);
     }
 
     /// <summary>
