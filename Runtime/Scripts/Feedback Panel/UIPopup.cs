@@ -40,13 +40,13 @@ public class UIPopup : UIPopUpBase {
     private WindowType activeWindow = WindowType.Search;
 
     private List<TagPreview> tagPreviewList = new List<TagPreview>();
-    private DateTime lastOpenTime;
 
     private float animationTime;
     private float duration = 1f;
     private bool currentlyLoading = false;
     private VisualElement rotationTarget;
     private AnimationCurve rotationCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+    private LoadAsanaAttachmentFiles fileLoader;
 
     Texture2D screenshot;
     Length fullPercent = new Length(100, LengthUnit.Percent);
@@ -103,6 +103,8 @@ public class UIPopup : UIPopUpBase {
         rotationTarget.style.height = new Length(100, LengthUnit.Percent);
         rotationTarget.style.width = new Length(100, LengthUnit.Percent);
         PanelComponents.root.Add(rotationTarget);
+
+        fileLoader = new LoadAsanaAttachmentFiles(settings);
     }
     private void Update() {
         var before = ActiveWindow;
@@ -307,7 +309,6 @@ public class UIPopup : UIPopUpBase {
         ShowReportPanel();
     }
 
-
     private void SendData() {
         if (Api is AsanaAPI) {
             var asanaAPI = (AsanaAPI)Api;
@@ -317,10 +318,11 @@ public class UIPopup : UIPopUpBase {
         List<Texture2D> textureList = new List<Texture2D>();
         textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
 
-        List<string> fileList = new List<string>();
-        fileList.Add("Test text to represent textual data");
+        Dictionary<string, string> fileList = fileLoader.LoadAttachments();
+        //fileList.Add("Test text to represent textual data");
 
-        Dictionary<List<string>, List<Texture2D>> attachmentSet = new Dictionary<List<string>, List<Texture2D>>();
+        Dictionary<Dictionary<string, string>, List<Texture2D>> attachmentSet = new Dictionary<Dictionary<string, string>, List<Texture2D>>();
+        
         attachmentSet.Add(fileList, textureList);
 
         RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text,

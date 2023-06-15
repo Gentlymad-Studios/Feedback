@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Policy;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]
@@ -22,4 +23,8 @@ public class AsanaAPISettings : APISettings {
     [Header("Task Settings")]
     public List<string> Tags;
     public List<string> DataTypes;
+
+    [Header("Attachments")]
+    public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
+    public List<string> FileAttachmentPaths;
 }

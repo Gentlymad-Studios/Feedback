@@ -72,7 +72,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
     public override void PostNewData<T1, T2>(RequestData<T1, T2> data) {
-   
+
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
 
@@ -86,7 +86,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
         try {
             byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
-           
+
             using (Stream postStream = request.GetRequestStream()) {
                 postStream.Write(dataBytes11, 0, dataBytes11.Length);
             }
@@ -120,9 +120,12 @@ public class AsanaRequestHandler : BaseRequestHandler {
         List<NewAsanaTicketRequest.Attachment> attachments = new List<NewAsanaTicketRequest.Attachment>();
 
         foreach (var dictonarySet in data.Attachments) {
-            foreach (T1 typOneListEntry in dictonarySet.Key) {
-                attachments.Add(BuildAttachment(typOneListEntry));
+            //Dictionary with filename and file text representation
+            Dictionary<T1, T1> typeOneFileSets = dictonarySet.Key;
+            foreach (var fileSet in typeOneFileSets) {
+                attachments.Add(BuildAttachment(fileSet.Value, fileName: fileSet.Key.ToString()));
             }
+
             foreach (T2 typeTwoListEntry in dictonarySet.Value) {
                 attachments.Add(BuildAttachment(typeTwoListEntry));
             }
@@ -143,9 +146,13 @@ public class AsanaRequestHandler : BaseRequestHandler {
         return output;
     }
 
-    private NewAsanaTicketRequest.Attachment BuildAttachment<T>(T attachmentData) {
-        string filename = "attachment";
-        string fileEnding = ".txt";
+    private NewAsanaTicketRequest.Attachment BuildAttachment<T>(T attachmentData, string fileName = "") {
+        string name = fileName;
+        string ending = "";
+        if (fileName.Equals("")) {
+            name = "attachment";
+            ending = ".txt";
+        }
         string contentType = "text/plain";
         string content = "";
 
@@ -164,12 +171,12 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
 
         if (attachmentData is Texture2D) {
-            fileEnding = ".jpg";
+            ending = ".jpg";
             contentType = "image/jpg";
         }
 
         NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment() {
-            filename = filename + fileEnding,
+            filename = name + ending,
             contentType = contentType,
             content = content
         };
