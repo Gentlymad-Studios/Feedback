@@ -10,7 +10,9 @@ public class LoadAsanaAttachmentFiles {
     private AsanaAPISettings settings;
     private string attachmentPath;
     private string savegamePath;
+    private string logPath;
     private string tempDirPath;
+    private string playerLogPath;
     private string tempDirName = "\\_temp_savegame.zip";
     private Dictionary<string, string> stringFileRepresentation = new Dictionary<string, string>();
     public LoadAsanaAttachmentFiles(AsanaAPISettings settings) {
@@ -19,21 +21,34 @@ public class LoadAsanaAttachmentFiles {
             .Replace("Roaming", "LocalLow") + settings.AttachmentLocation;
         savegamePath = attachmentPath + "\\savegame";
         tempDirPath = savegamePath + tempDirName;
+        logPath = attachmentPath + "\\Logs";
+        playerLogPath = attachmentPath + "\\Player.log";
     }
 
     public Dictionary<string, string> LoadAttachments() {
-        LoadFiles();
-        LoadLatestSavegame();
-        DeleteDirectroy();
+        if (settings.includeLatesOutputLog) { LoadLatestOutputLog();  }
+        if (settings.includeLatestSavegame) { LoadLatestSavegame();  }
+        if (settings.includeCustomFileList) { LoadCustomFileList();  }
+        //LoadCustomFileList();
+        //LoadLatestSavegame();
+        
         return stringFileRepresentation;
     }
-    private void LoadFiles() {
-        settings.FileAttachmentPaths.ForEach(path => {
+    private void LoadCustomFileList() {
+        settings.CustomFileList.ForEach(path => {
             string loc = attachmentPath + path;
             string text = File.ReadAllText(loc);
             string name = Path.GetFileName(loc);
             stringFileRepresentation.Add(name, text);
         });
+    }
+
+    private void LoadLatestOutputLog(){
+        var logDirectory = new DirectoryInfo(logPath);
+        FileInfo latestLog = (FileInfo)logDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).First();
+        string text = File.ReadAllText(latestLog.FullName);
+        string name = Path.GetFileName(latestLog.FullName);
+        stringFileRepresentation.Add(name, text);
     }
 
     private void LoadLatestSavegame() {

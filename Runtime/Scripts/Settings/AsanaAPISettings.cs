@@ -25,6 +25,11 @@ public class AsanaAPISettings : APISettings {
     public List<string> DataTypes;
 
     [Header("Attachments")]
+    public bool includePlayerLog = true;
+    public bool includeLatesOutputLog = true;
+    public bool includeLatestSavegame = true;
+    public bool includeCustomFileList = false;
     public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
-    public List<string> FileAttachmentPaths;
+    
+    public List<string> CustomFileList;
 }
