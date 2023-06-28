@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Security.Policy;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]

@@ -32,6 +32,13 @@ public class PanelComponents {
     public VisualElement screenshotContainer;
     public VisualElement overpaintContainer;
 
+    //Paint Toolbar
+    public Button brushSizeUpBtn;
+    public Button brushSizeDownBtn;
+    public Button brushBtn;
+    public Button eraseBtn;
+    public Button clearBtn;
+
     public void Initialize(UIDocument uiDocument) {
         this.uiDocument = uiDocument;
         
@@ -58,5 +65,11 @@ public class PanelComponents {
         imageContainer = uiDocument.rootVisualElement.Q("imageContainer");
         screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");
         overpaintContainer = uiDocument.rootVisualElement.Q("overpaintContainer");
+
+        brushSizeUpBtn = uiDocument.rootVisualElement.Q("brushSizeUpBtn") as Button;
+        brushSizeDownBtn = uiDocument.rootVisualElement.Q("brushSizeDownBtn") as Button;
+        brushBtn = uiDocument.rootVisualElement.Q("brushBtn") as Button;
+        eraseBtn = uiDocument.rootVisualElement.Q("eraseBtn") as Button;
+        clearBtn = uiDocument.rootVisualElement.Q("clearCanvasBtn") as Button;
     }
 }

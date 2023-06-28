@@ -1,12 +1,8 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DrawImage {
-    //Toolbar UI Elements
-    //public DrawToolbar toolbar;
-
     private PanelComponents panelComponents;
 
     //Pen Settings
@@ -42,11 +38,15 @@ public class DrawImage {
 
     float[] max_opacity;
     bool isEraser = false;
+    public bool drawingCanBeDestroyed = false;
 
     public void Dispose() {
         UnregisterEvents();
         panelComponents.overpaintContainer.style.backgroundImage = null;
-        UnityEngine.Object.Destroy(drawSurfaceTexture);
+        if (drawingCanBeDestroyed) {
+            UnityEngine.Object.Destroy(drawSurfaceTexture);
+            drawingCanBeDestroyed = false;
+        }
     }
 
     public void Setup(PanelComponents panelComponents, float width, float height) {
@@ -59,24 +59,34 @@ public class DrawImage {
         //for correct size, multiply width canvas scale, use screensize or use screenshot size
         drawSurfaceWidth = width;
         drawSurfaceHeight = height;
-        drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight);
-        drawSurfaceTexture.name = "DrawSurfaceTex";
-        drawSurfaceTexture.hideFlags = HideFlags.HideAndDontSave;
-        drawSurfaceTexture.filterMode = FilterMode.Point; //prevent grey outlines for now
 
-        // Reset all pixels color to transparent
-        Color32 resetColor = new Color32(0, 0, 0, 0);
-        resetColorArray = drawSurfaceTexture.GetPixels32();
-
-        max_opacity = new float[resetColorArray.Length];
-        ResetMaxOpacity();
-
-        for (int i = 0; i < resetColorArray.Length; i++) {
-            resetColorArray[i] = resetColor;
+        bool recreateDrawSurfaceTexture = false;
+        if (drawSurfaceTexture == null) {
+            recreateDrawSurfaceTexture = true;
+        } else if (drawSurfaceWidth != drawSurfaceTexture.width || drawSurfaceHeight != drawSurfaceTexture.height) {
+            recreateDrawSurfaceTexture = true;
         }
 
-        drawSurfaceTexture.SetPixels32(resetColorArray);
-        drawSurfaceTexture.Apply();
+        if (recreateDrawSurfaceTexture) {
+            drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight);
+            drawSurfaceTexture.name = "DrawSurfaceTex";
+            drawSurfaceTexture.hideFlags = HideFlags.HideAndDontSave;
+            drawSurfaceTexture.filterMode = FilterMode.Point; //prevent grey outlines for now
+
+            // Reset all pixels color to transparent
+            Color32 resetColor = new Color32(0, 0, 0, 0);
+            resetColorArray = drawSurfaceTexture.GetPixels32();
+
+            max_opacity = new float[resetColorArray.Length];
+            ResetMaxOpacity();
+
+            for (int i = 0; i < resetColorArray.Length; i++) {
+                resetColorArray[i] = resetColor;
+            }
+
+            drawSurfaceTexture.SetPixels32(resetColorArray);
+            drawSurfaceTexture.Apply();
+        }
 
         current_brush = PenBrush;
         isEraser = false;
@@ -125,32 +135,32 @@ public class DrawImage {
     }
 
     private void ToolbarSetup() {
-        //toolbar.penButton.onClick.AddListener(() => {
-        //    isEraser = false;
-        //    SetPenColor(pickedColor);
-        //});
+        panelComponents.brushBtn.clicked += (() => {
+            isEraser = false;
+            SetPenColor(pickedColor);
+        });
 
-        //toolbar.eraserButton.onClick.AddListener(() => {
-        //    isEraser = true;
-        //    SetPenColor(Color.clear);
-        //});
+        panelComponents.eraseBtn.clicked += (() => {
+            isEraser = true;
+            SetPenColor(Color.clear);
+        });
 
         //toolbar.chooseColorButton.onClick.AddListener(() => {
         //    pickedColor = Color.green;
         //    SetPenColor(pickedColor);
         //});
 
-        //toolbar.clearButton.onClick.AddListener(() => {
-        //    ResetCanvas();
-        //});
+        panelComponents.clearBtn.clicked += (() => {
+            ResetCanvas();
+        });
 
-        //toolbar.shrinkButton.onClick.AddListener(() => {
-        //    SetPenSize(drawWidth - 1);
-        //});
+        panelComponents.brushSizeDownBtn.clicked += (() => {
+            SetPenSize(drawWidth - 1);
+        });
 
-        //toolbar.enlargeButton.onClick.AddListener(() => {
-        //    SetPenSize(drawWidth + 1);
-        //});
+        panelComponents.brushSizeUpBtn.clicked += (() => {
+            SetPenSize(drawWidth + 1);
+        });
 
         // call it to calculate the first kernel
         SetPenSize(drawWidth);

@@ -141,10 +141,14 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.root.style.display = DisplayStyle.Flex;
             PanelComponents.searchTab.style.display = DisplayStyle.Flex;
             PanelComponents.reportTab.style.display = DisplayStyle.None;
+            PanelComponents.searchBtn.style.backgroundColor = Color.white;
+            PanelComponents.reportBtn.style.backgroundColor = Color.grey;
         } else if (activeWindow == WindowType.Report) {
             PanelComponents.root.style.display = DisplayStyle.Flex;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
             PanelComponents.reportTab.style.display = DisplayStyle.Flex;
+            PanelComponents.searchBtn.style.backgroundColor = Color.grey;
+            PanelComponents.reportBtn.style.backgroundColor = Color.white;
         } else {
             PanelComponents.root.style.display = DisplayStyle.None;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
@@ -317,6 +321,7 @@ public class UIPopup : UIPopUpBase {
 
         List<Texture2D> textureList = new List<Texture2D>();
         textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
+        DrawImage.drawingCanBeDestroyed = true;
 
         Dictionary<string, string> fileList = fileLoader.LoadAttachments();
         //fileList.Add("Test text to represent textual data");

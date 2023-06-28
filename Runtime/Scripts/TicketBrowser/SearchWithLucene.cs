@@ -56,7 +56,10 @@ public class SearchWithLucene {
                 document.Add(new TextField("Notes", task.notes, Field.Store.YES));
 
                 TaskModels.CustomField cf = task.custom_fields.Find(field => field.name == "Upvotes");
-                string field = cf.display_value.ToString();
+                string field = "0";
+                if (cf.display_value != null) {
+                    field = cf.display_value.ToString();
+                }
                 document.Add(new TextField("Upvotes", field, Field.Store.YES));
 
                 writer.AddDocument(document);
