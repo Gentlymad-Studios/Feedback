@@ -51,6 +51,23 @@ public class UIPopup : UIPopUpBase {
     Texture2D screenshot;
     Length fullPercent = new Length(100, LengthUnit.Percent);
 
+    public void Toggle() {
+        var before = ActiveWindow;
+
+        if (ActiveWindow != WindowType.None) {
+            ActiveWindow = WindowType.None;
+            SetWindowTypes();
+            currentWindowType = before;
+        } else {
+            ActiveWindow = currentWindowType;
+            LockTimeHandler.CheckSpam(AbortOpen);
+            if (LockTimeHandler.locked) {
+                return;
+            }
+            base.GetData();
+            LockTimeHandler.SetOpenTime();
+        }
+    }
 
     private void Awake() {
         if (PanelComponents == null) {
@@ -106,22 +123,8 @@ public class UIPopup : UIPopUpBase {
 
         fileLoader = new LoadAsanaAttachmentFiles(settings);
     }
-    private void Update() {
-        var before = ActiveWindow;
-        if (Input.GetKeyDown(KeyCode.F1)) {
-            if (ActiveWindow != WindowType.None) {
-                ActiveWindow = WindowType.None;
-                SetWindowTypes();
-                currentWindowType = before;
-            } else {
-                ActiveWindow = currentWindowType;
-                LockTimeHandler.CheckSpam(AbortOpen);
-                if (LockTimeHandler.locked) { return; }
-                base.GetData();
-                LockTimeHandler.SetOpenTime();
-            }
-        }
 
+    private void Update() {
         if (currentlyLoading) {
             if (rotationTarget.style.display.Equals(DisplayStyle.None)) {
                 rotationTarget.style.display = DisplayStyle.Flex;
