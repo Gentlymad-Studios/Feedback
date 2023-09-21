@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UIPopup;
 
 public class Feedback {
     private static UIPopup window;
