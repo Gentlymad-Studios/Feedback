@@ -12,17 +12,15 @@ public class LoadAsanaAttachmentFiles {
     private string savegamePath;
     private string logPath;
     private string tempDirPath;
-    private string playerLogPath;
     private string tempDirName = "\\_temp_savegame.zip";
     private Dictionary<string, string> stringFileRepresentation = new Dictionary<string, string>();
     public LoadAsanaAttachmentFiles(AsanaAPISettings settings) {
         this.settings = settings;
         attachmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
             .Replace("Roaming", "LocalLow") + settings.AttachmentLocation;
-        savegamePath = attachmentPath + "\\savegame";
+        savegamePath = attachmentPath + settings.SavegameLocation;
         tempDirPath = savegamePath + tempDirName;
-        logPath = attachmentPath + "\\Logs";
-        playerLogPath = attachmentPath + "\\Player.log";
+        logPath = attachmentPath + settings.LogLocation;
     }
 
     public Dictionary<string, string> LoadAttachments() {
@@ -45,16 +43,21 @@ public class LoadAsanaAttachmentFiles {
 
     private void LoadLatestOutputLog(){
         var logDirectory = new DirectoryInfo(logPath);
-        FileInfo latestLog = (FileInfo)logDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).First();
+        if (logDirectory.GetFiles().Length == 0) {
+            return;
+        }
+        FileInfo latestLog = logDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).First();
         string text = File.ReadAllText(latestLog.FullName);
         string name = Path.GetFileName(latestLog.FullName);
         stringFileRepresentation.Add(name, text);
     }
 
     private void LoadLatestSavegame() {
-
         var savegameDirectory = new DirectoryInfo(savegamePath);
-        List<FileInfo> orderdFileInfoList = (List<FileInfo>)savegameDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).ToList();
+        if (savegameDirectory.GetFiles().Length == 0) {
+            return;
+        }
+        List<FileInfo> orderdFileInfoList = savegameDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).ToList();
 
         string firstName = orderdFileInfoList.Find(d => d.Name.Contains(".savegame")).Name;
         List<FileInfo> saveGamesFileInfo = orderdFileInfoList.FindAll(d => d.Name.Contains(firstName));

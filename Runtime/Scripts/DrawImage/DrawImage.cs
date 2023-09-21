@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 public class DrawImage {
@@ -106,7 +107,7 @@ public class DrawImage {
     }
 
     private void OnPointerMoveEvent(PointerMoveEvent evt) {
-        if (Input.GetMouseButton(0)) {
+        if (Mouse.current.leftButton.isPressed) {
             localPointerPosition = CalculatePointerPosition(evt.localPosition);
             current_brush(localPointerPosition);
             color_changed = true;
@@ -121,7 +122,7 @@ public class DrawImage {
             }
         }
 
-        mouse_was_previously_held_down = Input.GetMouseButton(0);
+        mouse_was_previously_held_down = Mouse.current.leftButton.isPressed;
     }
 
     private void OnPointerLeaveEvent(PointerLeaveEvent evt) {
