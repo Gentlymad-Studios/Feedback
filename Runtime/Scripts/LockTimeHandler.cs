@@ -9,7 +9,7 @@ public class LockTimeHandler {
     private static DateTime openTime;
     private static float lockTime = 10.0f;
     private static float remainingWaitTime;
-    private static string message = "No F1 Spaming please. You need to wait for - " + lockTime + " - Seconds";
+    private static string message = "No Spaming please. You need to wait for - " + lockTime + " - Seconds";
 
     private static void Timer() {
         while (locked) {
