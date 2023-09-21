@@ -1,3 +1,4 @@
+using PlasticPipe.PlasticProtocol.Messages;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,10 @@ public class UIPopup : UIPopUpBase {
     public VisualTreeAsset PromptUi;
     public VisualTreeAsset LoadingUi;
 
+    public delegate void Callback();
+    public Callback OnOpen;
+    public Callback OnClose;
+
     //implement settings provider with editor helper
     public AsanaAPISettings asanaSpecificSettings;
 
@@ -28,8 +33,14 @@ public class UIPopup : UIPopUpBase {
         set {
             if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
                 OnShowWindow();
+                if (OnOpen != null) {
+                    OnOpen();
+                }
             } else if (activeWindow != WindowType.None && value == WindowType.None) {
                 OnHideWindow();
+                if (OnClose != null) {
+                    OnClose();
+                }
             }
             activeWindow = value;
         }

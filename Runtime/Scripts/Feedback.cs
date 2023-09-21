@@ -1,17 +1,20 @@
 using UnityEngine;
+using static UIPopup;
 
 public class Feedback {
-    private static UIPopup feedbackWindow;
+    private static UIPopup window;
+    public static UIPopup Window {
+        get {
+            if (window == null) {
+                window = GameObject.FindObjectOfType<UIPopup>();
+            }
 
-    public static void ToggleFeedbackWindow() {
-        if (feedbackWindow == null) {
-            feedbackWindow = GameObject.FindObjectOfType<UIPopup>();
-        }
+            if (window == null) {
+                Debug.LogError("Unable to find Feedback Tool Object!");
+                return null;
+            }
 
-        if (feedbackWindow == null) {
-            Debug.LogError("Unable to find Feedback Tool Object!");
-        } else {
-            feedbackWindow.Toggle();
+            return window;
         }
     }
 }
