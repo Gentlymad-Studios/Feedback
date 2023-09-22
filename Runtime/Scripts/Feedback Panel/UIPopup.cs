@@ -136,12 +136,14 @@ public class UIPopup : UIPopUpBase {
 
     private void Update() {
         if (currentlyLoading) {
+            PanelComponents.root.SetEnabled(false);
             if (rotationTarget.style.display.Equals(DisplayStyle.None)) {
                 rotationTarget.style.display = DisplayStyle.Flex;
             }
             SpinLoadingIcon();
         }
         if (!currentlyLoading && rotationTarget != null && !ActiveWindow.Equals(WindowType.None)) {
+            PanelComponents.root.SetEnabled(true);
             if (rotationTarget.style.display.Equals(DisplayStyle.Flex)) {
                 rotationTarget.style.display = DisplayStyle.None;
             }
@@ -322,7 +324,9 @@ public class UIPopup : UIPopUpBase {
             }
         }
 
-        PanelComponents.taskTitleTxt.value = titleText;
+        if (string.IsNullOrEmpty(PanelComponents.taskTitleTxt.value)) {
+            PanelComponents.taskTitleTxt.value = titleText;
+        }
         ShowReportPanel();
     }
 
