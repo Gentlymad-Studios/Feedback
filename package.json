@@ -1,13 +1,15 @@
 {
 	"name": "com.gentlymadstudios.feedbackservice",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"displayName": "Feedback Service",
 	"description": "Feedback Service by Gentlymadstudios",
 	"unity": "2022.1",
 	"unityRelease": "16f1",
 	"custom_packageJsonLink": "https://raw.githubusercontent.com/Gentlymad-Studios/Feedback/master/package.json",
 	"dependencies": {
-	},
+		"com.unity.nuget.newtonsoft-json": "3.0.2",
+		"com.unity.inputsystem": "1.6.3"
+	}
 	"keywords": [
 		"editor",
     "unityeditor",
