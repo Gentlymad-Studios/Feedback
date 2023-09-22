@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,22 +15,38 @@ public class AsanaAPISettings : APISettings {
     public string UpdateUpvotesEndpoint;
     public string GetUserWithUniqueId;
 
-    [Header("Asana Gids")]
-    public string BugProjectId;
-    public string FeedbackProjectId;
+    [Header("Asana Workspace")]
     public string WorkspaceId;
+
+    [Header("Asana Projects")]
+    public List<AsanaProject> asanaProjects;
 
     [Header("Task Settings")]
     public List<string> Tags;
-    public List<string> DataTypes;
 
     [Header("Attachments")]
-    public bool includeLatesOutputLog = true;
-    public bool includeLatestSavegame = true;
-    public bool includeCustomFileList = false;
     public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
     public string SavegameLocation = "\\savegame";
     public string LogLocation = "\\logs";
 
     public List<string> CustomFileList;
+
+    public AsanaProject GetProjectByName(string projectName) {
+        for (int i = 0; i < asanaProjects.Count; i++) {
+            if(asanaProjects[i].name == projectName) {
+                return asanaProjects[i];
+            }
+        }
+
+        return null;
+    }
+}
+
+[Serializable]
+public class AsanaProject {
+    public string name;
+    public string id;
+    public bool includeLatesOutputLog = true;
+    public bool includeLatestSavegame = true;
+    public bool includeCustomFileList = false;
 }

@@ -114,8 +114,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// <param name="data"></param>
     /// <returns></returns>
     private string BuildTaskData<T1, T2>(RequestData<T1, T2> data) {
-        string projectId = asanaAPISettings.BugProjectId;
-        if (data.DataType.Equals("Feedback")) { projectId = asanaAPISettings.FeedbackProjectId; }
+        string projectId = data.AsanaProject != null ? data.AsanaProject.id : string.Empty;
 
         List<NewAsanaTicketRequest.Attachment> attachments = new List<NewAsanaTicketRequest.Attachment>();
 

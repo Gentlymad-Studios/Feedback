@@ -23,10 +23,10 @@ public class LoadAsanaAttachmentFiles {
         logPath = attachmentPath + settings.LogLocation;
     }
 
-    public Dictionary<string, string> LoadAttachments() {
-        if (settings.includeLatesOutputLog) { LoadLatestOutputLog();  }
-        if (settings.includeLatestSavegame) { LoadLatestSavegame();  }
-        if (settings.includeCustomFileList) { LoadCustomFileList();  }
+    public Dictionary<string, string> LoadAttachments(AsanaProject project) {
+        if (project.includeLatesOutputLog) { LoadLatestOutputLog();  }
+        if (project.includeLatestSavegame) { LoadLatestSavegame();  }
+        if (project.includeCustomFileList) { LoadCustomFileList();  }
         //LoadCustomFileList();
         //LoadLatestSavegame();
         

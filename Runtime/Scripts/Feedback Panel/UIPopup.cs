@@ -45,7 +45,7 @@ public class UIPopup : UIPopUpBase {
         }
     }
 
-    private string currentDataType = "Feedback";
+    private string currentDataType;
     private WindowType currentWindowType;
     private WindowType activeWindow = WindowType.Search;
 
@@ -95,10 +95,11 @@ public class UIPopup : UIPopUpBase {
 
         //Init Type DropDown
         PanelComponents.taskTypeDrpDwn.choices.Clear();
-        for (int i = 0; i < settings.DataTypes.Count; i++) {
-            PanelComponents.taskTypeDrpDwn.choices.Add(settings.DataTypes[i]);
+        for (int i = 0; i < settings.asanaProjects.Count; i++) {
+            PanelComponents.taskTypeDrpDwn.choices.Add(settings.asanaProjects[i].name);
         }
-        PanelComponents.taskTypeDrpDwn.value = settings.DataTypes[0];
+        PanelComponents.taskTypeDrpDwn.value = settings.asanaProjects[0].name;
+        currentDataType = settings.asanaProjects[0].name;
 
         //Init Tags
         tagPreviewList.Clear();
@@ -340,16 +341,16 @@ public class UIPopup : UIPopUpBase {
         textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
         DrawImage.drawingCanBeDestroyed = true;
 
-        Dictionary<string, string> fileList = fileLoader.LoadAttachments();
+        AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
+
+        Dictionary<string, string> fileList = fileLoader.LoadAttachments(asanaProject);
         //fileList.Add("Test text to represent textual data");
 
         Dictionary<Dictionary<string, string>, List<Texture2D>> attachmentSet = new Dictionary<Dictionary<string, string>, List<Texture2D>>();
         
         attachmentSet.Add(fileList, textureList);
 
-        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text,
-            PanelComponents.taskDescriptionTxt.text,
-            attachmentSet, currentDataType);
+        RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachmentSet, asanaProject);
 
         PostData(data);
         foreach (TagPreview p in tagPreviewList) {
