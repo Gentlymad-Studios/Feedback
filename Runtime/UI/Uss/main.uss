@@ -1,8 +1,8 @@
 :root {
-  --tagLabel_default: rgb(150, 150, 150);
-  --tagLabel_defaultHover: rgb(200, 200, 200);
-  --tagLabel_selected: rgb(111, 111, 111);
-  --tagLabel_selectedHover: rgb(111, 111, 111);
+    --tagLabel_default: rgb(150, 150, 150);
+    --tagLabel_defaultHover: rgb(200, 200, 200);
+    --tagLabel_selected: rgb(111, 111, 111);
+    --tagLabel_selectedHover: rgb(111, 111, 111);
 }
 
 .TextInput {
@@ -17,58 +17,74 @@
     margin-top: 0;
     margin-bottom: 0;
 }
-.TextInput > .unity-base-field__label{
-    visibility: hidden;    
-    width: 0px;
-    min-width:0px ;
-    height: 0px;
-    margin: 0px;
-    padding: 0px;
- }
- .unity-popup-field__input{
-   margin: 0;
-   height: 50px;
- }
- .unity-enum-field__input{
-   margin: 0;
-   height: 50px;
- }
- .unit-text-input{
-   margin:0;
- }
- .unity-base-text-field__input{
-   margin:0;
-   height: 100%;
- }
-  .unity-base-field > .unity-text-field__label{
+
+.TextInput > .unity-base-field__label {
+    visibility: hidden;
+    width: 0;
+    min-width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.unity-popup-field__input {
+    margin: 0;
+    height: 50px;
+}
+
+.unity-enum-field__input {
+    margin: 0;
+    height: 50px;
+}
+
+.unit-text-input {
+    margin: 0;
+}
+
+.unity-base-text-field__input {
+    margin: 0;
+    height: 100%;
+}
+
+.unity-base-field > .unity-text-field__label {
     display: none;
- }
- .unity-base-field > .unity-popup-field__label{
+}
+
+.unity-base-field > .unity-popup-field__label {
     display: none;
- }
- 
- .unity-base-field > .unity-enum-field__label{
+}
+
+.unity-base-field > .unity-enum-field__label {
     display: none;
- }
+}
 
- .tagLabel {
-     background-color: var(--tagLabel_default);
- }
+.tagLabel {
+    background-color: var(--tagLabel_default);
+}
 
- .tagLabel:hover {
-     background-color: var(--tagLabel_defaultHover);
- }
+.tagLabel:hover {
+    background-color: var(--tagLabel_defaultHover);
+}
 
- .tagLabelSelected {
-     background-color: var(--tagLabel_selected);
- }
+.tagLabelSelected {
+    background-color: var(--tagLabel_selected);
+}
 
- .tagLabelSelected:hover {
-     background-color: var(--tagLabel_selectedHover);
- }
+.tagLabelSelected:hover {
+    background-color: var(--tagLabel_selectedHover);
+}
 
- .popup {
-     position: absolut;
-     height: 100%;
-     width: 100%;
- }
+.popup {
+    position: absolut;
+    height: 100%;
+    width: 100%;
+}
+
+.iconbutton {
+    width: 40px;
+    height: 40px;
+    -unity-slice-left: 8px;
+    -unity-slice-right: 8px;
+    -unity-slice-top: 8px;
+    -unity-slice-bottom: 8px;
+}

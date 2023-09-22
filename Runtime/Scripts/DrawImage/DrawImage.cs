@@ -156,11 +156,11 @@ public class DrawImage {
         });
 
         panelComponents.brushSizeDownBtn.clicked += (() => {
-            SetPenSize(drawWidth - 1);
+            SetPenSize(drawWidth - 2);
         });
 
         panelComponents.brushSizeUpBtn.clicked += (() => {
-            SetPenSize(drawWidth + 1);
+            SetPenSize(drawWidth + 2);
         });
 
         // call it to calculate the first kernel
