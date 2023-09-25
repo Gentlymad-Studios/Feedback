@@ -1,3 +1,4 @@
+using Game.UI;
 using UnityEngine.UIElements;
 
 public class PanelComponents {
@@ -38,6 +39,7 @@ public class PanelComponents {
     public Button brushBtn;
     public Button eraseBtn;
     public Button clearBtn;
+    public ColorField colorField;
 
     public void Initialize(UIDocument uiDocument) {
         this.uiDocument = uiDocument;
@@ -71,5 +73,7 @@ public class PanelComponents {
         brushBtn = uiDocument.rootVisualElement.Q("brushBtn") as Button;
         eraseBtn = uiDocument.rootVisualElement.Q("eraseBtn") as Button;
         clearBtn = uiDocument.rootVisualElement.Q("clearCanvasBtn") as Button;
+        colorField = uiDocument.rootVisualElement.Q("color-field") as ColorField;
+        colorField.PopupRoot = root;
     }
 }

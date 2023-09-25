@@ -4,18 +4,18 @@
     <ui:VisualElement name="ReportContainer" style="flex-grow: 1; background-color: rgb(255, 255, 255); flex-direction: row; min-height: 100%; min-width: 100%; max-width: 100%; max-height: 100%;">
         <ui:VisualElement name="LeftContainer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 25px; padding-right: 25px; padding-top: 25px; padding-bottom: 25px; color: rgb(250, 250, 250);">
             <ui:VisualElement name="imageContainer" style="flex-grow: 1; background-color: rgba(250, 250, 250, 0);">
-                <ui:VisualElement name="screenshotContainer" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); border-left-color: rgba(84, 8, 8, 0); border-right-color: rgba(84, 8, 8, 0); border-top-color: rgba(84, 8, 8, 0); border-bottom-color: rgba(84, 8, 8, 0); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-background-scale-mode: scale-to-fit; flex-shrink: 0; background-image: url(&apos;project://database/Assets/Feedback/Runtime/RenderTextures/16_9.jpg?fileID=2800000&amp;guid=1be0f426eeebd8341994a658cab11afe&amp;type=3#16_9&apos;); width: 100%; height: auto; align-self: center;" />
+                <ui:VisualElement name="screenshotContainer" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); border-left-color: rgba(84, 8, 8, 0); border-right-color: rgba(84, 8, 8, 0); border-top-color: rgba(84, 8, 8, 0); border-bottom-color: rgba(84, 8, 8, 0); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-background-scale-mode: scale-to-fit; flex-shrink: 0; background-image: url(&apos;project://database/Assets/16_9.jpg?fileID=2800000&amp;guid=1be0f426eeebd8341994a658cab11afe&amp;type=3#16_9&apos;); width: 100%; height: auto; align-self: center;" />
                 <ui:VisualElement name="overpaintContainer" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); border-left-color: rgba(84, 8, 8, 0); border-right-color: rgba(84, 8, 8, 0); border-top-color: rgba(84, 8, 8, 0); border-bottom-color: rgba(84, 8, 8, 0); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-background-scale-mode: scale-to-fit; flex-shrink: 0; position: absolute; width: 100%; align-self: center;" />
             </ui:VisualElement>
             <ui:VisualElement name="ToolContainer" style="flex-grow: 0; flex-direction: row; flex-shrink: 1;">
-                <ui:VisualElement name="Buttons">
+                <ui:VisualElement name="Buttons" style="flex-direction: column;">
                     <ui:Button name="brushSizeUpBtn" class="iconbutton" style="background-image: resource(&apos;plus&apos;);" />
                     <ui:Button name="brushSizeDownBtn" class="iconbutton" style="background-image: resource(&apos;minus&apos;);" />
                     <ui:Button name="brushBtn" class="iconbutton" style="background-image: resource(&apos;brush&apos;);" />
                     <ui:Button name="eraseBtn" class="iconbutton" style="background-image: resource(&apos;eraser&apos;);" />
                     <ui:Button name="clearCanvasBtn" class="iconbutton" style="background-image: resource(&apos;trash&apos;);" />
+                    <Game.UI.ColorField name="color-field" class="customcolorfield" />
                 </ui:VisualElement>
-                <ui:VisualElement name="Colorpicker" style="width: 230px; background-image: resource(&apos;loader&apos;);" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="RightContainer" style="flex-grow: 1; background-color: rgba(250, 250, 250, 0); max-width: 50%; min-width: 50%; min-height: 100%; max-height: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 25px; padding-right: 25px; padding-top: 25px; padding-bottom: 25px;">

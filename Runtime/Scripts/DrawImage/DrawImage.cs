@@ -8,13 +8,13 @@ public class DrawImage {
 
     //Pen Settings
     public int drawWidth = 12;
-    public Color drawColor = Color.green;
+    public Color drawColor = Color.black;
     public float[,] drawKernel;
     public float sigma = 1; //describes the pen fallof / hardness
     public Texture2D drawSurfaceTexture;
 
-    private Color tempDrawColor = Color.green;
-    private Color pickedColor = Color.red;
+    private Color tempDrawColor = Color.black;
+    private Color pickedColor = Color.black;
 
     private float drawSurfaceWidth;
     private float drawSurfaceHeight;
@@ -146,10 +146,10 @@ public class DrawImage {
             SetPenColor(Color.clear);
         });
 
-        //toolbar.chooseColorButton.onClick.AddListener(() => {
-        //    pickedColor = Color.green;
-        //    SetPenColor(pickedColor);
-        //});
+        panelComponents.colorField.RegisterValueChangedCallback((evt) => {
+            pickedColor = evt.newValue;
+            SetPenColor(pickedColor);
+        });
 
         panelComponents.clearBtn.clicked += (() => {
             ResetCanvas();

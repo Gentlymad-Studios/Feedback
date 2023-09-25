@@ -1,3 +1,4 @@
+using Game.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -169,6 +170,11 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.root.style.display = DisplayStyle.None;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
             PanelComponents.reportTab.style.display = DisplayStyle.None;
+
+            List<PopupPanel> popups = PanelComponents.root.Query<PopupPanel>().ToList();
+            for (int i = 0; i < popups.Count; i++) {
+                popups[i].Hide();
+            }
         }
     }
     protected override void OnShowWindow() {

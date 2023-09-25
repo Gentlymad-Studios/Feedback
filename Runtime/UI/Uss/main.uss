@@ -88,3 +88,14 @@
     -unity-slice-top: 8px;
     -unity-slice-bottom: 8px;
 }
+.customcolorfield {
+    margin: 0px;
+}
+
+.customcolorfield .color-field__input {
+    width: 40px;
+    height: 40px;
+    margin: 2px 3px;
+    border-width: 0.1px;
+    border-color: rgba(0, 0, 0, 0.5);
+}
