@@ -29,7 +29,8 @@ public class AsanaAPISettings : APISettings {
     public string SavegameLocation = "\\savegame";
     public string LogLocation = "\\logs";
 
-    public List<string> CustomFileList;
+    [Tooltip("List of Files that should be attached for any Project")]
+    public List<string> GlobalCustomFiles;
 
     public AsanaProject GetProjectByName(string projectName) {
         for (int i = 0; i < asanaProjects.Count; i++) {
@@ -48,5 +49,8 @@ public class AsanaProject {
     public string id;
     public bool includeLatesOutputLog = true;
     public bool includeLatestSavegame = true;
-    public bool includeCustomFileList = false;
+    public bool includeGlobalCustomFiles = false;
+    public bool includeCustomFiles = false;
+    [Tooltip("List of Files that should be attached for to this Project")]
+    public List<string> CustomFiles;
 }

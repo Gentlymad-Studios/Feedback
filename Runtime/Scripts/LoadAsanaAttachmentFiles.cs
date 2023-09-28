@@ -6,7 +6,6 @@ using System.Linq;
 using Debug = UnityEngine.Debug;
 
 public class LoadAsanaAttachmentFiles {
-
     private AsanaAPISettings settings;
     private string attachmentPath;
     private string savegamePath;
@@ -14,6 +13,7 @@ public class LoadAsanaAttachmentFiles {
     private string tempDirPath;
     private string tempDirName = "\\_temp_savegame.zip";
     private Dictionary<string, string> stringFileRepresentation = new Dictionary<string, string>();
+
     public LoadAsanaAttachmentFiles(AsanaAPISettings settings) {
         this.settings = settings;
         attachmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
@@ -26,23 +26,46 @@ public class LoadAsanaAttachmentFiles {
     public Dictionary<string, string> LoadAttachments(AsanaProject project) {
         if (project.includeLatesOutputLog) { LoadLatestOutputLog();  }
         if (project.includeLatestSavegame) { LoadLatestSavegame();  }
-        if (project.includeCustomFileList) { LoadCustomFileList();  }
-        //LoadCustomFileList();
-        //LoadLatestSavegame();
-        
+        if (project.includeGlobalCustomFiles) { LoadCustomFileList(); }
+        if (project.includeCustomFiles) { LoadCustomFileList(project.CustomFiles); }
+
         return stringFileRepresentation;
     }
+
     private void LoadCustomFileList() {
-        settings.CustomFileList.ForEach(path => {
-            string loc = attachmentPath + path;
-            string text = File.ReadAllText(loc);
-            string name = Path.GetFileName(loc);
-            stringFileRepresentation.Add(name, text);
+        settings.GlobalCustomFiles.ForEach(path => {
+            string loc = Path.Combine(attachmentPath, path);
+            if (File.Exists(loc)) {
+                string text = File.ReadAllText(loc);
+                string name = Path.GetFileName(loc);
+                stringFileRepresentation.Add(name, text);
+            } else {
+                Debug.LogWarning($"[FeedbackService] File not found ({loc}).");
+            }
+        });
+    }
+
+    private void LoadCustomFileList(List<string> files) {
+        files.ForEach(path => {
+            string loc = Path.Combine(attachmentPath, path);
+            if (File.Exists(loc)) {
+                string text = File.ReadAllText(loc);
+                string name = Path.GetFileName(loc);
+                stringFileRepresentation.Add(name, text);
+            } else {
+                Debug.LogWarning($"[FeedbackService] File not found ({loc}).");
+            }
         });
     }
 
     private void LoadLatestOutputLog(){
         var logDirectory = new DirectoryInfo(logPath);
+
+        if (!logDirectory.Exists) {
+            Debug.LogWarning($"[FeedbackService] Log Directory not found ({logPath}).");
+            return;
+        }
+
         if (logDirectory.GetFiles().Length == 0) {
             return;
         }
@@ -54,6 +77,12 @@ public class LoadAsanaAttachmentFiles {
 
     private void LoadLatestSavegame() {
         var savegameDirectory = new DirectoryInfo(savegamePath);
+
+        if (!savegameDirectory.Exists) {
+            Debug.LogWarning($"[FeedbackService] Savegame Directory not found ({savegamePath}).");
+            return;
+        }
+
         if (savegameDirectory.GetFiles().Length == 0) {
             return;
         }
@@ -69,7 +98,7 @@ public class LoadAsanaAttachmentFiles {
     }
 
     //Todo: to send zip files, the content type application/zip is required for Http requests. To use it, adjust the buildAttachment method
-    //the generic RequestData objekt and the implementation in AsanaRequestManager. 
+    //the generic RequestData object and the implementation in AsanaRequestManager. 
     //https://stackoverflow.com/questions/834527/how-do-i-generate-and-send-a-zip-file-to-a-user-in-c-sharp-asp-net
     private string CreateZipArchive(string fileName, List<FileInfo> sources) {
         try {
