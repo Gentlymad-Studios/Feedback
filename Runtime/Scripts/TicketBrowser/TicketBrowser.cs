@@ -14,8 +14,8 @@ public class TicketBrowser {
     private List<string> mentions = new List<string>();
 
     public TicketBrowser(UIPopup uIPopup) {
-        AsanaAPI.TasksReceivedEvent -= OnTasksReceived;
-        AsanaAPI.TasksReceivedEvent += OnTasksReceived;
+        AsanaAPI.DataReceivedEvent -= OnDataReceived;
+        AsanaAPI.DataReceivedEvent += OnDataReceived;
 
         this.uIPopup = uIPopup;
 
@@ -73,7 +73,7 @@ public class TicketBrowser {
     }
 
     //Needs to be fired to operate on tickets!
-    private void OnTasksReceived(List<TaskModels.AsanaTaskModel> tasks) {
+    private void OnDataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags) {
         Debug.Log("<color=cyan>All Tasks received: </color>" + tasks.Count);
 
         //change nulls to empty strings
@@ -88,6 +88,9 @@ public class TicketBrowser {
             }
         }
         SearchWithLucene.Instance.CreateIndex(tasks);
+
+        Debug.Log("<color=cyan>All ReportTags received: </color>" + reportTags.enum_options.Count);
+
         uIPopup.SetLoading(false);
     }
 

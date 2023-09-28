@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static TaskModels;
 using Debug = UnityEngine.Debug;
 
 public class UIPopup : UIPopUpBase {
@@ -18,6 +19,8 @@ public class UIPopup : UIPopUpBase {
     public VisualTreeAsset PromptUi;
     public VisualTreeAsset LoadingUi;
 
+    public List<TagPreview> tagPreviewList = new List<TagPreview>();
+
     public delegate void Callback();
     public Callback OnOpen;
     public Callback OnClose;
@@ -25,7 +28,7 @@ public class UIPopup : UIPopUpBase {
     //implement settings provider with editor helper
     public AsanaAPISettings asanaSpecificSettings;
 
-    public Dictionary<string, TaskModels.AsanaTaskModel> MentionedTask = new Dictionary<string, TaskModels.AsanaTaskModel>();
+    public Dictionary<string, AsanaTaskModel> MentionedTask = new Dictionary<string, AsanaTaskModel>();
     public WindowType ActiveWindow {
         get {
             return activeWindow;
@@ -50,12 +53,10 @@ public class UIPopup : UIPopUpBase {
     private WindowType currentWindowType;
     private WindowType activeWindow = WindowType.Search;
 
-    private List<TagPreview> tagPreviewList = new List<TagPreview>();
-
     private float animationTime;
     private float duration = 1f;
     private bool currentlyLoading = false;
-    private VisualElement rotationTarget;
+    private VisualElement loadingOverlay;
     private AnimationCurve rotationCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     private LoadAsanaAttachmentFiles fileLoader;
 
@@ -102,18 +103,6 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.taskTypeDrpDwn.value = settings.asanaProjects[0].name;
         currentDataType = settings.asanaProjects[0].name;
 
-        //Init Tags
-        tagPreviewList.Clear();
-        PanelComponents.tagContainer.Clear();
-
-        for (int i = 0; i < settings.Tags.Count; i++) {
-            VisualElement tagUi = TagLabelUi.Instantiate();
-            PanelComponents.tagContainer.Add(tagUi);
-
-            TagPreview tagPreview = new TagPreview(tagUi, settings.Tags[i]);
-            tagPreviewList.Add(tagPreview);
-        }
-
         RegisterEvents();
         ConfigureAPI();
 
@@ -125,29 +114,47 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.root.Add(Prompt);
         }
 
-        rotationTarget = LoadingUi.Instantiate();
-        rotationTarget.name = "LoadWH";
-        rotationTarget.style.position = Position.Absolute;
-        rotationTarget.style.display = DisplayStyle.Flex;
-        rotationTarget.style.height = new Length(100, LengthUnit.Percent);
-        rotationTarget.style.width = new Length(100, LengthUnit.Percent);
-        PanelComponents.root.Add(rotationTarget);
+        loadingOverlay = LoadingUi.Instantiate();
+        loadingOverlay.name = "LoadWH";
+        loadingOverlay.style.position = Position.Absolute;
+        loadingOverlay.style.display = DisplayStyle.Flex;
+        loadingOverlay.style.height = new Length(100, LengthUnit.Percent);
+        loadingOverlay.style.width = new Length(100, LengthUnit.Percent);
+        PanelComponents.root.Add(loadingOverlay);
+        PanelComponents.loadingLbl = PanelComponents.root.Q("loadingLabel") as Label;
+        PanelComponents.loadingSpinner = PanelComponents.root.Q("spinner");
+        PanelComponents.loadingLbl.text = "load tickets...";
 
         fileLoader = new LoadAsanaAttachmentFiles(settings);
     }
 
     private void Update() {
         if (currentlyLoading) {
-            PanelComponents.root.SetEnabled(false);
-            if (rotationTarget.style.display.Equals(DisplayStyle.None)) {
-                rotationTarget.style.display = DisplayStyle.Flex;
+            //PanelComponents.root.SetEnabled(false);
+            if (loadingOverlay.style.display.Equals(DisplayStyle.None)) {
+                loadingOverlay.style.display = DisplayStyle.Flex;
             }
             SpinLoadingIcon();
         }
-        if (!currentlyLoading && rotationTarget != null && !ActiveWindow.Equals(WindowType.None)) {
-            PanelComponents.root.SetEnabled(true);
-            if (rotationTarget.style.display.Equals(DisplayStyle.Flex)) {
-                rotationTarget.style.display = DisplayStyle.None;
+        if (!currentlyLoading && loadingOverlay != null && !ActiveWindow.Equals(WindowType.None)) {
+            //Init Tags after loading
+            if (tagPreviewList.Count == 0) {
+                PanelComponents.tagContainer.Clear();
+
+                AsanaAPI asanaAPI = Api as AsanaAPI;
+
+                foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
+                    VisualElement tagUi = TagLabelUi.Instantiate();
+                    PanelComponents.tagContainer.Add(tagUi);
+
+                    TagPreview tagPreview = new TagPreview(tagUi, tag.name);
+                    tagPreviewList.Add(tagPreview);
+                }
+            }
+
+            //PanelComponents.root.SetEnabled(true);
+            if (loadingOverlay.style.display.Equals(DisplayStyle.Flex)) {
+                loadingOverlay.style.display = DisplayStyle.None;
             }
         }
     }
@@ -466,7 +473,7 @@ public class UIPopup : UIPopUpBase {
         var t = animationTime / duration;
         var angle = rotationCurve.Evaluate(t) * 360f;
         var rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        rotationTarget.transform.rotation = rotation;
+        PanelComponents.loadingSpinner.transform.rotation = rotation;
         animationTime += Time.deltaTime;
     }
     #endregion

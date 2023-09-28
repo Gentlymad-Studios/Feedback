@@ -6,12 +6,12 @@ using System.Collections.Generic;
 /// </summary>
 public class AsanaAPI : BaseAPI {
 
-    public delegate void TasksReceived(List<TaskModels.AsanaTaskModel> tasks);
-    public static event TasksReceived TasksReceivedEvent;
+    public delegate void DataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags);
+    public static event DataReceived DataReceivedEvent;
 
     public AsanaAPISettings AsanaSpecificSettings;
-    public List<TaskModels.AsanaTaskModel> TicketModels = new List<TaskModels.AsanaTaskModel>();
     public List<TaskModels.AsanaTaskModel> TicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
+    public TaskModels.ReportTags ReportTagsBackup = new TaskModels.ReportTags();
     public List<string> CustomFields = new List<string>();
     public List<string> Mentions = new List<string>();
 
@@ -32,8 +32,8 @@ public class AsanaAPI : BaseAPI {
         Settings = AsanaSpecificSettings;
     }
 
-    public void FireTasksCreated(List<TaskModels.AsanaTaskModel> tickets) {
-        TasksReceivedEvent.Invoke(tickets);
+    public void FireDataCreated(List<TaskModels.AsanaTaskModel> tickets, TaskModels.ReportTags reportTags) {
+        DataReceivedEvent.Invoke(tickets, reportTags);
     }
 }
 

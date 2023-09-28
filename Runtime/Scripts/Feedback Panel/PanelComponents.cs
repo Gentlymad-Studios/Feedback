@@ -41,6 +41,10 @@ public class PanelComponents {
     public Button clearBtn;
     public ColorField colorField;
 
+    //Loading Elements
+    public Label loadingLbl;
+    public VisualElement loadingSpinner;
+
     public void Initialize(UIDocument uiDocument) {
         this.uiDocument = uiDocument;
         

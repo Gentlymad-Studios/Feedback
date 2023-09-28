@@ -32,9 +32,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// fire TicketsRecievedEvent to create lucene index with tickets.
     /// </summary>
     public async override void GetAllData() {
-
         if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now) {
-            asanaAPI.FireTasksCreated(asanaAPI.TicketModelsBackup);
+            asanaAPI.FireDataCreated(asanaAPI.TicketModelsBackup, asanaAPI.ReportTagsBackup);
             return;
         }
 
@@ -42,28 +41,44 @@ public class AsanaRequestHandler : BaseRequestHandler {
         try {
             task.Start();
             await task;
-            return;
-
         } catch (Exception e) {
             Debug.LogWarning(e.Message);
         }
-
     }
 
     private async void GetAllDataAsync() {
+        List<TaskModels.AsanaTaskModel> ticketModels;
+        TaskModels.ReportTags reportTags;
+
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetAllTaskDataEndpoint}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
         using (Stream stream = response.GetResponseStream())
         using (StreamReader reader = new StreamReader(stream)) {
+            //sometime we are stuck...
             string result = await reader.ReadToEndAsync();
-            List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
+            ticketModels = new List<TaskModels.AsanaTaskModel>();
             ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
             asanaAPI.TicketModelsBackup.Clear();
             asanaAPI.TicketModelsBackup.AddRange(ticketModels);
-            asanaAPI.FireTasksCreated(ticketModels);
             asanaAPI.lastUpdateTime = DateTime.Now;
+        }
+
+        url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
+        request = (HttpWebRequest)WebRequest.Create(url);
+        request.Method = RequestMethods.GET.ToString();
+        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+        using (Stream stream = response.GetResponseStream())
+        using (StreamReader reader = new StreamReader(stream)) {
+            reportTags = new TaskModels.ReportTags();
+            string result = await reader.ReadToEndAsync();
+            reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
+            asanaAPI.ReportTagsBackup = reportTags;
+        }
+
+        if (ticketModels != null && reportTags != null) {
+            asanaAPI.FireDataCreated(ticketModels, reportTags);
         }
     }
 

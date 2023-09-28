@@ -21,9 +21,6 @@ public class AsanaAPISettings : APISettings {
     [Header("Asana Projects")]
     public List<AsanaProject> asanaProjects;
 
-    [Header("Task Settings")]
-    public List<string> Tags;
-
     [Header("Attachments")]
     public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
     public string SavegameLocation = "\\savegame";
