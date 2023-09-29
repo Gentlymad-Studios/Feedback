@@ -16,10 +16,6 @@ public abstract class UIPopUpBase : MonoBehaviour {
         Api.RequestHandler.GetAllData();
     }
 
-    protected void GetCustomFields() {
-        //Api.RequestHandler.Cus
-    }
-
     protected void PostData<T1, T2>(RequestData<T1, T2> data) {
         Api.RequestHandler.PostNewData(data);
     }
