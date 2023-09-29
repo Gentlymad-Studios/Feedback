@@ -21,17 +21,17 @@ namespace Game.UI {
         private DragManipulator dragger;
         private Vector2 dragElementStartPos;
 
-        private StyleSheet stylesheet;
-        private StyleSheet StyleSheet {
-            get {
-                if (stylesheet == null) {
-                    stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
-                }
+        //private StyleSheet stylesheet;
+        //private StyleSheet StyleSheet {
+        //    get {
+        //        if (stylesheet == null) {
+        //            stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
+        //        }
 
-                return stylesheet;
-            }
-        }
-        private const string stylesheetGUID = "372b285e8c2add946a81a82d78cc21e7";
+        //        return stylesheet;
+        //    }
+        //}
+        //private const string stylesheetGUID = "372b285e8c2add946a81a82d78cc21e7";
         private const string ussFieldName = "slider-2d";
         private const string ussDragger = ussFieldName + "__dragger";
         private const string ussDraggerBorder = ussFieldName + "__dragger-border";
@@ -47,7 +47,7 @@ namespace Game.UI {
             MinValue = min;
             MaxValue = max;
 
-            styleSheets.Add(StyleSheet);
+            //styleSheets.Add(StyleSheet);
             AddToClassList(ussFieldName);
 
             dragBorderElement = new VisualElement() { name = "dragger-border", pickingMode = PickingMode.Ignore };
