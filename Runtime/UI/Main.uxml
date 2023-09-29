@@ -1,6 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="Report" src="project://database/Assets/Feedback/Runtime/UI/UI/Search.uxml?fileID=9197481963319205126&amp;guid=e8c5773b99bf1f446ade778082807779&amp;type=3#Search" />
-    <ui:Template name="_Report" src="project://database/Assets/Feedback/Runtime/UI/UI/Report.uxml?fileID=9197481963319205126&amp;guid=0ec40b620ff185948bdb512e0b73dafa&amp;type=3#Report" />
+    <ui:Template name="Report" src="project://database/Assets/Feedback/Runtime/UI/Search.uxml?fileID=9197481963319205126&amp;guid=e8c5773b99bf1f446ade778082807779&amp;type=3#Search" />
+    <ui:Template name="_Report" src="project://database/Assets/Feedback/Runtime/UI/Report.uxml?fileID=9197481963319205126&amp;guid=0ec40b620ff185948bdb512e0b73dafa&amp;type=3#Report" />
+    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
+    <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/PopupMessageStyleSheet.uss?fileID=7433441132597879392&amp;guid=31ef632a2ac3cc74998d8e2cdb61aff9&amp;type=3#PopupMessageStyleSheet" />
+    <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/PopupPanelStyleSheet.uss?fileID=7433441132597879392&amp;guid=a0361e5a0279ef442ad58d4ef59810c5&amp;type=3#PopupPanelStyleSheet" />
+    <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/PopupTextFieldStyleSheet.uss?fileID=7433441132597879392&amp;guid=3e6a3af4462ed2748b26467cb297106f&amp;type=3#PopupTextFieldStyleSheet" />
+    <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/Slider2DStyleSheet.uss?fileID=7433441132597879392&amp;guid=372b285e8c2add946a81a82d78cc21e7&amp;type=3#Slider2DStyleSheet" />
+    <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/ColorFieldStyleSheet.uss?fileID=7433441132597879392&amp;guid=bdacf44a7b5bf5c4d94ea5784f944720&amp;type=3#ColorFieldStyleSheet" />
+    <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/ColorPopupStyleSheet.uss?fileID=7433441132597879392&amp;guid=9153a560cf1694b4cb538dbd33d91d63&amp;type=3#ColorPopupStyleSheet" />
     <ui:VisualElement name="Main" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); min-width: 100%; min-height: 100%;">
         <ui:VisualElement name="TopBar" style="flex-grow: 1; background-color: rgb(67, 67, 67); height: auto; width: 100%; flex-direction: row; align-self: flex-start; align-items: stretch; max-height: 40px; min-height: 40px;">
             <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; align-items: stretch; height: 100%; max-height: 100%; min-height: 100%;">

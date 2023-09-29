@@ -25,17 +25,17 @@ namespace Game.UI {
         private Texture2D gradientTexture;
         private Texture2D hueSliderTexture;
 
-        private StyleSheet stylesheet;
-        private StyleSheet StyleSheet {
-            get {
-                if (stylesheet == null) {
-                    stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
-                }
+        //private StyleSheet stylesheet;
+        //private StyleSheet StyleSheet {
+        //    get {
+        //        if (stylesheet == null) {
+        //            stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
+        //        }
 
-                return stylesheet;
-            }
-        }
-        private const string stylesheetGUID = "9153a560cf1694b4cb538dbd33d91d63";
+        //        return stylesheet;
+        //    }
+        //}
+        //private const string stylesheetGUID = "9153a560cf1694b4cb538dbd33d91d63";
         private const string ussPopupClassName = "color-popup";
         private const string ussContentBack = ussPopupClassName + "__content-area";
         private const string ussRSlider = ussPopupClassName + "__red-slider";
@@ -53,7 +53,7 @@ namespace Game.UI {
         }
 
         public ColorPopup(string heading, string buttonLabel) {
-            styleSheets.Add(StyleSheet);
+            //styleSheets.Add(StyleSheet);
 
             // panel
             mainPanel.AddToClassList(ussPopupClassName);

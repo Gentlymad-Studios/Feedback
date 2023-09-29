@@ -32,24 +32,24 @@ namespace Game.UI {
         protected VisualElement mainPanel;
         protected IVisualElementScheduledItem task;
 
-        private StyleSheet stylesheet;
-        private StyleSheet StyleSheet {
-            get {
-                if (stylesheet == null) {
-                    stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
-                }
+        //private StyleSheet stylesheet;
+        //private StyleSheet StyleSheet {
+        //    get {
+        //        if (stylesheet == null) {
+        //            stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
+        //        }
 
-                return stylesheet;
-            }
-        }
-        private const string stylesheetGUID = "a0361e5a0279ef442ad58d4ef59810c5";
+        //        return stylesheet;
+        //    }
+        //}
+        //private const string stylesheetGUID = "a0361e5a0279ef442ad58d4ef59810c5";
         private const string ussClassName = "popup-panel";
         private const string ussContainer = ussClassName + "__container";
 
         // ------------------------------------------------------------------------------------------------------------
 
         public PopupPanel() {
-            styleSheets.Add(StyleSheet);
+            //styleSheets.Add(StyleSheet);
             AddToClassList(ussContainer);
             pickingMode = PickingMode.Position;
             RegisterCallback<PointerDownEvent>(e => {

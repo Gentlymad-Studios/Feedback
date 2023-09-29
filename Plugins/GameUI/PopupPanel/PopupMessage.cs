@@ -20,17 +20,17 @@ namespace Game.UI {
         private System.Action onAccept;
         private System.Action onCancel;
 
-        private StyleSheet stylesheet;
-        private StyleSheet StyleSheet {
-            get {
-                if (stylesheet == null) {
-                    stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
-                }
+        //private StyleSheet stylesheet;
+        //private StyleSheet StyleSheet {
+        //    get {
+        //        if (stylesheet == null) {
+        //            stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
+        //        }
 
-                return stylesheet;
-            }
-        }
-        private const string stylesheetGUID = "31ef632a2ac3cc74998d8e2cdb61aff9";
+        //        return stylesheet;
+        //    }
+        //}
+        //private const string stylesheetGUID = "31ef632a2ac3cc74998d8e2cdb61aff9";
         private const string ussClassName = "popup-message";
         private const string ussHeadingBack = ussClassName + "__heading-area";
         private const string ussMessageBack = ussClassName + "__text-area";
@@ -44,7 +44,7 @@ namespace Game.UI {
 
         public PopupMessage()
             : base() {
-            styleSheets.Add(StyleSheet);
+            //styleSheets.Add(StyleSheet);
 
             // panel
             mainPanel.AddToClassList(ussClassName);

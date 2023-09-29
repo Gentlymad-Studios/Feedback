@@ -32,17 +32,17 @@ namespace Game.UI {
         private ColorFieldInput colorFieldInput;
         private Button resetButton;
 
-        private StyleSheet stylesheet;
-        private StyleSheet StyleSheet {
-            get {
-                if (stylesheet == null) {
-                    stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
-                }
+        //private StyleSheet stylesheet;
+        //private StyleSheet StyleSheet {
+        //    get {
+        //        if (stylesheet == null) {
+        //            stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(stylesheetGUID));
+        //        }
 
-                return stylesheet;
-            }
-        }
-        private const string stylesheetGUID = "bdacf44a7b5bf5c4d94ea5784f944720";
+        //        return stylesheet;
+        //    }
+        //}
+        //private const string stylesheetGUID = "bdacf44a7b5bf5c4d94ea5784f944720";
         private const string ussFieldName = "color-field";
         private const string ussFieldLabel = "color-field__label";
         private const string ussFieldResetButton = "color-field__reset-button";
@@ -62,7 +62,7 @@ namespace Game.UI {
             this.colorFieldInput = colorFieldInput;
             this.resetLabel = resetLabel;
 
-            styleSheets.Add(StyleSheet);
+            //styleSheets.Add(StyleSheet);
             AddToClassList(ussFieldName);
 
             labelElement.AddToClassList(ussFieldLabel);
