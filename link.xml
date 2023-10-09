@@ -1,0 +1,6 @@
+<linker>
+  <assembly fullname="System">
+    <namespace fullname="System.Net" preserve="all"/>
+    <namespace fullname="System.Net.WebRequest" preserve="all"/>
+  </assembly>
+</linker>
