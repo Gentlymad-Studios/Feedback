@@ -5,11 +5,7 @@ using System.Net;
 using UnityEngine;
 
 public abstract class UIPopUpBase : MonoBehaviour {
-
-
     public BaseAPI Api = null;
-
-    private Dictionary<LoginFailReason, string> loginFailMessagesLookup = new Dictionary<LoginFailReason, string>();
     private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
 
     protected void GetData() {
@@ -27,6 +23,11 @@ public abstract class UIPopUpBase : MonoBehaviour {
     protected void LogOut() {
         Api.RequestHandler.LogOut();
     }
+
+    protected void AbortLogIn() {
+        Api.RequestHandler.AbortLogin();
+    }
+
     protected void SetTag(TagPreview tag) {
         Api.RequestHandler.AddTagToTagList(tag);
     }
@@ -90,8 +91,6 @@ public abstract class UIPopUpBase : MonoBehaviour {
         }
         onAfterCapture(screenshot);
     }
-
-
 }
 
 public enum LoginFailReason {

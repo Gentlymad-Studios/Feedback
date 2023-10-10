@@ -8,12 +8,17 @@ public class DetailPopup : VisualElement {
     public Button closeButton;
 
     public DetailPopup(VisualTreeAsset vta) {
-        Add(vta.Instantiate());
+        TemplateContainer tmpCnt = vta.Instantiate();
+        tmpCnt.style.height = new Length(100, LengthUnit.Percent);
+        tmpCnt.style.width = new Length(100, LengthUnit.Percent);
+        tmpCnt.style.justifyContent = Justify.Center;
+        tmpCnt.style.alignItems = Align.Center;
+
+        Add(tmpCnt);
 
         name = "taskDetail";
+        AddToClassList("popup");
         style.position = Position.Absolute;
-        style.height = new Length(100, LengthUnit.Percent);
-        style.width = new Length(100, LengthUnit.Percent);
 
         title = this.Q("taskTitleLbl") as Label;
         description = this.Q("taskDescriptionLbl") as Label;

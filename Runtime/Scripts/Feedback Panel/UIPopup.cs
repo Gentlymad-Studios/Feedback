@@ -2,7 +2,9 @@ using Game.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static AsanaAPI;
 using static TaskModels;
 using Debug = UnityEngine.Debug;
 
@@ -13,6 +15,7 @@ public class UIPopup : UIPopUpBase {
     public UIDocument UIDocument;
     public TicketBrowser TicketBrowser;
     public Prompt Prompt;
+    public Loading Loading;
     public VisualTreeAsset TaskCardUi;
     public VisualTreeAsset TagLabelUi;
     public VisualTreeAsset TaskDetailCardUi;
@@ -53,11 +56,7 @@ public class UIPopup : UIPopUpBase {
     private WindowType currentWindowType;
     private WindowType activeWindow = WindowType.Search;
 
-    private float animationTime;
-    private float duration = 1f;
     private bool currentlyLoading = false;
-    private VisualElement loadingOverlay;
-    private AnimationCurve rotationCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     private LoadAsanaAttachmentFiles fileLoader;
 
     Texture2D screenshot;
@@ -114,29 +113,20 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.root.Add(Prompt);
         }
 
-        loadingOverlay = LoadingUi.Instantiate();
-        loadingOverlay.name = "LoadWH";
-        loadingOverlay.style.position = Position.Absolute;
-        loadingOverlay.style.display = DisplayStyle.Flex;
-        loadingOverlay.style.height = new Length(100, LengthUnit.Percent);
-        loadingOverlay.style.width = new Length(100, LengthUnit.Percent);
-        PanelComponents.root.Add(loadingOverlay);
-        PanelComponents.loadingLbl = PanelComponents.root.Q("loadingLabel") as Label;
-        PanelComponents.loadingSpinner = PanelComponents.root.Q("spinner");
-        PanelComponents.loadingLbl.text = "load tickets...";
+        if (Loading == null) {
+            Loading = new Loading(LoadingUi);
+            PanelComponents.root.Add(Loading);
+        }
 
         fileLoader = new LoadAsanaAttachmentFiles(settings);
     }
 
     private void Update() {
         if (currentlyLoading) {
-            //PanelComponents.root.SetEnabled(false);
-            if (loadingOverlay.style.display.Equals(DisplayStyle.None)) {
-                loadingOverlay.style.display = DisplayStyle.Flex;
-            }
-            SpinLoadingIcon();
+            Loading.SpinLoadingIcon();
         }
-        if (!currentlyLoading && loadingOverlay != null && !ActiveWindow.Equals(WindowType.None)) {
+
+        if (!currentlyLoading && !ActiveWindow.Equals(WindowType.None)) {
             //Init Tags after loading
             if (tagPreviewList.Count == 0) {
                 PanelComponents.tagContainer.Clear();
@@ -152,10 +142,14 @@ public class UIPopup : UIPopUpBase {
                 }
             }
 
-            //PanelComponents.root.SetEnabled(true);
-            if (loadingOverlay.style.display.Equals(DisplayStyle.Flex)) {
-                loadingOverlay.style.display = DisplayStyle.None;
-            }
+            Loading?.Hide();
+        }
+
+        //Hide Overlays
+        if (Keyboard.current.escapeKey.wasPressedThisFrame) {
+            Prompt.callback?.Invoke();
+            Prompt.Hide();
+            TicketBrowser?.HideDetailCard();
         }
     }
 
@@ -165,14 +159,14 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.root.style.display = DisplayStyle.Flex;
             PanelComponents.searchTab.style.display = DisplayStyle.Flex;
             PanelComponents.reportTab.style.display = DisplayStyle.None;
-            PanelComponents.searchBtn.style.backgroundColor = Color.white;
-            PanelComponents.reportBtn.style.backgroundColor = Color.grey;
+            PanelComponents.searchBtn.AddToClassList("menuItemActive");
+            PanelComponents.reportBtn.RemoveFromClassList("menuItemActive");
         } else if (activeWindow == WindowType.Report) {
             PanelComponents.root.style.display = DisplayStyle.Flex;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
             PanelComponents.reportTab.style.display = DisplayStyle.Flex;
-            PanelComponents.searchBtn.style.backgroundColor = Color.grey;
-            PanelComponents.reportBtn.style.backgroundColor = Color.white;
+            PanelComponents.searchBtn.RemoveFromClassList("menuItemActive");
+            PanelComponents.reportBtn.AddToClassList("menuItemActive");
         } else {
             PanelComponents.root.style.display = DisplayStyle.None;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
@@ -185,13 +179,14 @@ public class UIPopup : UIPopUpBase {
         }
     }
     protected override void OnShowWindow() {
-        SetLoading(true);
+        SetLoadingStatus(true);
         base.OnShowWindow();
+        Loading.Show("load tickets...");
         RegisterEvents();
         TicketBrowser?.InitEvents();
     }
     protected override void OnHideWindow() {
-        SetLoading(false);
+        SetLoadingStatus(false);
         UnregisterEvents();
 
         Destroy(screenshot);
@@ -211,7 +206,6 @@ public class UIPopup : UIPopUpBase {
         ActiveWindow = WindowType.Search;
         SetWindowTypes();
     }
-
     private void AbortOpen() {
         ActiveWindow = WindowType.None;
         SetWindowTypes();
@@ -222,21 +216,32 @@ public class UIPopup : UIPopUpBase {
     public void OnLogInButtonClick() {
         if (Api.RequestHandler.User == null) {
             try {
+                SetLoadingStatus(true);
+                Loading.Show("wait for login...", true, AbortLogIn);
+
+                LoginResultEvent -= LoginResult;
+                LoginResultEvent += LoginResult;
+
                 LogIn();
-                Prompt.Show("Login", "Login erfolgreich", OnLoginSucceed);
+                //Prompt.Show("Login", "Login erfolgreich", OnLoginSucceed);
             } catch (Exception e) {
                 OnLoginFail(e.Message);
             }
         } else {
             LogOut();
             PanelComponents.loginBtn.text = "Login";
+            PanelComponents.userLbl.text = "";
         }
     }
 
-    private void OnLoginSucceed() {
-        if (Api.RequestHandler.GetUser() != null) {
+    private void LoginResult(bool success) {
+        if (success) {
             PanelComponents.loginBtn.text = "Logout";
+            PanelComponents.userLbl.text = Api.RequestHandler.User.name;
+        } else {
+            OnLoginFail("Unable to Login!");
         }
+        SetLoadingStatus(false);
     }
 
     protected override void OnLoginFail(string failMessage) {
@@ -462,19 +467,8 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region Loading
-    public void SetLoading(bool loading) {
+    public void SetLoadingStatus(bool loading) {
         currentlyLoading = loading;
-    }
-
-    private void SpinLoadingIcon() {
-        while (animationTime > duration) {
-            animationTime -= duration;
-        }
-        var t = animationTime / duration;
-        var angle = rotationCurve.Evaluate(t) * 360f;
-        var rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        PanelComponents.loadingSpinner.transform.rotation = rotation;
-        animationTime += Time.deltaTime;
     }
     #endregion
 }

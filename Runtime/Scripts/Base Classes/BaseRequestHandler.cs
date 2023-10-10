@@ -14,7 +14,7 @@ public abstract class BaseRequestHandler : IRequestHandler {
     public abstract void RemoveTagFromTagList(TagPreview tag);
     public abstract void LogIn();
     public abstract void LogOut();
-
+    public abstract void AbortLogin();
 }
 
 public enum RequestMethods {

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public class Prompt : VisualElement {
@@ -9,12 +10,17 @@ public class Prompt : VisualElement {
     public Action callback;
 
     public Prompt(VisualTreeAsset vta) {
-        Add(vta.Instantiate());
+        TemplateContainer tmpCnt = vta.Instantiate();
+        tmpCnt.style.height = new Length(100, LengthUnit.Percent);
+        tmpCnt.style.width = new Length(100, LengthUnit.Percent);
+        tmpCnt.style.justifyContent = Justify.Center;
+        tmpCnt.style.alignItems = Align.Center;
+
+        Add(tmpCnt);
 
         name = "prompt";
+        AddToClassList("popup");
         style.position = Position.Absolute;
-        style.height = new Length(100, LengthUnit.Percent);
-        style.width = new Length(100, LengthUnit.Percent);
 
         title = this.Q("promptTitleLbl") as Label;
         description = this.Q("promptDescriptionLbl") as Label;
@@ -23,6 +29,13 @@ public class Prompt : VisualElement {
         RegisterEvents();
 
         Hide();
+
+        RegisterCallback<KeyDownEvent>(e => {
+            if (e.keyCode == KeyCode.Escape) {
+                e.StopImmediatePropagation();
+                Hide();
+            }
+        });
     }
 
     public void Show(string title, string description, Action callback, string buttonText = "Ok") {

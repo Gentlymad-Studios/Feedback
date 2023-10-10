@@ -13,7 +13,8 @@ public class PanelComponents {
 
     // Login Section
     public Button loginBtn;
-    public Button logoutBtn;
+    public Label userLbl;
+    public VisualElement userImg;
 
     // Search Section
     public TextField searchTxtFld;
@@ -41,10 +42,6 @@ public class PanelComponents {
     public Button clearBtn;
     public ColorField colorField;
 
-    //Loading Elements
-    public Label loadingLbl;
-    public VisualElement loadingSpinner;
-
     public void Initialize(UIDocument uiDocument) {
         this.uiDocument = uiDocument;
         
@@ -56,6 +53,8 @@ public class PanelComponents {
         reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
 
         loginBtn = uiDocument.rootVisualElement.Q("loginBtn") as Button;
+        userLbl = uiDocument.rootVisualElement.Q("loginName") as Label;
+        userImg = uiDocument.rootVisualElement.Q("loginAvatar");
 
         searchTxtFld = uiDocument.rootVisualElement.Q("searchTxt") as TextField;
         searchSubmitBtn = uiDocument.rootVisualElement.Q("searchSubmitBtn") as Button;

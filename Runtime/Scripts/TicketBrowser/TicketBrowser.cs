@@ -63,6 +63,10 @@ public class TicketBrowser {
         UnregisterEvents();
     }
 
+    public void HideDetailCard() {
+        detailPopup?.Hide();
+    }
+
     private void RegisterEvents() {
         UnregisterEvents();
         uIPopup.PanelComponents.searchTxtFld.RegisterValueChangedCallback(Search);
@@ -91,7 +95,7 @@ public class TicketBrowser {
 
         Debug.Log("<color=cyan>All ReportTags received: </color>" + reportTags.enum_options.Count);
 
-        uIPopup.SetLoading(false);
+        uIPopup.SetLoadingStatus(false);
     }
 
     //Search for the change text with lucene text analyzer
@@ -161,5 +165,4 @@ public class TicketBrowser {
         uIPopup.MentionedTask.Remove(gid);
         uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(gid);
     }
-
 }

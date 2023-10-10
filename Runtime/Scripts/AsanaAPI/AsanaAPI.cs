@@ -9,6 +9,9 @@ public class AsanaAPI : BaseAPI {
     public delegate void DataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags);
     public static event DataReceived DataReceivedEvent;
 
+    public delegate void LoginResult(bool success);
+    public static event LoginResult LoginResultEvent;
+
     public AsanaAPISettings AsanaSpecificSettings;
     public List<TaskModels.AsanaTaskModel> TicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
     public TaskModels.ReportTags ReportTagsBackup = new TaskModels.ReportTags();
@@ -34,6 +37,10 @@ public class AsanaAPI : BaseAPI {
 
     public void FireDataCreated(List<TaskModels.AsanaTaskModel> tickets, TaskModels.ReportTags reportTags) {
         DataReceivedEvent.Invoke(tickets, reportTags);
+    }
+
+    public void FireLoginResult(bool success) {
+        LoginResultEvent.Invoke(success);
     }
 }
 
