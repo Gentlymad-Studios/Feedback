@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 
 //query builder https://developers.asana.com/reference/searchtasksforworkspace
@@ -15,7 +16,6 @@ using Debug = UnityEngine.Debug;
 /// Class that creates an asana client instance.
 /// </summary>
 public class AsanaRequestHandler : BaseRequestHandler {
-
     private AsanaAPI asanaAPI;
     private AsanaAPISettings asanaAPISettings;
     private HttpWebRequest request;
@@ -412,7 +412,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
             try {
                 string result = await reader.ReadToEndAsync();
                 User = JsonConvert.DeserializeObject<AuthorizationUser>(result);
-            } catch {}
+            } catch { }
         }
     }
 
@@ -428,6 +428,21 @@ public class AsanaRequestHandler : BaseRequestHandler {
         killLogin = true;
     }
 
+    public async override void LoadAvatar() {
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(User.picture);
+        request.timeout = 2000;
+
+        UnityWebRequestAsyncOperation operation = request.SendWebRequest();
+        while (!operation.isDone) {
+            await Task.Yield();
+        }
+
+        if (request.result == UnityWebRequest.Result.Success) {
+            User.avatar = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            asanaAPI.FireAvatarLoaded();
+        }
+    }
+
     #endregion
 }
 
@@ -436,5 +451,7 @@ public class AuthorizationUser {
     public string gid;
     public string name;
     public string email;
+    public string picture;
+    public Texture2D avatar = null;
 }
 

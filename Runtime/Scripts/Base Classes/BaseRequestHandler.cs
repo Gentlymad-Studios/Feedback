@@ -15,6 +15,7 @@ public abstract class BaseRequestHandler : IRequestHandler {
     public abstract void LogIn();
     public abstract void LogOut();
     public abstract void AbortLogin();
+    public abstract void LoadAvatar();
 }
 
 public enum RequestMethods {

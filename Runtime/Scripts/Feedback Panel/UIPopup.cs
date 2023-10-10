@@ -222,8 +222,10 @@ public class UIPopup : UIPopUpBase {
                 LoginResultEvent -= LoginResult;
                 LoginResultEvent += LoginResult;
 
+                AvatarLoadedEvent -= AvatarLoaded;
+                AvatarLoadedEvent += AvatarLoaded;
+
                 LogIn();
-                //Prompt.Show("Login", "Login erfolgreich", OnLoginSucceed);
             } catch (Exception e) {
                 OnLoginFail(e.Message);
             }
@@ -238,16 +240,22 @@ public class UIPopup : UIPopUpBase {
         if (success) {
             PanelComponents.loginBtn.text = "Logout";
             PanelComponents.userLbl.text = Api.RequestHandler.User.name;
+
+            Api.RequestHandler.LoadAvatar();
         } else {
             OnLoginFail("Unable to Login!");
         }
         SetLoadingStatus(false);
     }
 
+    private void AvatarLoaded() {
+        var tex = Api.RequestHandler.User.avatar;
+        Debug.Log(tex);
+    }
+
     protected override void OnLoginFail(string failMessage) {
         Debug.LogWarning(failMessage);
     }
-
     #endregion
 
     #region Setup Events and API
