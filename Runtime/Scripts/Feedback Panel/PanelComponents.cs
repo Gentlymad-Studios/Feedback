@@ -13,7 +13,6 @@ public class PanelComponents {
 
     // Login Section
     public Button loginBtn;
-    public Label userLbl;
     public VisualElement userImg;
 
     // Search Section
@@ -53,7 +52,6 @@ public class PanelComponents {
         reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
 
         loginBtn = uiDocument.rootVisualElement.Q("loginBtn") as Button;
-        userLbl = uiDocument.rootVisualElement.Q("loginName") as Label;
         userImg = uiDocument.rootVisualElement.Q("loginAvatar");
 
         searchTxtFld = uiDocument.rootVisualElement.Q("searchTxt") as TextField;

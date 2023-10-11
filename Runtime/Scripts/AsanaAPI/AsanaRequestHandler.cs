@@ -393,7 +393,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
             killLogin = false;
         } catch (Exception e) {
-            Debug.LogWarning(e.Message);
+            Debug.LogException(e);
+            asanaAPI.FireLoginResult(false);
         }
     }
 

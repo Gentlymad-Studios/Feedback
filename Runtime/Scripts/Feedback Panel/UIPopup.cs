@@ -21,6 +21,7 @@ public class UIPopup : UIPopUpBase {
     public VisualTreeAsset TaskDetailCardUi;
     public VisualTreeAsset PromptUi;
     public VisualTreeAsset LoadingUi;
+    public Texture2D avatarPlaceholderIcon;
 
     public List<TagPreview> tagPreviewList = new List<TagPreview>();
 
@@ -28,7 +29,6 @@ public class UIPopup : UIPopUpBase {
     public Callback OnOpen;
     public Callback OnClose;
 
-    //implement settings provider with editor helper
     public AsanaAPISettings asanaSpecificSettings;
 
     public Dictionary<string, AsanaTaskModel> MentionedTask = new Dictionary<string, AsanaTaskModel>();
@@ -232,14 +232,13 @@ public class UIPopup : UIPopUpBase {
         } else {
             LogOut();
             PanelComponents.loginBtn.text = "Login";
-            PanelComponents.userLbl.text = "";
+            PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
         }
     }
 
     private void LoginResult(bool success) {
         if (success) {
-            PanelComponents.loginBtn.text = "Logout";
-            PanelComponents.userLbl.text = Api.RequestHandler.User.name;
+            PanelComponents.loginBtn.text = "Logout " + Api.RequestHandler.User.name;
 
             Api.RequestHandler.LoadAvatar();
         } else {
@@ -249,8 +248,7 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void AvatarLoaded() {
-        var tex = Api.RequestHandler.User.avatar;
-        Debug.Log(tex);
+        PanelComponents.userImg.style.backgroundImage = Api.RequestHandler.User.avatar;
     }
 
     protected override void OnLoginFail(string failMessage) {

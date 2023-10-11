@@ -42,6 +42,22 @@
     color: var(--fontDefaultcolor);
 }
 
+.loginButton {
+    margin: 0;
+    border-width: 0;
+    background-color: rgba(0,0,0,0);
+    color: var(--fontDefaultcolor);
+    min-width: 80px;
+}
+
+.loginButton:hover {
+    color: var(--fontLightcolor);
+}
+
+.loginButton:active {
+    color: var(--fontDarkcolor);
+}
+
 .defaultAccentButton {
     margin: 0;
     border-radius: 20px;
