@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="tagRoot" class="tagLabel" style="flex-grow: 1; max-height: 40px; min-height: 40px; min-width: 140px; max-width: 140px; border-top-left-radius: 20px; border-bottom-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;">
-        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="tagLbl" style="align-self: auto; justify-content: center; max-height: 100%; min-height: 100%; align-items: auto; -unity-text-align: middle-center; font-size: 15px;" />
-    </ui:VisualElement>
-</ui:UXML>

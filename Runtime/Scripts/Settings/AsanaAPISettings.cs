@@ -21,6 +21,10 @@ public class AsanaAPISettings : APISettings {
     [Header("Asana Projects")]
     public List<AsanaProject> asanaProjects;
 
+    [Header("Asana CustomField")]
+    public string upvoteField = "Upvotes";
+    public string tagField = "Report Tags";
+
     [Header("Attachments")]
     public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
     public string SavegameLocation = "\\savegame";

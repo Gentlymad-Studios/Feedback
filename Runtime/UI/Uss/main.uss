@@ -22,6 +22,22 @@
     --buttonRedclickcolor: rgb(150, 150, 150);
     --xButtoncolor: rgb(150, 150, 150);
     --xButtonHovercolor: rgb(200, 200, 200);
+    --fontSizeSmall: 12px;
+    --fontSizeMiddle: 13px;
+    --fontSizeLarge: 16px;
+    font-size: var(--fontSizeMiddle);
+}
+
+.fontSizeSmall {
+    font-size: var(--fontSizeSmall);
+}
+
+.fontSizeMiddle {
+    font-size: var(--fontSizeMiddle);
+}
+
+.fontSizeLarge {
+    font-size: var(--fontSizeLarge);
 }
 
 .defaultButton {
@@ -168,38 +184,32 @@
     color: var(--fontDefaultcolor);
 }
 
-TextField {
-    border-width: 0;
-    justify-content: flex-start;
-    -unity-text-align: upper-left;
-    overflow: hidden;
-    align-self: auto;
-    width: 90%;
-    height: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
+.searchField {
+    flex-grow: 1;
+    margin: 0;
     color: var(--fontDefaultcolor);
+    background-color: var(--base01color);
     border-color: var(--base01color);
     border-width: 1px;
     border-radius: 20px;
+    height: 100%;
 }
 
-TextField:focus {
+.searchField:focus {
     border-color: var(--base05color);
     border-width: 1px;
     border-radius: 20px;
     --unity-cursor-color: var(--fontDefaultcolor);
 }
 
-TextField:hover {
+.searchField:hover {
     border-color: var(--base05color);
     border-width: 1px;
     border-radius: 20px;
 }
 
-TextField > .unity-base-field__input {
+.searchField > .unity-base-field__input {
+    padding: 0 5px;
     border-width: 0;
     background-color: var(--base01color);
 }
@@ -223,56 +233,57 @@ TextField > .unity-base-field__input {
     margin: 0;
 }
 
-.unity-popup-field__input {
-    margin: 0;
-    height: 50px;
+
+
+.tinyScroller Scroller {
+    min-height: 12px;
+    height: 12px;
 }
 
-.unity-enum-field__input {
-    margin: 0;
-    height: 50px;
+.tinyScroller .unity-slider {
+    min-height: 12px;
+    height: 12px;
 }
 
-.unit-text-input {
-    margin: 0;
+.tinyScroller #unity-tracker {
+    background-color: rgba(0,0,0,0);
 }
 
-.unity-base-text-field__input {
-    margin: 0;
-    height: 100%;
+.tinyScroller #unity-dragger {
+    height: 10px;
+    min-height: 10px;
+    max-height: 10px;
+    margin-top: -3px;
+    border-radius: 5px;
 }
 
-.unity-base-field > .unity-text-field__label {
-    display: none;
-}
-
-.unity-base-field > .unity-popup-field__label {
-    display: none;
-}
-
-.unity-base-field > .unity-enum-field__label {
-    display: none;
-}
-
-.tagLabel {
+.tag {
+    flex-direction: row;
+    height: 30px;
+    padding: 0 10px;
+    margin: 5px;
     background-color: var(--accentDefaultcolor);
     color: var(--fontDefaultcolor);
+    border-radius: 15px;
+    align-items: center;
 }
 
-.tagLabel:hover {
-    background-color: var(--accentLightcolor);
-    color: var(--fontLightcolor);
+.tag > #removeBtn {
+    width: 16px;
+    height: 16px;
+    -unity-background-image-tint-color: var(--base04color);
 }
 
-.tagLabelSelected {
-    background-color: var(--accentDarkcolor);
-    color: var(--fontDefaultcolor);
+.tag > Label {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-left;
 }
 
-.tagLabelSelected:hover {
-    background-color: var(--accentDarkcolor);
-    color: var(--fontLightcolor);
-}
+
+
+
 
 .popup {
     position: absolut;
@@ -300,4 +311,41 @@ TextField > .unity-base-field__input {
     margin: 2px 3px;
     border-width: 0.1px;
     border-color: rgba(0, 0, 0, 0.5);
+}
+
+.hide  {
+    display: none;
+}
+
+
+
+
+.unity-popup-field__input {
+    margin: 0;
+    height: 50px;
+}
+
+.unity-enum-field__input {
+    margin: 0;
+    height: 50px;
+}
+
+.tagLabel {
+    background-color: var(--accentDefaultcolor);
+    color: var(--fontDefaultcolor);
+}
+
+.tagLabel:hover {
+    background-color: var(--accentLightcolor);
+    color: var(--fontLightcolor);
+}
+
+.tagLabelSelected {
+    background-color: var(--accentDarkcolor);
+    color: var(--fontDefaultcolor);
+}
+
+.tagLabelSelected:hover {
+    background-color: var(--accentDarkcolor);
+    color: var(--fontLightcolor);
 }

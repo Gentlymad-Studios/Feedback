@@ -31,7 +31,7 @@ public class TicketBrowser {
             uIPopup.PanelComponents.taskContainer.Add(taskCard);
 
             //create ticketPreview and link ui to it
-            TicketPreview taskPreview = new TicketPreview(taskCard);
+            TicketPreview taskPreview = new TicketPreview(taskCard, uIPopup.TagUi);
             //add to tasklist
             taskPreviewList.Add(taskPreview);
             //add events

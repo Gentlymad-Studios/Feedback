@@ -5,8 +5,8 @@
             <ui:VisualElement name="image" usage-hints="None" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: resource(&apos;loader&apos;); -unity-background-scale-mode: scale-to-fit; align-self: auto; align-items: center; justify-content: center; width: 100%; height: 100%; display: flex; -unity-slice-top: 0; -unity-slice-bottom: 0;" />
         </ui:VisualElement>
         <ui:VisualElement style="background-color: rgba(0, 0, 0, 0); flex-direction: row; align-self: center;">
-            <ui:Label tabindex="-1" name="loadingLabel" text="loading..." style="align-self: center; -unity-text-align: middle-center; font-size: 16px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; color: rgb(255, 255, 255);" />
-            <ui:Button display-tooltip-when-elided="true" name="abortButton" class="xButton" style="background-image: resource(&apos;x&apos;); max-height: 25px; max-width: 25px; min-width: 25px; min-height: 25px; margin-left: 5px;" />
+            <ui:Label tabindex="-1" name="loadingLabel" text="loading..." style="align-self: center; -unity-text-align: middle-center; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; color: rgb(255, 255, 255);" />
+            <ui:Button display-tooltip-when-elided="true" name="abortButton" class="xButton" style="background-image: resource(&apos;x&apos;); max-height: 20px; max-width: 20px; min-width: 20px; min-height: 20px; margin-left: 5px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -8,6 +8,7 @@ public class TaskModels {
         public List<CustomField> custom_fields { get; set; }
         public string name { get; set; }
         public string notes { get; set; }
+        public string project_id { get; set; }
     }
 
     public class CustomField {

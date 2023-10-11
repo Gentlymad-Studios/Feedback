@@ -2,14 +2,18 @@
     <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
     <ui:VisualElement name="CardContainer" style="min-height: 250px; max-height: 100%; max-width: 350px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 350px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 1;">
         <ui:VisualElement name="Card" class="base04" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; flex-grow: 1;">
-            <ui:VisualElement name="Header" class="base02" style="flex-grow: 1; max-width: none; min-width: 100%; max-height: 50px; min-height: 50px; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; width: auto; height: 50px;">
-                <ui:Label tabindex="-1" text="HEADLINE dsa dsa dsa weg rgtr tr rht htrhtr thr hrt" display-tooltip-when-elided="true" name="taskTitleLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-font-style: bold; font-size: 13px; overflow: hidden; text-overflow: ellipsis;" />
-                <ui:VisualElement name="TagContainer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 10px;" />
+            <ui:VisualElement name="Header" class="base02" style="flex-grow: 1; max-width: none; min-width: 100%; max-height: 50px; min-height: 50px; padding-left: 7px; padding-right: 7px; padding-top: 7px; padding-bottom: 7px; width: auto; height: 50px; justify-content: center;">
+                <ui:Label tabindex="-1" text="HEADLINE dsa dsa dsa weg rgtr tr rht htrhtr thr hrt" display-tooltip-when-elided="true" name="taskTitleLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-font-style: bold; overflow: hidden; text-overflow: ellipsis; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Label tabindex="-1" text="Type: Bug" display-tooltip-when-elided="true" name="taskTypeLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; overflow: hidden; text-overflow: ellipsis; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
             </ui:VisualElement>
-            <ui:VisualElement name="Content" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); max-width: 100%; min-width: 250px; max-height: none; height: auto; width: 100%; min-height: 100px; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; flex-wrap: nowrap; margin-bottom: 50px;">
-                <ui:ScrollView name="ScrollView" vertical-scroller-visibility="Hidden" style="min-width: 100%; min-height: 100%;">
-                    <ui:Label tabindex="-1" text="CONTENT TEXT" display-tooltip-when-elided="true" name="taskDescriptionLbl" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-wrap: wrap; white-space: normal; font-size: 12px;" />
+            <ui:VisualElement name="Content" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); max-width: 100%; min-width: 250px; max-height: none; height: auto; width: 100%; min-height: 100px; flex-wrap: nowrap; margin-bottom: 50px;">
+                <ui:ScrollView name="ScrollView" vertical-scroller-visibility="Hidden" style="flex-grow: 1; padding-left: 7px; padding-right: 7px; padding-top: 7px; padding-bottom: 7px;">
+                    <ui:Label tabindex="-1" text="CONTENT TEXT" display-tooltip-when-elided="true" name="taskDescriptionLbl" class="fontSizeSmall" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-wrap: wrap; white-space: normal;" />
                 </ui:ScrollView>
+                <ui:VisualElement name="TagContainer" style="background-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement class="base03" style="min-height: 1px; max-height: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 0;" />
+                    <ui:ScrollView name="TagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" class="tinyScroller" />
+                </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="Footer" class="base02" style="flex-grow: 1; width: 100%; height: 50px; max-width: 350px; min-height: 50px; max-height: 10%; flex-direction: row; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; align-self: flex-end; align-items: flex-end; bottom: 0; position: absolute;">
                 <ui:VisualElement name="UpvoteContainer" style="flex-grow: 1; flex-direction: row; align-items: center;">

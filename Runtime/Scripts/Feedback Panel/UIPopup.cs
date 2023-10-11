@@ -18,6 +18,7 @@ public class UIPopup : UIPopUpBase {
     public Loading Loading;
     public VisualTreeAsset TaskCardUi;
     public VisualTreeAsset TagLabelUi;
+    public VisualTreeAsset TagUi;
     public VisualTreeAsset TaskDetailCardUi;
     public VisualTreeAsset PromptUi;
     public VisualTreeAsset LoadingUi;
@@ -29,6 +30,7 @@ public class UIPopup : UIPopUpBase {
     public Callback OnOpen;
     public Callback OnClose;
 
+    public static AsanaAPISettings settings;
     public AsanaAPISettings asanaSpecificSettings;
 
     public Dictionary<string, AsanaTaskModel> MentionedTask = new Dictionary<string, AsanaTaskModel>();
@@ -92,7 +94,7 @@ public class UIPopup : UIPopUpBase {
         SetWindowTypes();
 
         //AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
-        AsanaAPISettings settings = asanaSpecificSettings;
+        settings = asanaSpecificSettings;
 
         //Init Type DropDown
         PanelComponents.taskTypeDrpDwn.choices.Clear();
@@ -134,10 +136,10 @@ public class UIPopup : UIPopUpBase {
                 AsanaAPI asanaAPI = Api as AsanaAPI;
 
                 foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
-                    VisualElement tagUi = TagLabelUi.Instantiate();
+                    VisualElement tagUi = TagUi.Instantiate();
                     PanelComponents.tagContainer.Add(tagUi);
 
-                    TagPreview tagPreview = new TagPreview(tagUi, tag.name);
+                    TagPreview tagPreview = new TagPreview(tagUi, tag.name, tag.gid);
                     tagPreviewList.Add(tagPreview);
                 }
             }
@@ -238,7 +240,8 @@ public class UIPopup : UIPopUpBase {
 
     private void LoginResult(bool success) {
         if (success) {
-            PanelComponents.loginBtn.text = "Logout " + Api.RequestHandler.User.name;
+            PanelComponents.loginBtn.text = "Logout";
+            //PanelComponents.loginBtn.text = "Logout " + Api.RequestHandler.User.name;
 
             Api.RequestHandler.LoadAvatar();
         } else {
@@ -344,8 +347,9 @@ public class UIPopup : UIPopUpBase {
             p.addTagToTagList = () => SetTag(p);
             p.removeFromTagList = () => RemoveTag(p);
             if (titleText.ToLower().Contains(p.title.ToLower())) {
-                SetTag(p);
-                p.Select();
+                //SetTag(p);
+                //p.Select();
+                p.ToggleTag(true);
             }
         }
 
@@ -378,7 +382,7 @@ public class UIPopup : UIPopUpBase {
 
         PostData(data);
         foreach (TagPreview p in tagPreviewList) {
-            p.Deselect();
+            p.ToggleTag(false);
         }
 
         PanelComponents.taskTitleTxt.value = "Descriptive Title";

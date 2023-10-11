@@ -4,44 +4,60 @@ using UnityEngine.UIElements;
 
 public class TagPreview {
     public VisualElement ui;
+    public Label tagLbl;
+    public Button removeBtn;
 
     public Action addTagToTagList;
     public Action removeFromTagList;
-    public Label tagLbl;
     public string title;
+    public string gid;
 
-    private bool selected = false;
-
-    public TagPreview(VisualElement ui, string title) {
-        this.ui = ui.Q("tagRoot");
+    public TagPreview(VisualElement ui, string title, string gid = "", bool displayOnly = false) {
+        this.ui = ui;
         this.title = title;
+        this.gid = gid;
 
-        tagLbl = ui.Q("tagLbl") as Label;
+        tagLbl = ui.Q("label") as Label;
         tagLbl.text = title;
 
-        ui.RegisterCallback<ClickEvent>(TagLbl_clicked);
-    }
-
-    private void TagLbl_clicked(ClickEvent evt) {
-        if (!selected) {
-            Select();
+        removeBtn = ui.Q("removeBtn") as Button;
+        if (displayOnly) {
+            removeBtn.AddToClassList("hide");
         } else {
-            Deselect();
+            removeBtn.clicked += () => ToggleTag(false);
         }
     }
 
-    public void Select() {
-        selected = true;
-        ui.RemoveFromClassList("tagLabel");
-        ui.AddToClassList("tagLabelSelected");
-        addTagToTagList.Invoke();
+    public void ToggleTag(bool selected) {
+        if (selected) {
+            ui.style.display = DisplayStyle.Flex;
+            addTagToTagList.Invoke();
+        } else {
+            ui.style.display = DisplayStyle.None;
+            removeFromTagList.Invoke();
+        }
     }
 
-    public void Deselect() {
-        selected = false;
-        ui.AddToClassList("tagLabel");
-        ui.RemoveFromClassList("tagLabelSelected");
-        removeFromTagList.Invoke();
-    }
+    //private void TagLbl_clicked(ClickEvent evt) {
+    //    if (!selected) {
+    //        Select();
+    //    } else {
+    //        Deselect();
+    //    }
+    //}
+
+    //public void Select() {
+    //    selected = true;
+    //    ui.RemoveFromClassList("tagLabel");
+    //    ui.AddToClassList("tagLabelSelected");
+    //    addTagToTagList.Invoke();
+    //}
+
+    //public void Deselect() {
+    //    selected = false;
+    //    ui.AddToClassList("tagLabel");
+    //    ui.RemoveFromClassList("tagLabelSelected");
+    //    removeFromTagList.Invoke();
+    //}
 
 }

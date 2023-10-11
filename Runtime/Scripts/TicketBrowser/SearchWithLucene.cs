@@ -54,13 +54,26 @@ public class SearchWithLucene {
                 document.Add(new TextField("Gid", task.gid, Field.Store.YES));
                 document.Add(new TextField("Name", task.name, Field.Store.YES));
                 document.Add(new TextField("Notes", task.notes, Field.Store.YES));
+                document.Add(new TextField("ProjectId", task.project_id, Field.Store.YES));
 
-                TaskModels.CustomField cf = task.custom_fields.Find(field => field.name == "Upvotes");
-                string field = "0";
-                if (cf.display_value != null) {
-                    field = cf.display_value.ToString();
+                for (int i = 0; i < task.custom_fields.Count; i++) {
+                    TaskModels.CustomField cf = task.custom_fields[i];
+                    
+
+                    string field = "";
+                    if (cf.name == UIPopup.settings.upvoteField) {
+                        field = "0";
+                        if (cf.display_value != null) {
+                            field = cf.display_value.ToString();
+                        }
+                        document.Add(new TextField(UIPopup.settings.upvoteField, field, Field.Store.YES));
+                    } else if (cf.name == UIPopup.settings.tagField) {
+                        if (cf.display_value != null) {
+                            field = cf.display_value.ToString();
+                        }
+                        document.Add(new TextField(UIPopup.settings.tagField, field, Field.Store.YES));
+                    }
                 }
-                document.Add(new TextField("Upvotes", field, Field.Store.YES));
 
                 writer.AddDocument(document);
             } catch (Exception e) {
@@ -93,14 +106,20 @@ public class SearchWithLucene {
                 Document document = indexSearcher.Doc(hit.Doc);
 
                 List<TaskModels.CustomField> customFields = new List<TaskModels.CustomField>();
-                TaskModels.CustomField field = new TaskModels.CustomField();
-                field.display_value = document.Get("Upvotes");
-                customFields.Add(field);
+
+                TaskModels.CustomField upvotesField = new TaskModels.CustomField();
+                upvotesField.display_value = document.Get(UIPopup.settings.upvoteField);
+                customFields.Add(upvotesField);
+
+                TaskModels.CustomField tagsField = new TaskModels.CustomField();
+                tagsField.display_value = document.Get(UIPopup.settings.tagField);
+                customFields.Add(tagsField);
 
                 results.Add(new TaskModels.AsanaTaskModel() {
                     gid = document.Get("Gid"),
                     name = document.Get("Name"),
                     notes = document.Get("Notes"),
+                    project_id = document.Get("ProjectId"),
                     custom_fields = customFields,
                 });
             }

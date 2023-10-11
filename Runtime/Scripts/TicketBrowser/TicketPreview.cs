@@ -1,20 +1,26 @@
 using System;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static TaskModels;
 
 public class TicketPreview {
-    public VisualElement ui;
-
     public Action<string,int> sendUpvoteAction;
     public Action openDetailPopup;
     public Action addToMentions;
     public Action removeFromMentions;
     public bool mentioned = false;
 
+    public VisualElement ui;
     public Label taskTitleLbl;
+    public Label taskTypeLbl;
     public Label taskDescriptionLbl;
     private Label upvoteLbl;
     private Button mentionBtn;
+    private VisualElement tagContainer;
+    private VisualElement tagHolder;
+
+    public VisualTreeAsset tagUi;
 
     private string gid;
     private TaskModels.AsanaTaskModel ticketModel;
@@ -23,16 +29,20 @@ public class TicketPreview {
 
     private bool voted = false;
 
-    public TicketPreview(VisualElement ui) {
+    public TicketPreview(VisualElement ui, VisualTreeAsset tagUi) {
+        this.ui = ui;
+        this.tagUi = tagUi;
+
         taskTitleLbl = ui.Q("taskTitleLbl") as Label;
+        taskTypeLbl = ui.Q("taskTypeLbl") as Label;
         taskDescriptionLbl = ui.Q("taskDescriptionLbl") as Label;
         upvoteLbl = ui.Q("upvoteLbl") as Label;
         mentionBtn = ui.Q("mentionBtn") as Button;
+        tagContainer = ui.Q("TagContainer");
+        tagHolder = ui.Q("TagHolder");
 
         fillPreview = FillPreview;
         resetPreview = ResetPreview;
-
-        this.ui = ui;
 
         voted = false;
         RegisterEvents();
@@ -72,7 +82,34 @@ public class TicketPreview {
         taskTitleLbl.text = ticketModel.name;
         gid = ticketModel.gid;
         taskDescriptionLbl.text = ticketModel.notes;
+
+        taskTypeLbl.text = "Type: Unknown";
+        for (int i = 0; i < UIPopup.settings.asanaProjects.Count; i++) {
+            if (UIPopup.settings.asanaProjects[i].id == ticketModel.project_id) {
+                taskTypeLbl.text = $"Type: {UIPopup.settings.asanaProjects[i].name}";
+                break;
+            }
+        }
+
         upvoteLbl.text = ticketModel.custom_fields[0]?.display_value.ToString();
+
+        string[] tags = null;
+        string value = ticketModel.custom_fields[1]?.display_value?.ToString();
+        if (!string.IsNullOrEmpty(value)) {
+            tags = value.Split(", ");
+        }
+
+        if (tags != null && tags.Length > 0) {
+            tagContainer.style.display = DisplayStyle.Flex;
+
+            for (int i = 0; i < tags.Length; i++) {
+                VisualElement ui = tagUi.Instantiate();
+                tagHolder.Add(ui);
+                new TagPreview(ui, tags[i], displayOnly: true);
+            }
+        } else {
+            tagContainer.style.display = DisplayStyle.None;
+        }
     }
     private void ResetPreview() {
         taskTitleLbl.text = string.Empty;
