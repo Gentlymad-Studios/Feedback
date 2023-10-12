@@ -18,6 +18,7 @@ public class PanelComponents {
     // Search Section
     public TextField searchTxtFld;
     public Button searchSubmitBtn;
+    public Button searchCancelBtn;
     public ScrollView taskContainer;
 
     // Report Section
@@ -28,6 +29,7 @@ public class PanelComponents {
     public TextField taskTitleTxt;
     public TextField taskDescriptionTxt;
     public Button taskSubmitBtn;
+    public Button taskCancelBtn;
 
     // Screenshot Section
     public VisualElement imageContainer;
@@ -58,6 +60,7 @@ public class PanelComponents {
 
         searchTxtFld = uiDocument.rootVisualElement.Q("searchTxt") as TextField;
         searchSubmitBtn = uiDocument.rootVisualElement.Q("searchSubmitBtn") as Button;
+        searchCancelBtn = uiDocument.rootVisualElement.Q("searchCancelBtn") as Button;
         taskContainer = uiDocument.rootVisualElement.Q("taskContainer") as ScrollView;
 
         taskTypeDrpDwn = uiDocument.rootVisualElement.Q("taskTypeDrpDwn") as DropdownField;
@@ -69,6 +72,7 @@ public class PanelComponents {
         taskTitleTxt = uiDocument.rootVisualElement.Q("taskTitleTxt") as TextField;
         taskDescriptionTxt = uiDocument.rootVisualElement.Q("taskDescriptionTxt") as TextField;
         taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
+        taskCancelBtn = uiDocument.rootVisualElement.Q("taskCancelBtn") as Button;
         tagContainer = uiDocument.rootVisualElement.Q("tagHolder") as ScrollView;
 
         imageContainer = uiDocument.rootVisualElement.Q("imageContainer");

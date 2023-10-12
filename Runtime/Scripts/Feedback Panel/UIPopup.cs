@@ -17,7 +17,6 @@ public class UIPopup : UIPopUpBase {
     public Prompt Prompt;
     public Loading Loading;
     public VisualTreeAsset TaskCardUi;
-    public VisualTreeAsset TagLabelUi;
     public VisualTreeAsset TagUi;
     public VisualTreeAsset TaskDetailCardUi;
     public VisualTreeAsset PromptUi;
@@ -116,9 +115,19 @@ public class UIPopup : UIPopUpBase {
 
         fileLoader = new LoadAsanaAttachmentFiles(settings);
 
+        PanelComponents.taskTitleTxt.UnregisterValueChangedCallback(Text_changed);
         PanelComponents.taskTitleTxt.RegisterValueChangedCallback(Text_changed);
+
+        PanelComponents.taskDescriptionTxt.UnregisterValueChangedCallback(Text_changed);
         PanelComponents.taskDescriptionTxt.RegisterValueChangedCallback(Text_changed);
+
+        PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Text_changed);
         PanelComponents.searchTxtFld.RegisterValueChangedCallback(Text_changed);
+
+        PanelComponents.searchCancelBtn.clicked -= CancelBtn_clicked;
+        PanelComponents.searchCancelBtn.clicked += CancelBtn_clicked;
+        PanelComponents.taskCancelBtn.clicked -= CancelBtn_clicked;
+        PanelComponents.taskCancelBtn.clicked += CancelBtn_clicked;
     }
 
     private void Update() {
@@ -187,6 +196,7 @@ public class UIPopup : UIPopUpBase {
             }
         }
     }
+
     protected override void OnShowWindow() {
         SetLoadingStatus(true);
         base.OnShowWindow();
@@ -194,6 +204,7 @@ public class UIPopup : UIPopUpBase {
         RegisterEvents();
         TicketBrowser?.InitEvents();
     }
+
     protected override void OnHideWindow() {
         SetLoadingStatus(false);
         UnregisterEvents();
@@ -207,16 +218,30 @@ public class UIPopup : UIPopUpBase {
         GC.WaitForPendingFinalizers();
         GC.Collect();
     }
+
+    private void Reset() {
+        DrawImage.drawingCanBeDestroyed = true;
+        PanelComponents.searchTxtFld.value = string.Empty;
+        PanelComponents.taskDescriptionTxt.value = string.Empty;
+        PanelComponents.taskTitleTxt.value = string.Empty;
+        PanelComponents.taskTypeDrpDwn.value = settings.asanaProjects[0].name;
+
+        MentionedTask.Clear();
+
+        for (int i = 0; i < tagPreviewList.Count; i++) {
+            tagPreviewList[i].ToggleTag(false);
+        }
+
+        TicketBrowser?.ResetPreview();
+    }
+
     private void ShowReportPanel() {
         ActiveWindow = WindowType.Report;
         SetWindowTypes();
     }
+
     private void ShowSearchPanel() {
         ActiveWindow = WindowType.Search;
-        SetWindowTypes();
-    }
-    private void AbortOpen() {
-        ActiveWindow = WindowType.None;
         SetWindowTypes();
     }
     #endregion
@@ -299,6 +324,12 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region UI Events
+    private void CancelBtn_clicked() {
+        Reset();
+        ActiveWindow = WindowType.None;
+        SetWindowTypes();
+    }
+
     private void SearchTab_clicked(ClickEvent evt) {
         ShowSearchPanel();
     }
@@ -338,7 +369,7 @@ public class UIPopup : UIPopUpBase {
     }
 
     public void OnClickMentionDrpDwn(string value) {
-        TaskModels.AsanaTaskModel task = MentionedTask[value];
+        AsanaTaskModel task = MentionedTask[value];
         TicketBrowser.OnClickTicketPreviewAction(task.name, task.notes);
 
         PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify("select ticket to show details");
@@ -363,16 +394,11 @@ public class UIPopup : UIPopUpBase {
     /// Fill the mention list with mentioned tasks
     /// </summary>
     private void CreateTicketFromSearch() {
-        string titleText = "";
-        if (string.IsNullOrWhiteSpace(PanelComponents.searchTxtFld.text)) {
-            titleText = "...";
-        } else {
-            titleText = PanelComponents.searchTxtFld.text;
-        }
+        string titleText = PanelComponents.searchTxtFld.text;
 
         foreach (var task in MentionedTask) {
-            if (!PanelComponents.taskMentionsDrpDwn.choices.Contains(task.Value.name)) {
-                PanelComponents.taskMentionsDrpDwn.choices.Add(task.Value.name);
+            if (!PanelComponents.taskMentionsDrpDwn.choices.Contains($"{task.Value.name} ({task.Value.gid})")) {
+                PanelComponents.taskMentionsDrpDwn.choices.Add($"{task.Value.name} ({task.Value.gid})");
                 PanelComponents.taskMentionsDrpDwn.SetEnabled(true);
             }
         }

@@ -10,7 +10,7 @@
                 <ui:ScrollView name="ScrollView" vertical-scroller-visibility="Hidden" style="flex-grow: 1; padding-left: 7px; padding-right: 7px; padding-top: 7px; padding-bottom: 7px;">
                     <ui:Label tabindex="-1" text="CONTENT TEXT" display-tooltip-when-elided="true" name="taskDescriptionLbl" class="fontSizeSmall" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-wrap: wrap; white-space: normal;" />
                 </ui:ScrollView>
-                <ui:VisualElement name="TagContainer" style="background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="TagContainer" style="background-color: rgba(0, 0, 0, 0); min-height: 46px;">
                     <ui:VisualElement class="base03" style="min-height: 1px; max-height: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 0;" />
                     <ui:ScrollView name="TagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" />
                 </ui:VisualElement>

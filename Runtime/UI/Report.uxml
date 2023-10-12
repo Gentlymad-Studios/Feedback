@@ -30,7 +30,7 @@
             <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" class="tinyScroller" style="min-height: 53px;" />
             <ui:VisualElement name="VisualElement" style="flex-direction: row; justify-content: space-between; height: 40px; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
                 <ui:Button text="Submit" display-tooltip-when-elided="true" name="taskSubmitBtn" class="defaultAccentButton" style="width: 200px;" />
-                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="cancelBtn" class="defaultRedButton" style="width: 100px;" />
+                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="taskCancelBtn" class="defaultRedButton" style="width: 100px;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

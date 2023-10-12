@@ -54,50 +54,48 @@ public class AsanaRequestHandler : BaseRequestHandler {
         TaskModels.ReportTags reportTags;
 
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetAllTaskDataEndpoint}";
-        Debug.LogError("1# START");
         request = (HttpWebRequest)WebRequest.Create(url);
-        Debug.LogError("2# WebRequest Created");
+        Debug.LogError("1# WebRequest Created");
         request.Method = RequestMethods.GET.ToString();
         request.Timeout = 3000;
-        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-        using (Stream stream = response.GetResponseStream())
-        using (StreamReader reader = new StreamReader(stream)) {
-            Debug.LogError("3# Read Stream");
-            //sometime we are stuck...
-            string result = await reader.ReadToEndAsync();
-            Debug.LogError("4# Read Async");
-            ticketModels = new List<TaskModels.AsanaTaskModel>();
-            ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
-            Debug.LogError("5# DeserializeObject");
-            asanaAPI.TicketModelsBackup.Clear();
-            asanaAPI.TicketModelsBackup.AddRange(ticketModels);
-            asanaAPI.lastUpdateTime = DateTime.Now;
-            Debug.LogError("6# end reader");
+        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+            Debug.LogError("2# get response");
+            using (Stream stream = response.GetResponseStream()) {
+                Debug.LogError("3# read respone stream");
+                using (StreamReader reader = new StreamReader(stream)) {
+                    Debug.LogError("4# read stream");
+                    //sometime we are stuck...
+                    string result = await reader.ReadToEndAsync();
+                    Debug.LogError("5# Read Async");
+                    ticketModels = new List<TaskModels.AsanaTaskModel>();
+                    ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
+                    Debug.LogError("6# DeserializeObject");
+                    asanaAPI.TicketModelsBackup.Clear();
+                    asanaAPI.TicketModelsBackup.AddRange(ticketModels);
+                    asanaAPI.lastUpdateTime = DateTime.Now;
+                    Debug.LogError("7# end reader");
+                }
+            }
         }
+        
 
         Debug.LogError("-------------------------------");
 
         url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
-        Debug.LogError("11# START");
         request = (HttpWebRequest)WebRequest.Create(url);
-        Debug.LogError("22# WebRequest Created");
         request.Method = RequestMethods.GET.ToString();
         request.Timeout = 3000;
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
         using (Stream stream = response.GetResponseStream())
         using (StreamReader reader = new StreamReader(stream)) {
-            Debug.LogError("33# Read Stream");
             reportTags = new TaskModels.ReportTags();
             string result = await reader.ReadToEndAsync();
-            Debug.LogError("44# Read Async");
             reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
-            Debug.LogError("55# DeserializeObject");
             asanaAPI.ReportTagsBackup = reportTags;
         }
 
         if (ticketModels != null && reportTags != null) {
             asanaAPI.FireDataCreated(ticketModels, reportTags);
-            Debug.LogError("7# FireDataCreated");
         }
 
         requestRunning = false;

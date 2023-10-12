@@ -5,7 +5,6 @@ using System.Collections.Generic;
 /// Api class which inherits from the basic api class.  
 /// </summary>
 public class AsanaAPI : BaseAPI {
-
     public delegate void DataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags);
     public static event DataReceived DataReceivedEvent;
 
@@ -24,17 +23,11 @@ public class AsanaAPI : BaseAPI {
     public DateTime lastUpdateTime;
 
     public AsanaAPI(AsanaAPISettings s){
-        //CreateAPISpecificSettings();
         AsanaSpecificSettings = s;
         base.RequestHandler = new AsanaRequestHandler(this);
     }
 
-    public void SetMentionList(List<string> mentions) {
-        this.Mentions = mentions;   
-    }
-
     public override void CreateAPISpecificSettings() {
-        //AsanaSpecificSettings = APISettings.LoadSettings<AsanaAPISettings>();
         Settings = AsanaSpecificSettings;
     }
 

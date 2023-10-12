@@ -78,7 +78,7 @@ public class TicketBrowser {
 
     //Needs to be fired to operate on tickets!
     private void OnDataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags) {
-        Debug.Log("<color=cyan>All Tasks received: </color>" + tasks.Count);
+        Debug.Log($"<color=cyan>{tasks.Count} Tasks received. Load to RAM...</color>");
 
         //change nulls to empty strings
         foreach (TaskModels.AsanaTaskModel task in tasks) {
@@ -93,21 +93,25 @@ public class TicketBrowser {
         }
         SearchWithLucene.Instance.CreateIndex(tasks);
 
-        Debug.Log("<color=cyan>All ReportTags received: </color>" + reportTags.enum_options.Count);
+        Debug.Log($"<color=cyan>{reportTags.enum_options.Count} ReportTags received.</color>");
 
         uIPopup.SetLoadingStatus(false);
     }
 
     //Search for the change text with lucene text analyzer
     private void Search(ChangeEvent<string> evt) {
+        ResetPreview();
+
         if (string.IsNullOrEmpty(evt.newValue) || string.IsNullOrWhiteSpace(evt.newValue)) {
-            if (!taskPreviewList[0].PreviewEmpty()) {
-                ResetPreview();
-            }
             return;
         }
 
         searchResult = SearchWithLucene.Instance.SearchTerm(evt.newValue).ToList();
+        
+        if (searchResult.Count == 0) {
+            return;
+        }
+
         FillPreview();
     }
 
@@ -128,13 +132,13 @@ public class TicketBrowser {
                 preview.mentioned = true;
             }
             preview.openDetailPopup = () => OnClickTicketPreviewAction(title, notes);
-            preview.addToMentions = () => AddToMentionList(title, task);
-            preview.removeFromMentions = () => RemoveMentionFromList(gid);
+            preview.addToMentions = () => AddToMentionList($"{title} ({gid})", task);
+            preview.removeFromMentions = () => RemoveMentionFromList($"{title} ({gid})");
         }
     }
 
     //Reset the preview objects (hide them and clear the text fields)
-    private void ResetPreview() {
+    public void ResetPreview() {
         taskPreviewList.ForEach(preview => {
             preview.ResetTicketModel();
             preview.SetActive(false);
@@ -153,17 +157,17 @@ public class TicketBrowser {
         uIPopup.PanelComponents.root.Add(detailPopup);
     }
 
-    private void AddToMentionList(string name, TaskModels.AsanaTaskModel p) {
-        mentions.Add(name);
-        uIPopup.MentionedTask.Add(name, p);
+    private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {
+        mentions.Add(gid);
+        uIPopup.MentionedTask.Add(gid, p);
     }
 
-    private void RemoveMentionFromList(string name) {
-        if (mentions.Contains(name)) {
-            mentions.Remove(name);
+    private void RemoveMentionFromList(string gid) {
+        if (mentions.Contains(gid)) {
+            mentions.Remove(gid);
         }
-        uIPopup.MentionedTask.Remove(name);
-        uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(name);
+        uIPopup.MentionedTask.Remove(gid);
+        uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(gid);
         if (mentions.Count == 0) {
             uIPopup.PanelComponents.taskMentionsDrpDwn.SetEnabled(false);
         }

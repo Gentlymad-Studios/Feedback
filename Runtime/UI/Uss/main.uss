@@ -61,7 +61,7 @@
 .loginButton {
     margin: 0;
     border-width: 0;
-    background-color: rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
     color: var(--fontDefaultcolor);
     min-width: 80px;
 }
@@ -220,7 +220,7 @@
 
 .unity-scroller #unity-tracker {
     border-width: 0;
-    background-color: rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .unity-scroller #unity-dragger {
@@ -319,7 +319,7 @@
 .dropdown > .unity-popup-field__label {
     min-width: 120px;
     color: var(--fontDefaultcolor);
-} 
+}
 
 .dropdown > .unity-base-field__input {
     margin: 0;
@@ -372,7 +372,7 @@
     width: 20px;
     height: 20px;
     margin: 2px;
-    padding: 0px;
+    padding: 0;
     -unity-slice-left: 2px;
     -unity-slice-right: 2px;
     -unity-slice-top: 2px;
@@ -403,10 +403,10 @@
     color: var(--fontDarkcolor);
 }
 
-.hidePreviewText > .previewText {
+.hidePreviewText .previewText {
     display: none;
 }
 
-.hide  {
+.hide {
     display: none;
 }
