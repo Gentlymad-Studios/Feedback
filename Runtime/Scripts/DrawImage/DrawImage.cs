@@ -23,8 +23,6 @@ public class DrawImage {
 
     // see drawable
     Vector2 previous_drag_position;
-    bool mouse_was_previously_held_down = false;
-    bool no_drawing_on_current_drag = false;
     bool color_changed = true;
     public delegate void Brush_Function(Vector2 world_position);
 
@@ -113,7 +111,6 @@ public class DrawImage {
             color_changed = true;
         } else {
             previous_drag_position = Vector2.zero;
-            no_drawing_on_current_drag = false;
 
             if (color_changed) {
                 last_colors = drawSurfaceTexture.GetPixels32();
@@ -121,18 +118,11 @@ public class DrawImage {
                 ResetMaxOpacity();
             }
         }
-
-        mouse_was_previously_held_down = Mouse.current.leftButton.isPressed;
     }
 
     private void OnPointerLeaveEvent(PointerLeaveEvent evt) {
         // We're not over our destination texture
         previous_drag_position = Vector2.zero;
-        if (!mouse_was_previously_held_down) {
-            // This is a new drag where the user is left clicking off the canvas
-            // Ensure no drawing happens until a new drag is started
-            no_drawing_on_current_drag = true;
-        }
     }
 
     private void ToolbarSetup() {

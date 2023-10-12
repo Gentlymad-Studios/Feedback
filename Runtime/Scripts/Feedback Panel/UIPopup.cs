@@ -73,12 +73,7 @@ public class UIPopup : UIPopUpBase {
             currentWindowType = before;
         } else {
             ActiveWindow = currentWindowType;
-            LockTimeHandler.CheckSpam(AbortOpen);
-            if (LockTimeHandler.locked) {
-                return;
-            }
             base.GetData();
-            LockTimeHandler.SetOpenTime();
         }
     }
 
@@ -93,7 +88,6 @@ public class UIPopup : UIPopUpBase {
 
         SetWindowTypes();
 
-        //AsanaAPISettings settings = APISettings.LoadSettings<AsanaAPISettings>();
         settings = asanaSpecificSettings;
 
         //Init Type DropDown
@@ -121,6 +115,10 @@ public class UIPopup : UIPopUpBase {
         }
 
         fileLoader = new LoadAsanaAttachmentFiles(settings);
+
+        PanelComponents.taskTitleTxt.RegisterValueChangedCallback(Text_changed);
+        PanelComponents.taskDescriptionTxt.RegisterValueChangedCallback(Text_changed);
+        PanelComponents.searchTxtFld.RegisterValueChangedCallback(Text_changed);
     }
 
     private void Update() {
@@ -130,17 +128,26 @@ public class UIPopup : UIPopUpBase {
 
         if (!currentlyLoading && !ActiveWindow.Equals(WindowType.None)) {
             //Init Tags after loading
-            if (tagPreviewList.Count == 0) {
+            if (PanelComponents.taskTagDrpDwn.choices.Count == 0) {
                 PanelComponents.tagContainer.Clear();
+                PanelComponents.taskTagDrpDwn.choices.Clear();
 
                 AsanaAPI asanaAPI = Api as AsanaAPI;
 
+                //Init Tag DropDown
                 foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
                     VisualElement tagUi = TagUi.Instantiate();
                     PanelComponents.tagContainer.Add(tagUi);
 
                     TagPreview tagPreview = new TagPreview(tagUi, tag.name, tag.gid);
                     tagPreviewList.Add(tagPreview);
+
+                    tagPreview.addTagToTagList = () => SetTag(tagPreview);
+                    tagPreview.removeFromTagList = () => RemoveTag(tagPreview);
+
+                    tagPreview.ToggleTag(false);
+
+                    PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
                 }
             }
 
@@ -266,16 +273,17 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.reportBtn.RegisterCallback<ClickEvent>(ReportTab_clicked);
         PanelComponents.searchBtn.RegisterCallback<ClickEvent>(SearchTab_clicked);
         PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
-        PanelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchSubmit_clicked);
+        PanelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchCreateTicket_clicked);
         PanelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
         PanelComponents.taskMentionsDrpDwn.RegisterValueChangedCallback(TaskMentionDrpDwn_changed);
+        PanelComponents.taskTagDrpDwn.RegisterValueChangedCallback(TaskTagDrpDwn_changed);
     }
     private void UnregisterEvents() {
         PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
         PanelComponents.reportBtn.UnregisterCallback<ClickEvent>(ReportTab_clicked);
         PanelComponents.searchBtn.UnregisterCallback<ClickEvent>(SearchTab_clicked);
         PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
-        PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchSubmit_clicked);
+        PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchCreateTicket_clicked);
         PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
         PanelComponents.taskMentionsDrpDwn.UnregisterValueChangedCallback(TaskMentionDrpDwn_changed);
         PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
@@ -290,7 +298,7 @@ public class UIPopup : UIPopUpBase {
     }
     #endregion
 
-    #region Click Events
+    #region UI Events
     private void SearchTab_clicked(ClickEvent evt) {
         ShowSearchPanel();
     }
@@ -304,7 +312,16 @@ public class UIPopup : UIPopUpBase {
         OnLogInButtonClick();
     }
 
-    private void SearchSubmit_clicked(ClickEvent evt) {
+    private void Text_changed(ChangeEvent<string> evt) {
+        VisualElement visualElement = evt.currentTarget as VisualElement;
+        if (string.IsNullOrEmpty(evt.newValue) || string.IsNullOrWhiteSpace(evt.newValue)) {
+            visualElement.RemoveFromClassList("hidePreviewText");
+        } else {
+            visualElement.AddToClassList("hidePreviewText");
+        }
+    }
+
+    private void SearchCreateTicket_clicked(ClickEvent evt) {
         CreateTicketFromSearch();
     }
 
@@ -315,11 +332,28 @@ public class UIPopup : UIPopUpBase {
     private void TaskMentionDrpDwn_changed(ChangeEvent<string> evt) {
         OnClickMentionDrpDwn(evt.newValue);
     }
+
+    private void TaskTagDrpDwn_changed(ChangeEvent<string> evt) {
+        OnClickTagDrpDwn(evt.newValue);
+    }
+
     public void OnClickMentionDrpDwn(string value) {
         TaskModels.AsanaTaskModel task = MentionedTask[value];
         TicketBrowser.OnClickTicketPreviewAction(task.name, task.notes);
 
-        PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify(string.Empty);
+        PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify("select ticket to show details");
+    }
+
+    public void OnClickTagDrpDwn(string value) {
+        PanelComponents.taskTagDrpDwn.SetValueWithoutNotify("add tag");
+
+        for (int i = 0; i < tagPreviewList.Count; i++) {
+            TagPreview tag = tagPreviewList[i];
+            if (tag.title == value) {
+                tag.ToggleTag();
+                break;
+            }
+        }
     }
     #endregion
 
@@ -336,19 +370,16 @@ public class UIPopup : UIPopUpBase {
             titleText = PanelComponents.searchTxtFld.text;
         }
 
-        foreach (string gid in MentionedTask.Keys) {
-            if (!PanelComponents.taskMentionsDrpDwn.choices.Contains(gid)) {
-                PanelComponents.taskMentionsDrpDwn.choices.Add(gid);
+        foreach (var task in MentionedTask) {
+            if (!PanelComponents.taskMentionsDrpDwn.choices.Contains(task.Value.name)) {
+                PanelComponents.taskMentionsDrpDwn.choices.Add(task.Value.name);
+                PanelComponents.taskMentionsDrpDwn.SetEnabled(true);
             }
         }
 
-        //look for matching tags and set tag preview action
+        //look for matching tags
         foreach (TagPreview p in tagPreviewList) {
-            p.addTagToTagList = () => SetTag(p);
-            p.removeFromTagList = () => RemoveTag(p);
             if (titleText.ToLower().Contains(p.title.ToLower())) {
-                //SetTag(p);
-                //p.Select();
                 p.ToggleTag(true);
             }
         }

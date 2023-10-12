@@ -1,7 +1,7 @@
 using J2N.Collections.Generic;
 
 public abstract class BaseRequestHandler : IRequestHandler {
-
+    public bool requestRunning = false;
     public AuthorizationUser User;
     public List<TagPreview> Tags = new List<TagPreview>();
    

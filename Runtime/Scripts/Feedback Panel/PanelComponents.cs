@@ -18,12 +18,13 @@ public class PanelComponents {
     // Search Section
     public TextField searchTxtFld;
     public Button searchSubmitBtn;
-    public VisualElement tagContainer;
     public ScrollView taskContainer;
 
     // Report Section
     public DropdownField taskTypeDrpDwn;
     public DropdownField taskMentionsDrpDwn;
+    public DropdownField taskTagDrpDwn;
+    public ScrollView tagContainer;
     public TextField taskTitleTxt;
     public TextField taskDescriptionTxt;
     public Button taskSubmitBtn;
@@ -45,6 +46,7 @@ public class PanelComponents {
         this.uiDocument = uiDocument;
         
         root = uiDocument.rootVisualElement;
+        root.panel.visualTree.styleSheets.Add(root.styleSheets[0]);
 
         searchTab = uiDocument.rootVisualElement.Q("SearchTab");
         reportTab = uiDocument.rootVisualElement.Q("ReportTab");
@@ -56,14 +58,18 @@ public class PanelComponents {
 
         searchTxtFld = uiDocument.rootVisualElement.Q("searchTxt") as TextField;
         searchSubmitBtn = uiDocument.rootVisualElement.Q("searchSubmitBtn") as Button;
-        tagContainer = uiDocument.rootVisualElement.Q("tagContainer");
         taskContainer = uiDocument.rootVisualElement.Q("taskContainer") as ScrollView;
 
         taskTypeDrpDwn = uiDocument.rootVisualElement.Q("taskTypeDrpDwn") as DropdownField;
         taskMentionsDrpDwn = uiDocument.rootVisualElement.Q("taskMentionsDrpDwn") as DropdownField;
+        taskMentionsDrpDwn.SetEnabled(false);
+        taskMentionsDrpDwn.SetValueWithoutNotify("select ticket to show details");
+        taskTagDrpDwn = uiDocument.rootVisualElement.Q("taskTagDrpDwn") as DropdownField;
+        taskTagDrpDwn.SetValueWithoutNotify("add tag");
         taskTitleTxt = uiDocument.rootVisualElement.Q("taskTitleTxt") as TextField;
         taskDescriptionTxt = uiDocument.rootVisualElement.Q("taskDescriptionTxt") as TextField;
         taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
+        tagContainer = uiDocument.rootVisualElement.Q("tagHolder") as ScrollView;
 
         imageContainer = uiDocument.rootVisualElement.Q("imageContainer");
         screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");

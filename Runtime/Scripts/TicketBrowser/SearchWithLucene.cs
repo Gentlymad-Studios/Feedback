@@ -21,7 +21,6 @@ public class SearchWithLucene {
     private IndexSearcher indexSearcher;
     private Directory indexDirectory;
 
-    private bool createIndexDocs = false;
     private string[] fieldsIncluded = { "Name", "Notes" };
 
 
@@ -142,7 +141,6 @@ public class SearchWithLucene {
             var config = new IndexWriterConfig(version, analyzer);
             config.OpenMode = OpenMode.CREATE_OR_APPEND;
             writer = new IndexWriter(indexDirectory, config);
-            createIndexDocs = true;
         } catch (Exception e) {
             Debug.LogException(e);
         }

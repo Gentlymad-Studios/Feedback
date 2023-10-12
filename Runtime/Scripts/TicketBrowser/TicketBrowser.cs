@@ -128,7 +128,7 @@ public class TicketBrowser {
                 preview.mentioned = true;
             }
             preview.openDetailPopup = () => OnClickTicketPreviewAction(title, notes);
-            preview.addToMentions = () => AddToMentionList(gid, task);
+            preview.addToMentions = () => AddToMentionList(title, task);
             preview.removeFromMentions = () => RemoveMentionFromList(gid);
         }
     }
@@ -153,16 +153,19 @@ public class TicketBrowser {
         uIPopup.PanelComponents.root.Add(detailPopup);
     }
 
-    private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {
-        mentions.Add(gid);
-        uIPopup.MentionedTask.Add(gid, p);
+    private void AddToMentionList(string name, TaskModels.AsanaTaskModel p) {
+        mentions.Add(name);
+        uIPopup.MentionedTask.Add(name, p);
     }
 
-    private void RemoveMentionFromList(string gid) {
-        if (mentions.Contains(gid)) {
-            mentions.Remove(gid);
+    private void RemoveMentionFromList(string name) {
+        if (mentions.Contains(name)) {
+            mentions.Remove(name);
         }
-        uIPopup.MentionedTask.Remove(gid);
-        uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(gid);
+        uIPopup.MentionedTask.Remove(name);
+        uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(name);
+        if (mentions.Count == 0) {
+            uIPopup.PanelComponents.taskMentionsDrpDwn.SetEnabled(false);
+        }
     }
 }

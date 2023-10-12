@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 public class TagPreview {
@@ -11,6 +10,7 @@ public class TagPreview {
     public Action removeFromTagList;
     public string title;
     public string gid;
+    public bool selected;
 
     public TagPreview(VisualElement ui, string title, string gid = "", bool displayOnly = false) {
         this.ui = ui;
@@ -28,7 +28,8 @@ public class TagPreview {
         }
     }
 
-    public void ToggleTag(bool selected) {
+    public void ToggleTag() {
+        selected = !selected;
         if (selected) {
             ui.style.display = DisplayStyle.Flex;
             addTagToTagList.Invoke();
@@ -38,26 +39,14 @@ public class TagPreview {
         }
     }
 
-    //private void TagLbl_clicked(ClickEvent evt) {
-    //    if (!selected) {
-    //        Select();
-    //    } else {
-    //        Deselect();
-    //    }
-    //}
-
-    //public void Select() {
-    //    selected = true;
-    //    ui.RemoveFromClassList("tagLabel");
-    //    ui.AddToClassList("tagLabelSelected");
-    //    addTagToTagList.Invoke();
-    //}
-
-    //public void Deselect() {
-    //    selected = false;
-    //    ui.AddToClassList("tagLabel");
-    //    ui.RemoveFromClassList("tagLabelSelected");
-    //    removeFromTagList.Invoke();
-    //}
-
+    public void ToggleTag(bool selected) {
+        this.selected = selected;
+        if (selected) {
+            ui.style.display = DisplayStyle.Flex;
+            addTagToTagList.Invoke();
+        } else {
+            ui.style.display = DisplayStyle.None;
+            removeFromTagList.Invoke();
+        }
+    }
 }

@@ -33,7 +33,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// fire TicketsRecievedEvent to create lucene index with tickets.
     /// </summary>
     public async override void GetAllData() {
-        if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now) {
+        if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now || requestRunning) {
             asanaAPI.FireDataCreated(asanaAPI.TicketModelsBackup, asanaAPI.ReportTagsBackup);
             return;
         }
@@ -48,6 +48,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     private async void GetAllDataAsync() {
+        requestRunning = true;
+
         List<TaskModels.AsanaTaskModel> ticketModels;
         TaskModels.ReportTags reportTags;
 
@@ -97,6 +99,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
             asanaAPI.FireDataCreated(ticketModels, reportTags);
             Debug.LogError("7# FireDataCreated");
         }
+
+        requestRunning = false;
     }
 
     /// <summary>
@@ -104,6 +108,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
     public override void PostNewData<T1, T2>(RequestData<T1, T2> data) {
+        requestRunning = true;
 
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
@@ -137,6 +142,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
         } catch (Exception e) {
             Debug.LogError("An error occured while posting new task: " + e.Message);
         }
+
+        requestRunning = false;
     }
 
     /// <summary>
@@ -264,6 +271,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <param name="ticket"></param>
     public async override void PostUpvoteCount(string ticketId, int count) {
+        requestRunning = true;
+
         string userID = CheckForUserGid();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.UpdateUpvotesEndpoint}{userID}/{ticketId}/{count}";
 
@@ -285,6 +294,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 Debug.LogError("An error occoured while posting increased upvote count: " + e.Message);
             }
         }
+
+        requestRunning = false;
     }
 
     /// <summary>
@@ -326,6 +337,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// delete client object with passing uniqueId
     /// </summary>
     public override void LogOut() {
+        requestRunning = true;
+
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.LogoutEndpoint}{uniqueId}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
@@ -336,6 +349,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
         base.User = null;
         uniqueId = "";
+
+        requestRunning = false;
     }
 
     /// <summary>
@@ -344,6 +359,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// </summary>
     /// <returns></returns>
     public override AuthorizationUser GetUser() {
+        requestRunning = true;
+
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
@@ -359,6 +376,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
             }
         }
 
+        requestRunning = false;
         return base.User;
     }
 
@@ -402,6 +420,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// Get User Data Sync
     /// </summary>
     private async void TryGetUserAsync() {
+        requestRunning = true;
+
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
@@ -415,6 +435,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 User = JsonConvert.DeserializeObject<AuthorizationUser>(result);
             } catch { }
         }
+
+        requestRunning = false;
     }
 
     private string CheckForUserGid() {
@@ -430,6 +452,8 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     public async override void LoadAvatar() {
+        requestRunning = true;
+
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(User.picture);
         request.timeout = 2000;
 
@@ -442,11 +466,12 @@ public class AsanaRequestHandler : BaseRequestHandler {
             User.avatar = ((DownloadHandlerTexture)request.downloadHandler).texture;
             asanaAPI.FireAvatarLoaded();
         }
+
+        requestRunning = false;
     }
 
     #endregion
 }
-
 
 public class AuthorizationUser {
     public string gid;
@@ -455,4 +480,3 @@ public class AuthorizationUser {
     public string picture;
     public Texture2D avatar = null;
 }
-

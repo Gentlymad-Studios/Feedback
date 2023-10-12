@@ -12,7 +12,7 @@
                 </ui:ScrollView>
                 <ui:VisualElement name="TagContainer" style="background-color: rgba(0, 0, 0, 0);">
                     <ui:VisualElement class="base03" style="min-height: 1px; max-height: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 0;" />
-                    <ui:ScrollView name="TagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" class="tinyScroller" />
+                    <ui:ScrollView name="TagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="Footer" class="base02" style="flex-grow: 1; width: 100%; height: 50px; max-width: 350px; min-height: 50px; max-height: 10%; flex-direction: row; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; align-self: flex-end; align-items: flex-end; bottom: 0; position: absolute;">

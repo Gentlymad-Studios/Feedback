@@ -99,6 +99,8 @@ public class TicketPreview {
             tags = value.Split(", ");
         }
 
+        tagHolder.Clear();
+
         if (tags != null && tags.Length > 0) {
             tagContainer.style.display = DisplayStyle.Flex;
 

@@ -18,8 +18,8 @@
     --buttonhovercolor: rgb(200, 200, 200);
     --buttonclickcolor: rgb(150, 150, 150);
     --buttonRedcolor: rgb(145, 40, 39);
-    --buttonRedhovercolor: rgb(200, 200, 200);
-    --buttonRedclickcolor: rgb(150, 150, 150);
+    --buttonRedhovercolor: rgb(165, 48, 50);
+    --buttonRedclickcolor: rgb(125, 35, 34);
     --xButtoncolor: rgb(150, 150, 150);
     --xButtonHovercolor: rgb(200, 200, 200);
     --fontSizeSmall: 12px;
@@ -197,32 +197,17 @@
 
 .searchField:focus {
     border-color: var(--base05color);
-    border-width: 1px;
-    border-radius: 20px;
     --unity-cursor-color: var(--fontDefaultcolor);
 }
 
 .searchField:hover {
     border-color: var(--base05color);
-    border-width: 1px;
-    border-radius: 20px;
 }
 
 .searchField > .unity-base-field__input {
     padding: 0 5px;
     border-width: 0;
     background-color: var(--base01color);
-}
-
-.unity-scroller #unity-tracker {
-    border-width: 0;
-    background-color: var(--base03color);
-}
-
-.unity-scroller #unity-dragger {
-    border-radius: 10px;
-    margin: 0 2px;
-    background-color: var(--base05color);
 }
 
 .unity-scroller > RepeatButton {
@@ -233,27 +218,50 @@
     margin: 0;
 }
 
-
-
-.tinyScroller Scroller {
-    min-height: 12px;
-    height: 12px;
-}
-
-.tinyScroller .unity-slider {
-    min-height: 12px;
-    height: 12px;
-}
-
-.tinyScroller #unity-tracker {
+.unity-scroller #unity-tracker {
+    border-width: 0;
     background-color: rgba(0,0,0,0);
 }
 
-.tinyScroller #unity-dragger {
+.unity-scroller #unity-dragger {
+    border-radius: 10px;
+    margin: 0 2px;
+    background-color: var(--base05color);
+}
+
+.unity-scroller--horizontal {
+    min-height: 12px;
+    height: 12px;
+}
+
+.unity-scroller--horizontal .unity-slider {
+    min-height: 12px;
+    height: 12px;
+}
+
+.unity-scroller--horizontal #unity-dragger {
     height: 10px;
     min-height: 10px;
     max-height: 10px;
     margin-top: -3px;
+    border-radius: 5px;
+}
+
+.unity-scroller--vertical {
+    min-width: 12px;
+    width: 12px;
+}
+
+.unity-scroller--vertical .unity-slider {
+    min-width: 12px;
+    width: 12px;
+}
+
+.unity-scroller--vertical #unity-dragger {
+    width: 10px;
+    min-width: 10px;
+    max-width: 10px;
+    margin-left: -3px;
     border-radius: 5px;
 }
 
@@ -281,9 +289,77 @@
     -unity-text-align: middle-left;
 }
 
+.textField {
+    margin: 2;
+    color: var(--fontDefaultcolor);
+    background-color: var(--base01color);
+    border-color: var(--base01color);
+    border-width: 1px;
+    border-radius: 10px;
+}
 
+.textField:focus {
+    border-color: var(--base05color);
+    --unity-cursor-color: var(--fontDefaultcolor);
+}
 
+.textField:hover {
+    border-color: var(--base05color);
+}
 
+.textField > .unity-base-field__input {
+    border-width: 0;
+    background-color: var(--base01color);
+}
+
+.dropdown {
+    margin: 2;
+}
+
+.dropdown > .unity-popup-field__label {
+    min-width: 120px;
+    color: var(--fontDefaultcolor);
+} 
+
+.dropdown > .unity-base-field__input {
+    margin: 0;
+    height: 36px;
+    color: var(--fontDefaultcolor);
+    background-color: var(--base01color);
+    border-color: var(--base01color);
+    border-width: 1px;
+    border-radius: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.dropdown:hover > .unity-base-field__input {
+    border-color: var(--base05color);
+}
+
+.dropdown:active > .unity-base-field__input {
+    border-color: var(--base05color);
+}
+
+.dropdown > .unity-base-field__input > .unity-base-popup-field__arrow {
+    -unity-background-image-tint-color: var(--base05color);
+}
+
+.unity-base-dropdown__container-inner {
+    border-radius: 10px;
+    background-color: var(--base01color);
+}
+
+.unity-base-dropdown__container-outer {
+    margin: 0;
+    border-radius: 10px;
+    border-color: var(--base05color);
+    color: var(--fontDefaultcolor);
+}
+
+.unity-base-dropdown__checkmark {
+    -unity-background-image-tint-color: var(--fontDefaultcolor);
+}
 
 .popup {
     position: absolut;
@@ -293,12 +369,22 @@
 }
 
 .iconbutton {
-    width: 40px;
-    height: 40px;
-    -unity-slice-left: 8px;
-    -unity-slice-right: 8px;
-    -unity-slice-top: 8px;
-    -unity-slice-bottom: 8px;
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    padding: 0px;
+    -unity-slice-left: 2px;
+    -unity-slice-right: 2px;
+    -unity-slice-top: 2px;
+    -unity-slice-bottom: 2px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0.1px;
+    border-color: var(--base01color);
+    -unity-background-image-tint-color: var(--fontDefaultcolor);
+}
+
+.iconbutton:hover {
+    -unity-background-image-tint-color: var(--fontLightcolor);
 }
 
 .customcolorfield {
@@ -306,46 +392,21 @@
 }
 
 .customcolorfield .color-field__input {
-    width: 40px;
-    height: 40px;
-    margin: 2px 3px;
+    width: 20px;
+    height: 20px;
+    margin: 2px;
     border-width: 0.1px;
-    border-color: rgba(0, 0, 0, 0.5);
+    border-color: var(--base01color);
+}
+
+.previewText {
+    color: var(--fontDarkcolor);
+}
+
+.hidePreviewText > .previewText {
+    display: none;
 }
 
 .hide  {
     display: none;
-}
-
-
-
-
-.unity-popup-field__input {
-    margin: 0;
-    height: 50px;
-}
-
-.unity-enum-field__input {
-    margin: 0;
-    height: 50px;
-}
-
-.tagLabel {
-    background-color: var(--accentDefaultcolor);
-    color: var(--fontDefaultcolor);
-}
-
-.tagLabel:hover {
-    background-color: var(--accentLightcolor);
-    color: var(--fontLightcolor);
-}
-
-.tagLabelSelected {
-    background-color: var(--accentDarkcolor);
-    color: var(--fontDefaultcolor);
-}
-
-.tagLabelSelected:hover {
-    background-color: var(--accentDarkcolor);
-    color: var(--fontLightcolor);
 }
