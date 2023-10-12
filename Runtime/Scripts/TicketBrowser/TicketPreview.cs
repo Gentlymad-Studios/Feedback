@@ -1,8 +1,6 @@
 using System;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static TaskModels;
 
 public class TicketPreview {
     public Action<string,int> sendUpvoteAction;
