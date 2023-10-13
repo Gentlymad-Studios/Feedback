@@ -25,6 +25,8 @@
     --fontSizeSmall: 12px;
     --fontSizeMiddle: 13px;
     --fontSizeLarge: 16px;
+    
+    --unity-metrics-single_line-height: 500px;
     font-size: var(--fontSizeMiddle);
 }
 
@@ -270,23 +272,34 @@
     height: 30px;
     padding: 0 10px;
     margin: 5px;
-    background-color: var(--accentDefaultcolor);
+    background-color: var(--base05color);
     color: var(--fontDefaultcolor);
     border-radius: 15px;
     align-items: center;
 }
 
-.tag > #removeBtn {
+.tag #removeBtn {
     width: 16px;
     height: 16px;
+    margin-left: 3px;
     -unity-background-image-tint-color: var(--base04color);
 }
 
-.tag > Label {
+.tag Label {
     flex-grow: 1;
+    flex-shrink: 1;
     margin: 0;
     padding: 0;
     -unity-text-align: middle-left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixedTag {
+    flex-grow: 0;
+    min-width: 250px;
+    max-width: 250px;
+    margin-bottom: 0;
 }
 
 .textField {
@@ -310,6 +323,21 @@
 .textField > .unity-base-field__input {
     border-width: 0;
     background-color: var(--base01color);
+}
+
+.checkBox .unity-toggle__checkmark {
+    color: var(--fontDefaultcolor);
+    background-color: var(--base01color);
+    border-color: var(--base04color);
+    -unity-background-image-tint-color: var(--fontDefaultcolor);
+}
+
+.checkBox:hover .unity-toggle__checkmark {
+    border-color: var(--base05color);
+}
+
+.checkBox:focus Label {
+    color: var(--fontDefaultcolor);
 }
 
 .dropdown {
@@ -355,6 +383,22 @@
     border-radius: 10px;
     border-color: var(--base05color);
     color: var(--fontDefaultcolor);
+}
+
+.unity-base-dropdown__container-outer .unity-base-slider--horizontal {
+    min-height: 0px;
+    max-height: 0px;
+}
+
+.unity-base-dropdown__container-outer .unity-scroller--horizontal {
+    min-height: 0px;
+    max-height: 0px;
+}
+
+.unity-base-dropdown__label {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-right: 12px;
 }
 
 .unity-base-dropdown__checkmark {

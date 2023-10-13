@@ -128,12 +128,13 @@ public class TicketBrowser {
             string notes = task.notes;
             string gid = task.gid;
 
-            if (uIPopup.MentionedTask.ContainsKey(gid)) {
-                preview.mentioned = true;
-            }
             preview.openDetailPopup = () => OnClickTicketPreviewAction(title, notes);
-            preview.addToMentions = () => AddToMentionList($"{title} ({gid})", task);
-            preview.removeFromMentions = () => RemoveMentionFromList($"{title} ({gid})");
+            preview.addToMentions = () => AddToMentionList(gid, task);
+            preview.removeFromMentions = () => RemoveMentionFromList(gid);
+
+            if (uIPopup.MentionedTask.ContainsKey(gid)) {
+                preview.Select();
+            }
         }
     }
 
@@ -158,18 +159,29 @@ public class TicketBrowser {
     }
 
     private void AddToMentionList(string gid, TaskModels.AsanaTaskModel p) {
-        mentions.Add(gid);
-        uIPopup.MentionedTask.Add(gid, p);
+        if (!mentions.Contains(gid)) {
+            mentions.Add(gid);
+            uIPopup.MentionedTask.Add(gid, p);
+        }
     }
 
-    private void RemoveMentionFromList(string gid) {
+    public void RemoveMentionFromList(string gid, bool updateUi = false) {
         if (mentions.Contains(gid)) {
             mentions.Remove(gid);
         }
         uIPopup.MentionedTask.Remove(gid);
-        uIPopup.PanelComponents.taskMentionsDrpDwn.choices.Remove(gid);
-        if (mentions.Count == 0) {
-            uIPopup.PanelComponents.taskMentionsDrpDwn.SetEnabled(false);
+
+        if (updateUi) {
+            if (uIPopup.MentionedTask.Count == 0) {
+                uIPopup.PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.None;
+            }
+
+            for (int i = 0; i < taskPreviewList.Count; i++) {
+                if (taskPreviewList[i].gid == gid) {
+                    taskPreviewList[i].Deselect();
+                    break;
+                }
+            }
         }
     }
 }

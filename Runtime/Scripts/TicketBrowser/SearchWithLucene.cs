@@ -7,8 +7,10 @@ using Lucene.Net.Store;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Directory = Lucene.Net.Store.Directory;
 
 public class SearchWithLucene {
@@ -47,6 +49,7 @@ public class SearchWithLucene {
     /// <param name="tasks"></param>
     public void CreateIndex(IEnumerable<TaskModels.AsanaTaskModel> tasks) {
         SetupLucene();
+
         foreach (TaskModels.AsanaTaskModel task in tasks) {
             var document = new Document();
             try {
@@ -76,7 +79,7 @@ public class SearchWithLucene {
 
                 writer.AddDocument(document);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.LogException(e);
             }
 
             //Apply all changes so index

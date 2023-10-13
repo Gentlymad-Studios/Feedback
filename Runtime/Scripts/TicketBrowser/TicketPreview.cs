@@ -14,13 +14,13 @@ public class TicketPreview {
     public Label taskTypeLbl;
     public Label taskDescriptionLbl;
     private Label upvoteLbl;
-    private Button mentionBtn;
+    private Toggle mentionTgl;
     private VisualElement tagContainer;
     private VisualElement tagHolder;
 
     public VisualTreeAsset tagUi;
 
-    private string gid;
+    public string gid;
     private TaskModels.AsanaTaskModel ticketModel;
     private Action<TaskModels.AsanaTaskModel> fillPreview;
     private Action resetPreview;
@@ -35,7 +35,7 @@ public class TicketPreview {
         taskTypeLbl = ui.Q("taskTypeLbl") as Label;
         taskDescriptionLbl = ui.Q("taskDescriptionLbl") as Label;
         upvoteLbl = ui.Q("upvoteLbl") as Label;
-        mentionBtn = ui.Q("mentionBtn") as Button;
+        mentionTgl = ui.Q("mentionedTgl") as Toggle;
         tagContainer = ui.Q("TagContainer");
         tagHolder = ui.Q("TagHolder");
 
@@ -50,13 +50,15 @@ public class TicketPreview {
         UnregisterEvents();
         ui.RegisterCallback<ClickEvent>(Card_clicked);
         upvoteLbl.RegisterCallback<ClickEvent>(Upvote_clicked);
-        mentionBtn.RegisterCallback<ClickEvent>(Mention_clicked);
+        mentionTgl.RegisterValueChangedCallback(Mention_changed);
+        mentionTgl.RegisterCallback<ClickEvent>(Mention_clicked);
     }
 
     public void UnregisterEvents() {
         ui.UnregisterCallback<ClickEvent>(Card_clicked);
         upvoteLbl.UnregisterCallback<ClickEvent>(Upvote_clicked);
-        mentionBtn.UnregisterCallback<ClickEvent>(Mention_clicked);
+        mentionTgl.UnregisterValueChangedCallback(Mention_changed);
+        mentionTgl.UnregisterCallback<ClickEvent>(Mention_clicked);
 
     }
 
@@ -68,11 +70,15 @@ public class TicketPreview {
     private void Upvote_clicked(ClickEvent evt) {
         Vote();
         sendUpvoteAction.Invoke(gid, int.Parse(upvoteLbl.text));
+        evt.StopPropagation();
     }
 
     private void Mention_clicked(ClickEvent evt) {
-        Mention();
         evt.StopPropagation();
+    }
+
+    private void Mention_changed(ChangeEvent<bool> evt) {
+        Mention(evt.newValue);
     }
     #endregion
 
@@ -117,6 +123,7 @@ public class TicketPreview {
         gid = string.Empty;
         upvoteLbl.text = "0";
         mentioned = false;
+        mentionTgl.SetValueWithoutNotify(false);
     }
     public string Vote() {
         int value;
@@ -134,13 +141,14 @@ public class TicketPreview {
         return value.ToString();
     }
 
-    private void Mention() {
-        if (!mentioned) {
+    private void Mention(bool mentioned) {
+        if (mentioned) {
             Select();
         } else {
             Deselect();
         }
     }
+
     public TicketPreview SetTicketModel(TaskModels.AsanaTaskModel ticketModel) {
         this.ticketModel = ticketModel;
         fillPreview.Invoke(ticketModel);
@@ -160,12 +168,12 @@ public class TicketPreview {
 
     public void Select() {
         mentioned = true;
-        mentionBtn.text = "mentioned";
+        mentionTgl.SetValueWithoutNotify(true);
         addToMentions.Invoke();
     }
     public void Deselect() {
         mentioned = false;
-        mentionBtn.text = "not mentioned";
+        mentionTgl.SetValueWithoutNotify(false);
         removeFromMentions.Invoke();
     }
 

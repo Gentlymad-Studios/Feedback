@@ -24,6 +24,8 @@ public class LoadAsanaAttachmentFiles {
     }
 
     public Dictionary<string, string> LoadAttachments(AsanaProject project) {
+        stringFileRepresentation.Clear();
+
         if (project.includeLatesOutputLog) { LoadLatestOutputLog();  }
         if (project.includeLatestSavegame) { LoadLatestSavegame();  }
         if (project.includeGlobalCustomFiles) { LoadCustomFileList(); }

@@ -1,10 +1,12 @@
 using Game.UI;
 using System;
 using System.Collections.Generic;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using static AsanaAPI;
+using static Codice.Client.Common.Connection.AskCredentialsToUser;
 using static TaskModels;
 using Debug = UnityEngine.Debug;
 
@@ -23,7 +25,7 @@ public class UIPopup : UIPopUpBase {
     public VisualTreeAsset LoadingUi;
     public Texture2D avatarPlaceholderIcon;
 
-    public List<TagPreview> tagPreviewList = new List<TagPreview>();
+    private List<TagPreview> tagPreviewList = new List<TagPreview>();
 
     public delegate void Callback();
     public Callback OnOpen;
@@ -82,6 +84,8 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.Initialize(UIDocument);
         }
 
+        CheckDevLogin();
+
         ActiveWindow = WindowType.None;
         currentWindowType = WindowType.Search;
 
@@ -114,20 +118,6 @@ public class UIPopup : UIPopUpBase {
         }
 
         fileLoader = new LoadAsanaAttachmentFiles(settings);
-
-        PanelComponents.taskTitleTxt.UnregisterValueChangedCallback(Text_changed);
-        PanelComponents.taskTitleTxt.RegisterValueChangedCallback(Text_changed);
-
-        PanelComponents.taskDescriptionTxt.UnregisterValueChangedCallback(Text_changed);
-        PanelComponents.taskDescriptionTxt.RegisterValueChangedCallback(Text_changed);
-
-        PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Text_changed);
-        PanelComponents.searchTxtFld.RegisterValueChangedCallback(Text_changed);
-
-        PanelComponents.searchCancelBtn.clicked -= CancelBtn_clicked;
-        PanelComponents.searchCancelBtn.clicked += CancelBtn_clicked;
-        PanelComponents.taskCancelBtn.clicked -= CancelBtn_clicked;
-        PanelComponents.taskCancelBtn.clicked += CancelBtn_clicked;
     }
 
     private void Update() {
@@ -247,7 +237,13 @@ public class UIPopup : UIPopUpBase {
     #endregion
 
     #region Auth and login
-    public void OnLogInButtonClick() {
+    private void CheckDevLogin() {
+        if (Debug.isDebugBuild) {
+            PanelComponents.loginSection.SetEnabled(true);
+        }
+    }
+
+    private void OnLogInButtonClick() {
         if (Api.RequestHandler.User == null) {
             try {
                 SetLoadingStatus(true);
@@ -300,8 +296,12 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
         PanelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchCreateTicket_clicked);
         PanelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
-        PanelComponents.taskMentionsDrpDwn.RegisterValueChangedCallback(TaskMentionDrpDwn_changed);
         PanelComponents.taskTagDrpDwn.RegisterValueChangedCallback(TaskTagDrpDwn_changed);
+        PanelComponents.taskTitleTxt.RegisterValueChangedCallback(Text_changed);
+        PanelComponents.taskDescriptionTxt.RegisterValueChangedCallback(Text_changed);
+        PanelComponents.searchTxtFld.RegisterValueChangedCallback(Text_changed);
+        PanelComponents.searchCancelBtn.clicked += CancelBtn_clicked;
+        PanelComponents.taskCancelBtn.clicked += CancelBtn_clicked;
     }
     private void UnregisterEvents() {
         PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
@@ -310,8 +310,12 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
         PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchCreateTicket_clicked);
         PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
-        PanelComponents.taskMentionsDrpDwn.UnregisterValueChangedCallback(TaskMentionDrpDwn_changed);
         PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
+        PanelComponents.taskTitleTxt.UnregisterValueChangedCallback(Text_changed);
+        PanelComponents.taskDescriptionTxt.UnregisterValueChangedCallback(Text_changed);
+        PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Text_changed);
+        PanelComponents.searchCancelBtn.clicked -= CancelBtn_clicked;
+        PanelComponents.taskCancelBtn.clicked -= CancelBtn_clicked;
     }
     public void ConfigureAPI() {
         if (Type.Equals(APISettings.APIType.Asana)) {
@@ -358,21 +362,11 @@ public class UIPopup : UIPopUpBase {
 
     private void TaskSubmit_clicked(ClickEvent evt) {
         SendData();
-    }
-
-    private void TaskMentionDrpDwn_changed(ChangeEvent<string> evt) {
-        OnClickMentionDrpDwn(evt.newValue);
+        Reset();
     }
 
     private void TaskTagDrpDwn_changed(ChangeEvent<string> evt) {
         OnClickTagDrpDwn(evt.newValue);
-    }
-
-    public void OnClickMentionDrpDwn(string value) {
-        AsanaTaskModel task = MentionedTask[value];
-        TicketBrowser.OnClickTicketPreviewAction(task.name, task.notes);
-
-        PanelComponents.taskMentionsDrpDwn.SetValueWithoutNotify("select ticket to show details");
     }
 
     public void OnClickTagDrpDwn(string value) {
@@ -396,11 +390,17 @@ public class UIPopup : UIPopUpBase {
     private void CreateTicketFromSearch() {
         string titleText = PanelComponents.searchTxtFld.text;
 
+        PanelComponents.mentionedTickets.Clear();
+        if (MentionedTask.Count > 0) {
+            PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.Flex;
+        } else {
+            PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.None;
+        }
+
         foreach (var task in MentionedTask) {
-            if (!PanelComponents.taskMentionsDrpDwn.choices.Contains($"{task.Value.name} ({task.Value.gid})")) {
-                PanelComponents.taskMentionsDrpDwn.choices.Add($"{task.Value.name} ({task.Value.gid})");
-                PanelComponents.taskMentionsDrpDwn.SetEnabled(true);
-            }
+            VisualElement tagUi = TagUi.Instantiate();
+            PanelComponents.mentionedTickets.Add(tagUi);
+            new MentionedTag(tagUi, task.Value.name, task.Value.gid, () => TicketBrowser.OnClickTicketPreviewAction(task.Value.name, task.Value.notes), () => TicketBrowser.RemoveMentionFromList(task.Key, true));
         }
 
         //look for matching tags
@@ -438,12 +438,6 @@ public class UIPopup : UIPopUpBase {
         RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachmentSet, asanaProject);
 
         PostData(data);
-        foreach (TagPreview p in tagPreviewList) {
-            p.ToggleTag(false);
-        }
-
-        PanelComponents.taskTitleTxt.value = "Descriptive Title";
-        PanelComponents.taskDescriptionTxt.value = "Description of bug or feedback";
 
         Prompt.Show("Feedback", "Feedback gesendet", () => {
             ActiveWindow = WindowType.None;

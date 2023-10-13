@@ -12,6 +12,7 @@ public class PanelComponents {
     public Button reportBtn;
 
     // Login Section
+    public VisualElement loginSection;
     public Button loginBtn;
     public VisualElement userImg;
 
@@ -23,13 +24,14 @@ public class PanelComponents {
 
     // Report Section
     public DropdownField taskTypeDrpDwn;
-    public DropdownField taskMentionsDrpDwn;
     public DropdownField taskTagDrpDwn;
     public ScrollView tagContainer;
     public TextField taskTitleTxt;
     public TextField taskDescriptionTxt;
     public Button taskSubmitBtn;
     public Button taskCancelBtn;
+    public VisualElement mentionedTicketsContainer;
+    public ScrollView mentionedTickets;
 
     // Screenshot Section
     public VisualElement imageContainer;
@@ -55,6 +57,8 @@ public class PanelComponents {
         searchBtn = uiDocument.rootVisualElement.Q("searchBtn") as Button;
         reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
 
+        loginSection = uiDocument.rootVisualElement.Q("loginSection");
+        loginSection.SetEnabled(false);
         loginBtn = uiDocument.rootVisualElement.Q("loginBtn") as Button;
         userImg = uiDocument.rootVisualElement.Q("loginAvatar");
 
@@ -64,9 +68,6 @@ public class PanelComponents {
         taskContainer = uiDocument.rootVisualElement.Q("taskContainer") as ScrollView;
 
         taskTypeDrpDwn = uiDocument.rootVisualElement.Q("taskTypeDrpDwn") as DropdownField;
-        taskMentionsDrpDwn = uiDocument.rootVisualElement.Q("taskMentionsDrpDwn") as DropdownField;
-        taskMentionsDrpDwn.SetEnabled(false);
-        taskMentionsDrpDwn.SetValueWithoutNotify("select ticket to show details");
         taskTagDrpDwn = uiDocument.rootVisualElement.Q("taskTagDrpDwn") as DropdownField;
         taskTagDrpDwn.SetValueWithoutNotify("add tag");
         taskTitleTxt = uiDocument.rootVisualElement.Q("taskTitleTxt") as TextField;
@@ -74,6 +75,8 @@ public class PanelComponents {
         taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
         taskCancelBtn = uiDocument.rootVisualElement.Q("taskCancelBtn") as Button;
         tagContainer = uiDocument.rootVisualElement.Q("tagHolder") as ScrollView;
+        mentionedTicketsContainer = uiDocument.rootVisualElement.Q("MentionedContainer");
+        mentionedTickets = uiDocument.rootVisualElement.Q("MentionedTickets") as ScrollView;
 
         imageContainer = uiDocument.rootVisualElement.Q("imageContainer");
         screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");
