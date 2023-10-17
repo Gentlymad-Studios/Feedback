@@ -16,9 +16,9 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="Footer" class="base02" style="flex-grow: 1; width: 100%; height: 50px; max-width: 350px; min-height: 50px; max-height: 10%; flex-direction: row; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; align-self: flex-end; align-items: flex-end; bottom: 0; position: absolute;">
-                <ui:VisualElement name="UpvoteContainer" style="flex-grow: 1; flex-direction: row; align-items: center;">
-                    <ui:VisualElement name="upvoteIcon" style="flex-grow: 1; background-image: resource(&apos;thumb-up-filled&apos;); min-height: 23px; max-width: 23px; min-width: 23px; max-height: 23px;" />
-                    <ui:Label tabindex="-1" text="UPVOTES" display-tooltip-when-elided="true" name="upvoteLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 1; -unity-text-align: middle-left;" />
+                <ui:VisualElement name="UpvoteContainer" style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: flex-end;">
+                    <ui:VisualElement name="upvoteIcon" style="flex-grow: 1; background-image: resource(&apos;thumb-up-filled&apos;); min-height: 23px; max-width: 23px; min-width: 23px; max-height: 23px; display: none;" />
+                    <ui:Label tabindex="-1" text="UPVOTES" display-tooltip-when-elided="true" name="upvoteLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 1; -unity-text-align: middle-left; display: none;" />
                     <ui:Toggle label="link to my ticket" name="mentionedTgl" class="checkBox" style="-unity-text-align: middle-right;" />
                 </ui:VisualElement>
             </ui:VisualElement>
