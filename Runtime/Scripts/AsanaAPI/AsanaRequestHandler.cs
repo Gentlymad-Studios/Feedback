@@ -67,8 +67,10 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 ticketModels = new List<TaskModels.AsanaTaskModel>();
                 ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
                 asanaAPI.TicketModelsBackup.Clear();
-                asanaAPI.TicketModelsBackup.AddRange(ticketModels);
-                asanaAPI.lastUpdateTime = DateTime.Now;
+                if (ticketModels != null) {
+                    asanaAPI.TicketModelsBackup.AddRange(ticketModels);
+                    asanaAPI.lastUpdateTime = DateTime.Now;
+                }
             }
 
 

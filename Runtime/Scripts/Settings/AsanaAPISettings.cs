@@ -4,7 +4,6 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]
 public class AsanaAPISettings : APISettings {
-
     [Header("AsanaRequestManager Endpoints")]
     public string BaseUrl;
     public string GetCustomFields;
@@ -29,9 +28,17 @@ public class AsanaAPISettings : APISettings {
     public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
     public string SavegameLocation = "\\savegame";
     public string LogLocation = "\\logs";
-
     [Tooltip("List of Files that should be attached for any Project")]
     public List<string> GlobalCustomFiles;
+
+    [Header("Tab GUI Settings")]
+    [Multiline]
+    public string searchDescripton;
+    [Multiline]
+    public string reportDescription;
+
+    [Header("Misc")]
+    public string howToUrl;
 
     public AsanaProject GetProjectByName(string projectName) {
         for (int i = 0; i < asanaProjects.Count; i++) {
@@ -48,10 +55,17 @@ public class AsanaAPISettings : APISettings {
 public class AsanaProject {
     public string name;
     public string id;
+    public string titlePlaceholder = "Title...";
+    [Multiline]
+    public string descriptionPlaceholder = "Description...";
     public bool includeLatesOutputLog = true;
     public bool includeLatestSavegame = true;
     public bool includeGlobalCustomFiles = false;
     public bool includeCustomFiles = false;
+    [Tooltip("If this is set, the project is only available logged in users")]
+    public bool visibleOnLoginOnly = false;
+    [Tooltip("If this is set, the project is hidden for logged in users")]
+    public bool hideOnLogin = false;
     [Tooltip("List of Files that should be attached for to this Project")]
     public List<string> CustomFiles;
 }

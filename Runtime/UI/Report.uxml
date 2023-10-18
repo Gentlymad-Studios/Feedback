@@ -26,10 +26,10 @@
         <ui:VisualElement name="RightContainer" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; width: 350px; max-width: 350px; min-width: 350px;">
             <ui:DropdownField name="taskTypeDrpDwn" class="dropdown" />
             <ui:TextField picking-mode="Ignore" name="taskTitleTxt" class="textField">
-                <ui:Label text="title..." picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: middle-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 11px; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 100%;" />
+                <ui:Label text="title..." picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: middle-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 11px; padding-right: 11px; padding-top: 0; padding-bottom: 0; height: 100%; max-width: 100%; text-overflow: ellipsis;" />
             </ui:TextField>
             <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" class="textField" style="flex-grow: 1;">
-                <ui:Label text="description..." picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: upper-left; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 11px; padding-right: 0; padding-top: 10px; padding-bottom: 0; height: 100%; margin-top: 0;" />
+                <ui:Label text="description... dwa dwadwad wa dwadw ad wad wa dwad wadwa&#10;&#10;d wadw a dwa dwa" picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: upper-left; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 11px; padding-right: 11px; padding-top: 11px; padding-bottom: 11px; height: 100%; margin-top: 0; max-width: 100%; text-overflow: ellipsis; white-space: normal;" />
             </ui:TextField>
             <ui:DropdownField name="taskTagDrpDwn" class="dropdown" />
             <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" class="tinyScroller" style="min-height: 53px;" />

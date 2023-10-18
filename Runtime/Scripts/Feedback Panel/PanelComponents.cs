@@ -10,6 +10,8 @@ public class PanelComponents {
     public VisualElement reportTab;
     public Button searchBtn;
     public Button reportBtn;
+    public Label tabDescriptionLbl;
+    public Label howToLbl;
 
     // Login Section
     public VisualElement loginSection;
@@ -56,6 +58,8 @@ public class PanelComponents {
         reportTab = uiDocument.rootVisualElement.Q("ReportTab");
         searchBtn = uiDocument.rootVisualElement.Q("searchBtn") as Button;
         reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
+        tabDescriptionLbl = uiDocument.rootVisualElement.Q("tabDescriptionLbl") as Label;
+        howToLbl = uiDocument.rootVisualElement.Q("howToLbl") as Label;
 
         loginSection = uiDocument.rootVisualElement.Q("loginSection");
         loginSection.SetEnabled(false);

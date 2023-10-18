@@ -77,6 +77,8 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void Awake() {
+        settings = asanaSpecificSettings;
+
         if (PanelComponents == null) {
             PanelComponents = new PanelComponents();
             PanelComponents.Initialize(UIDocument);
@@ -89,18 +91,9 @@ public class UIPopup : UIPopUpBase {
 
         SetWindowTypes();
 
-        settings = asanaSpecificSettings;
-
-        //Init Type DropDown
-        PanelComponents.taskTypeDrpDwn.choices.Clear();
-        for (int i = 0; i < settings.asanaProjects.Count; i++) {
-            PanelComponents.taskTypeDrpDwn.choices.Add(settings.asanaProjects[i].name);
-        }
-        PanelComponents.taskTypeDrpDwn.value = settings.asanaProjects[0].name;
-        currentDataType = settings.asanaProjects[0].name;
-
-        RegisterEvents();
         ConfigureAPI();
+        RegisterEvents();
+        SetupTaskTypeDrowndown();
 
         TicketBrowser = new TicketBrowser(this);
         DrawImage = new DrawImage();
@@ -167,12 +160,14 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.reportTab.style.display = DisplayStyle.None;
             PanelComponents.searchBtn.AddToClassList("menuItemActive");
             PanelComponents.reportBtn.RemoveFromClassList("menuItemActive");
+            PanelComponents.tabDescriptionLbl.text = settings.searchDescripton;
         } else if (activeWindow == WindowType.Report) {
             PanelComponents.root.style.display = DisplayStyle.Flex;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
             PanelComponents.reportTab.style.display = DisplayStyle.Flex;
             PanelComponents.searchBtn.RemoveFromClassList("menuItemActive");
             PanelComponents.reportBtn.AddToClassList("menuItemActive");
+            PanelComponents.tabDescriptionLbl.text = settings.reportDescription;
         } else {
             PanelComponents.root.style.display = DisplayStyle.None;
             PanelComponents.searchTab.style.display = DisplayStyle.None;
@@ -259,20 +254,22 @@ public class UIPopup : UIPopUpBase {
             }
         } else {
             LogOut();
-            PanelComponents.loginBtn.text = "Login";
+            SetupTaskTypeDrowndown();
+            PanelComponents.loginBtn.text = "<u>Login</u>";
             PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
         }
     }
 
     private void LoginResult(bool success) {
         if (success) {
-            PanelComponents.loginBtn.text = "Logout";
+            PanelComponents.loginBtn.text = "<u>Logout</u>";
             //PanelComponents.loginBtn.text = "Logout " + Api.RequestHandler.User.name;
 
             Api.RequestHandler.LoadAvatar();
         } else {
             OnLoginFail("Unable to Login!");
         }
+        SetupTaskTypeDrowndown();
         SetLoadingStatus(false);
     }
 
@@ -289,6 +286,7 @@ public class UIPopup : UIPopUpBase {
     private void RegisterEvents() {
         UnregisterEvents();
         PanelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
+        PanelComponents.howToLbl.RegisterCallback<ClickEvent>(HowToLbl_clicked);
         PanelComponents.reportBtn.RegisterCallback<ClickEvent>(ReportTab_clicked);
         PanelComponents.searchBtn.RegisterCallback<ClickEvent>(SearchTab_clicked);
         PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
@@ -303,6 +301,7 @@ public class UIPopup : UIPopUpBase {
     }
     private void UnregisterEvents() {
         PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
+        PanelComponents.howToLbl.UnregisterCallback<ClickEvent>(HowToLbl_clicked);
         PanelComponents.reportBtn.UnregisterCallback<ClickEvent>(ReportTab_clicked);
         PanelComponents.searchBtn.UnregisterCallback<ClickEvent>(SearchTab_clicked);
         PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
@@ -322,10 +321,53 @@ public class UIPopup : UIPopUpBase {
     }
     public void SetDataType(ChangeEvent<string> changeEvent) {
         currentDataType = changeEvent.newValue;
+
+        //cast label to INotifyValueChanged<string> to got the option to SetValueWithoutNotify
+        INotifyValueChanged<string> titlePreviewLbl = PanelComponents.taskTitleTxt.Q("previewTxt") as INotifyValueChanged<string>;
+        INotifyValueChanged<string> descPreviewLbl = PanelComponents.taskDescriptionTxt.Q("previewTxt") as INotifyValueChanged<string>;
+
+        for (int i = 0; i < settings.asanaProjects.Count; i++) {
+            if (settings.asanaProjects[i].name == currentDataType) {
+                titlePreviewLbl.SetValueWithoutNotify(settings.asanaProjects[i].titlePlaceholder);
+                descPreviewLbl.SetValueWithoutNotify(settings.asanaProjects[i].descriptionPlaceholder);
+                break;
+            }   
+        }
+    }
+    #endregion
+
+    #region UI helper
+    private void SetupTaskTypeDrowndown() {
+        bool loggedIn = Api.RequestHandler.User != null;
+
+        PanelComponents.taskTypeDrpDwn.choices.Clear();
+        for (int i = 0; i < settings.asanaProjects.Count; i++) {
+            AsanaProject project = settings.asanaProjects[i];
+
+            if (loggedIn) {
+                if (project.hideOnLogin) {
+                    continue;
+                }
+            } else {
+                if (project.visibleOnLoginOnly) {
+                    continue;
+                }
+            }
+            PanelComponents.taskTypeDrpDwn.choices.Add(settings.asanaProjects[i].name);
+        }
+
+        if (string.IsNullOrEmpty(currentDataType) || !PanelComponents.taskTypeDrpDwn.choices.Contains(currentDataType)) {
+            PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
+            currentDataType = PanelComponents.taskTypeDrpDwn.choices[0];
+        }
     }
     #endregion
 
     #region UI Events
+    private void HowToLbl_clicked(ClickEvent evt) {
+        Application.OpenURL(settings.howToUrl);
+    }
+
     private void CancelBtn_clicked() {
         Reset();
         ActiveWindow = WindowType.None;
