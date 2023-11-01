@@ -60,6 +60,7 @@ public class UIPopup : UIPopUpBase {
     private bool devMode = false;
     private bool devModeFlag = false;
 
+    private bool initializedAfterLoad = false;
     private bool currentlyLoading = false;
     private LoadAsanaAttachmentFiles fileLoader;
 
@@ -91,6 +92,9 @@ public class UIPopup : UIPopUpBase {
             PanelComponents = new PanelComponents();
             PanelComponents.Initialize(UIDocument);
         }
+
+        PanelComponents.howToDescLbl.text = settings.howToDescription;
+        PanelComponents.howToLbl.text = settings.howToName;
 
         CheckDevLogin();
 
@@ -147,6 +151,13 @@ public class UIPopup : UIPopUpBase {
 
                     PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
                 }
+            }
+
+            if (!initializedAfterLoad) {
+                initializedAfterLoad = true;
+
+                //Initial search call 
+                TicketBrowser.Search("");
             }
 
             Loading?.Hide();
@@ -211,6 +222,7 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void Reset() {
+        initializedAfterLoad = false;
         DrawImage.drawingCanBeDestroyed = true;
         PanelComponents.searchTxtFld.value = string.Empty;
         PanelComponents.taskDescriptionTxt.value = string.Empty;

@@ -4,9 +4,9 @@
         <ui:VisualElement name="SearchContainer" style="min-width: 100%; max-height: 100px; max-width: 100%; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; flex-direction: column-reverse; min-height: 100px;">
             <ui:VisualElement name="SearchBarContainer" style="flex-direction: row; max-width: 100%; min-width: 100%; min-height: 35px;">
                 <ui:TextField picking-mode="Ignore" name="searchTxt" class="searchField">
-                    <ui:Label text="describe your concern..." picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: middle-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 8px; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 100%;" />
+                    <ui:Label text="Describe your Concern..." picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: middle-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 8px; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 100%;" />
                 </ui:TextField>
-                <ui:Button text="Create Ticket" display-tooltip-when-elided="true" name="searchSubmitBtn" class="defaultAccentButton" style="height: 100%; width: 120px; margin-left: 10px; margin-right: 10px;" />
+                <ui:Button text="Create Report" display-tooltip-when-elided="true" name="searchSubmitBtn" class="defaultAccentButton" style="height: 100%; width: 120px; margin-left: 10px; margin-right: 10px;" />
                 <ui:Button text="Cancel" display-tooltip-when-elided="true" name="searchCancelBtn" class="defaultRedButton" style="width: 100px;" />
             </ui:VisualElement>
             <ui:VisualElement name="HeadlineContainer" style="align-self: flex-start;">
@@ -15,7 +15,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="Container2" style="flex-grow: 1; max-width: 100%; min-width: 100%; flex-wrap: nowrap; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
             <ui:VisualElement name="VisualElement" style="flex-grow: 1; flex-direction: row; justify-content: space-between; margin-bottom: 2px;">
-                <ui:Label tabindex="-1" text="Similar Tickets" display-tooltip-when-elided="true" class="fontLightDefault" style="-unity-font-style: bold; -unity-text-align: lower-left; justify-content: flex-start; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Label tabindex="-1" text="Tickets" display-tooltip-when-elided="true" class="fontLightDefault" style="-unity-font-style: bold; -unity-text-align: lower-left; justify-content: flex-start; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
             </ui:VisualElement>
             <ui:ScrollView vertical-scroller-visibility="Hidden" horizontal-scroller-visibility="AlwaysVisible" name="taskContainer" mode="Horizontal" mouse-wheel-scroll-size="1000" class="base03" style="width: 100%; height: 100%; min-height: auto; min-width: 100%; max-height: 100%; max-width: 100%; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px;" />
         </ui:VisualElement>

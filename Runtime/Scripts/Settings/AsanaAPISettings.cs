@@ -37,7 +37,11 @@ public class AsanaAPISettings : APISettings {
     [Multiline]
     public string reportDescription;
 
-    [Header("Misc")]
+    [Header("HowTo")]
+    [Multiline]
+    [Tooltip("Link will placed at the end of the Description")]
+    public string howToDescription;
+    public string howToName;
     public string howToUrl;
 
     public AsanaProject GetProjectByName(string projectName) {

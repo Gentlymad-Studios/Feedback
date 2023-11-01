@@ -100,14 +100,19 @@ public class TicketBrowser {
 
     //Search for the change text with lucene text analyzer
     private void Search(ChangeEvent<string> evt) {
+        Search(evt.newValue);
+    }
+
+    //Search for the change text with lucene text analyzer
+    public void Search(string searchTerm) {
         ResetPreview();
 
-        if (string.IsNullOrEmpty(evt.newValue) || string.IsNullOrWhiteSpace(evt.newValue)) {
-            return;
-        }
+        //if (string.IsNullOrEmpty(searchTerm) || string.IsNullOrWhiteSpace(searchTerm)) {
+        //    return;
+        //}
 
-        searchResult = SearchWithLucene.Instance.SearchTerm(evt.newValue).ToList();
-        
+        searchResult = SearchWithLucene.Instance.SearchTerm(searchTerm).ToList();
+
         if (searchResult.Count == 0) {
             return;
         }
