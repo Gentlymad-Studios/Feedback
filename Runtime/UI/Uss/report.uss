@@ -1,0 +1,85 @@
+#ReportContainer {
+	width: 100%;
+	height: 100%;
+	flex-direction: row;
+}
+
+#LeftContainer {
+	flex-grow: 1;
+	padding: 10px 0 10px 10px;
+}
+
+#RightContainer {
+	min-width: 350px;
+	max-width: 350px;
+	padding: 10px;
+}
+
+#PainterContainer {
+	flex-grow: 1;
+	flex-direction: row;
+}
+
+#brushSizeUpBtn {
+	margin-top: 0;
+}
+
+#imageContainer {
+	flex-grow: 1;
+}
+
+#screenshotContainer {
+	flex-grow: 0; 
+	-unity-background-scale-mode: scale-to-fit;
+	flex-shrink: 0;
+	width: 100%;
+	align-self: center;
+}
+
+#overpaintContainer {
+	flex-grow: 0;
+	-unity-background-scale-mode: scale-to-fit;
+	flex-shrink: 0;
+	position: absolute;
+	width: 100%;
+	align-self: center;
+}
+
+#MentionedContainer {
+	max-height: 125px;
+	margin-left: 20px;
+}
+
+#MentionedHeader {
+	-unity-text-align: lower-left;
+	padding-left: 3px;
+	-unity-font-style: bold;
+}
+
+#MentionedTickets {
+	flex-wrap: wrap;
+}
+
+#taskDescriptionTxt {
+	flex-grow: 1;
+}
+
+#tagHolder {
+	min-height: 53px
+}
+
+#ButtonContainer {
+	flex-direction: row;
+	justify-content: space-between;
+	height: 40px;
+	margin: 2px; 
+}
+
+#taskSubmitBtn {
+	flex-grow: 1;
+	margin-right: 10px;
+}
+
+#taskCancelBtn {
+	width: 100px;
+}

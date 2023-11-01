@@ -1,11 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
-    <ui:VisualElement name="ReportContainer" class="base04" style="width: 100%; height: 100%; flex-direction: row;">
-        <ui:VisualElement name="LeftContainer" style="padding-left: 10px; padding-right: 0; padding-top: 10px; padding-bottom: 10px; flex-grow: 1; flex-direction: column;">
-            <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/report.uss?fileID=7433441132597879392&amp;guid=3e0d049e26b6704489afa4a009110028&amp;type=3#report" />
+    <ui:VisualElement name="ReportContainer" class="base04">
+        <ui:VisualElement name="LeftContainer">
+            <ui:VisualElement name="PainterContainer">
                 <ui:VisualElement name="ToolContainer">
-                    <ui:VisualElement name="Buttons" style="flex-direction: column;">
-                        <ui:Button name="brushSizeUpBtn" class="iconbutton" style="background-image: resource(&apos;plus&apos;); margin-top: 0;" />
+                    <ui:VisualElement name="ToolButtons">
+                        <ui:Button name="brushSizeUpBtn" class="iconbutton" style="background-image: resource(&apos;plus&apos;);" />
                         <ui:Button name="brushSizeDownBtn" class="iconbutton" style="background-image: resource(&apos;minus&apos;);" />
                         <ui:Button name="brushBtn" class="iconbutton" style="background-image: resource(&apos;brush&apos;);" />
                         <ui:Button name="eraseBtn" class="iconbutton" style="background-image: resource(&apos;eraser&apos;);" />
@@ -13,29 +14,29 @@
                         <Game.UI.ColorField name="color-field" class="customcolorfield" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="imageContainer" style="flex-grow: 1;">
-                    <ui:VisualElement name="screenshotContainer" style="flex-grow: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-background-scale-mode: scale-to-fit; flex-shrink: 0; width: 100%; height: auto; align-self: center;" />
-                    <ui:VisualElement name="overpaintContainer" style="flex-grow: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-background-scale-mode: scale-to-fit; flex-shrink: 0; position: absolute; width: 100%; align-self: center;" />
+                <ui:VisualElement name="imageContainer">
+                    <ui:VisualElement name="screenshotContainer" />
+                    <ui:VisualElement name="overpaintContainer" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="MentionedContainer" style="max-height: 125px; margin-left: 20px;">
-                <ui:Label tabindex="-1" text="Mentioned Tickets" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-text-align: lower-left; padding-left: 3px; -unity-font-style: bold;" />
-                <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="MentionedTickets" mode="Horizontal" mouse-wheel-scroll-size="1000" style="flex-wrap: wrap;" />
+            <ui:VisualElement name="MentionedContainer">
+                <ui:Label text="Mentioned Tickets" parse-escape-sequences="true" name="MentionedHeader" />
+                <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="MentionedTickets" mode="Horizontal" mouse-wheel-scroll-size="1000" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="RightContainer" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; width: 350px; max-width: 350px; min-width: 350px;">
+        <ui:VisualElement name="RightContainer">
             <ui:DropdownField name="taskTypeDrpDwn" class="dropdown" />
             <ui:TextField picking-mode="Ignore" name="taskTitleTxt" class="textField">
-                <ui:Label text="title..." picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: middle-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 11px; padding-right: 11px; padding-top: 0; padding-bottom: 0; height: 100%; max-width: 100%; text-overflow: ellipsis;" />
+                <ui:Label text="title..." picking-mode="Ignore" name="previewTxt" class="previewText" />
             </ui:TextField>
-            <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" class="textField" style="flex-grow: 1;">
-                <ui:Label text="description... dwa dwadwad wa dwadw ad wad wa dwad wadwa&#10;&#10;d wadw a dwa dwa" picking-mode="Ignore" name="previewTxt" class="previewText" style="position: absolute; -unity-text-align: upper-left; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 11px; padding-right: 11px; padding-top: 11px; padding-bottom: 11px; height: 100%; margin-top: 0; max-width: 100%; text-overflow: ellipsis; white-space: normal;" />
+            <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" class="textField">
+                <ui:Label text="description... dwa dwadwad wa dwadw ad wad wa dwad wadwa&#10;&#10;d wadw a dwa dwa" picking-mode="Ignore" name="previewTxt" class="previewText multiLinePreviewText" />
             </ui:TextField>
             <ui:DropdownField name="taskTagDrpDwn" class="dropdown" />
-            <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" class="tinyScroller" style="min-height: 53px;" />
-            <ui:VisualElement name="VisualElement" style="flex-direction: row; justify-content: space-between; height: 40px; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
-                <ui:Button text="Submit" display-tooltip-when-elided="true" name="taskSubmitBtn" class="defaultAccentButton" style="flex-grow: 1; margin-right: 10px;" />
-                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="taskCancelBtn" class="defaultRedButton" style="width: 100px;" />
+            <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" class="tinyScroller" />
+            <ui:VisualElement name="ButtonContainer">
+                <ui:Button text="Submit" name="taskSubmitBtn" class="defaultAccentButton" />
+                <ui:Button text="Cancel" name="taskCancelBtn" class="defaultRedButton" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

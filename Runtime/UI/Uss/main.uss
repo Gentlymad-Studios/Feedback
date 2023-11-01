@@ -1,63 +1,49 @@
-:root {
-    --tagLabel_default: rgb(150, 150, 150);
-    --tagLabel_defaultHover: rgb(200, 200, 200);
-    --tagLabel_selected: rgb(111, 111, 111);
-    --tagLabel_selectedHover: rgb(111, 111, 111);
-    --base01color: rgb(22, 22, 22);
-    --base02color: rgb(32, 32, 32);
-    --base03color: rgb(41, 41, 41);
-    --base04color: rgb(51, 51, 51);
-    --base05color: rgb(85, 85, 85);
-    --accentLightcolor: rgb(44, 164, 165);
-    --accentDefaultcolor: rgb(39, 144, 145);
-    --accentDarkcolor: rgb(34, 124, 125);
-    --fontDarkcolor: rgb(150, 150, 150);
-    --fontDefaultcolor: rgb(220, 220, 220);
-    --fontLightcolor: rgb(255, 255, 255);
-    --buttoncolor: rgb(111, 111, 111);
-    --buttonhovercolor: rgb(200, 200, 200);
-    --buttonclickcolor: rgb(150, 150, 150);
-    --buttonRedcolor: rgb(145, 40, 39);
-    --buttonRedhovercolor: rgb(165, 48, 50);
-    --buttonRedclickcolor: rgb(125, 35, 34);
-    --xButtoncolor: rgb(150, 150, 150);
-    --xButtonHovercolor: rgb(200, 200, 200);
-    --fontSizeSmall: 12px;
-    --fontSizeMiddle: 13px;
-    --fontSizeLarge: 16px;
-    
-    --unity-metrics-single_line-height: 500px;
-    font-size: var(--fontSizeMiddle);
+#Main {
+	width: 100%;
+	height: 100%;
 }
 
-.fontSizeSmall {
-    font-size: var(--fontSizeSmall);
+#TopBar {
+	flex-direction: row;
+	max-height: 40px;
+	min-height: 40px;
 }
 
-.fontSizeMiddle {
-    font-size: var(--fontSizeMiddle);
+#Description {
+	padding: 0 15px 15px 15px;
 }
 
-.fontSizeLarge {
-    font-size: var(--fontSizeLarge);
+#howToContainer {
+	flex-direction: row;
 }
 
-.defaultButton {
-    margin: 0;
-    padding: 0;
-    border-width: 0;
-    background-color: var(--base03color);
-    color: var(--fontDefaultcolor);
+#howTo {
+	padding-right: 0;
+	padding-top: 0;
+	margin-top: 0;
 }
 
-.defaultButton:hover {
-    background-color: var(--base05color);
-    color: var(--fontLightcolor);
+#howToLbl {
+	margin-left: 0;
+	padding-left: 0;
+	margin-top: 0;
+	padding-top: 0;
 }
 
-.defaultButton:active {
-    background-color: var(--base02color);
-    color: var(--fontDefaultcolor);
+#ContentContainer {
+	flex-grow: 1;
+}
+
+#ContentContainer > VisualElement {
+	flex-grow: 1;
+}
+
+.instance {
+	flex-grow: 1;
+}
+
+#loginSection {
+	flex-direction: row;
 }
 
 .loginButton {
@@ -76,97 +62,16 @@
     color: var(--fontDarkcolor);
 }
 
-.defaultAccentButton {
-    margin: 0;
-    border-radius: 20px;
-    border-width: 0;
-    background-color: var(--accentDefaultcolor);
-    color: var(--fontDefaultcolor);
+#loginAvatar {
+	background-color: rgb(0, 0, 0);
+	-unity-background-image-tint-color: rgb(255, 255, 255);
+	min-height: 100%;
+	min-width: 43px;
 }
 
-.defaultAccentButton:hover {
-    background-color: var(--accentLightcolor);
-    color: var(--fontLightcolor);
-}
-
-.defaultAccentButton:active {
-    background-color: var(--accentDarkcolor);
-    color: var(--fontDefaultcolor);
-}
-
-.defaultRedButton {
-    margin: 0;
-    border-radius: 20px;
-    border-width: 0;
-    background-color: var(--buttonRedcolor);
-    color: var(--fontDefaultcolor);
-}
-
-.defaultRedButton:hover {
-    background-color: var(--buttonRedhovercolor);
-    color: var(--fontLightcolor);
-}
-
-.defaultRedButton:active {
-    background-color: var(--buttonRedclickcolor);
-    color: var(--fontDefaultcolor);
-}
-
-.xButton {
-    border-width: 0;
-    margin: 0;
-    padding: 0;
-    background-color: rgba(0, 0, 0, 0);
-    -unity-background-image-tint-color: var(--xButtoncolor);
-    -unity-slice-left: 1;
-    -unity-slice-right: 1;
-    -unity-slice-top: 1;
-    -unity-slice-bottom: 1;
-}
-
-.xButton:hover {
-    -unity-background-image-tint-color: var(--xButtonHovercolor);
-    -unity-slice-left: 0;
-    -unity-slice-right: 0;
-    -unity-slice-top: 0;
-    -unity-slice-bottom: 0;
-}
-
-.base01 {
-    background-color: var(--base01color);
-    color: var(--fontDefaultcolor);
-}
-
-.base02 {
-    background-color: var(--base02color);
-    color: var(--fontDefaultcolor);
-}
-
-.base03 {
-    background-color: var(--base03color);
-    color: var(--fontDefaultcolor);
-}
-
-.base04 {
-    background-color: var(--base04color);
-    color: var(--fontDefaultcolor);
-}
-
-.base05 {
-    background-color: var(--base05color);
-    color: var(--fontDefaultcolor);
-}
-
-.fontDefault {
-    color: var(--fontDefaultcolor);
-}
-
-.fontLight {
-    color: var(--fontLightcolor);
-}
-
-.fontDark {
-    color: var(--fontDarkcolor);
+#TopBarButtons {
+	flex-grow: 1;
+	flex-direction: row;
 }
 
 .menuItem {
@@ -175,6 +80,13 @@
     border-width: 0;
     background-color: var(--base02color);
     color: var(--fontDarkcolor);
+	min-width: 150px;
+	max-width: 150px;
+	max-height: 100%;
+	min-height: 100%;
+	height: 10%;
+	width: 150px;
+	-unity-font-style: bold;
 }
 
 .menuItem:hover {
@@ -184,277 +96,4 @@
 .menuItemActive {
     background-color: var(--base04color);
     color: var(--fontDefaultcolor);
-}
-
-.searchField {
-    flex-grow: 1;
-    margin: 0;
-    color: var(--fontDefaultcolor);
-    background-color: var(--base01color);
-    border-color: var(--base01color);
-    border-width: 1px;
-    border-radius: 20px;
-    height: 100%;
-}
-
-.searchField:focus {
-    border-color: var(--base05color);
-    --unity-cursor-color: var(--fontDefaultcolor);
-}
-
-.searchField:hover {
-    border-color: var(--base05color);
-}
-
-.searchField > .unity-base-field__input {
-    padding: 0 5px;
-    border-width: 0;
-    background-color: var(--base01color);
-}
-
-.unity-scroller > RepeatButton {
-    display: none;
-}
-
-.unity-scroller > ScrollerSlider {
-    margin: 0;
-}
-
-.unity-scroller #unity-tracker {
-    border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
-}
-
-.unity-scroller #unity-dragger {
-    border-radius: 10px;
-    margin: 0 2px;
-    background-color: var(--base05color);
-}
-
-.unity-scroller--horizontal {
-    min-height: 12px;
-    height: 12px;
-}
-
-.unity-scroller--horizontal .unity-slider {
-    min-height: 12px;
-    height: 12px;
-}
-
-.unity-scroller--horizontal #unity-dragger {
-    height: 10px;
-    min-height: 10px;
-    max-height: 10px;
-    margin-top: -3px;
-    border-radius: 5px;
-}
-
-.unity-scroller--vertical {
-    min-width: 12px;
-    width: 12px;
-}
-
-.unity-scroller--vertical .unity-slider {
-    min-width: 12px;
-    width: 12px;
-}
-
-.unity-scroller--vertical #unity-dragger {
-    width: 10px;
-    min-width: 10px;
-    max-width: 10px;
-    margin-left: -3px;
-    border-radius: 5px;
-}
-
-.tag {
-    flex-direction: row;
-    height: 30px;
-    padding: 0 10px;
-    margin: 5px;
-    background-color: var(--base05color);
-    color: var(--fontDefaultcolor);
-    border-radius: 15px;
-    align-items: center;
-}
-
-.tag #removeBtn {
-    width: 16px;
-    height: 16px;
-    margin-left: 3px;
-    -unity-background-image-tint-color: var(--base04color);
-}
-
-.tag Label {
-    flex-grow: 1;
-    flex-shrink: 1;
-    margin: 0;
-    padding: 0;
-    -unity-text-align: middle-left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.fixedTag {
-    flex-grow: 0;
-    min-width: 250px;
-    max-width: 250px;
-    margin-bottom: 0;
-}
-
-.textField {
-    margin: 2;
-    color: var(--fontDefaultcolor);
-    background-color: var(--base01color);
-    border-color: var(--base01color);
-    border-width: 1px;
-    border-radius: 10px;
-}
-
-.textField:focus {
-    border-color: var(--base05color);
-    --unity-cursor-color: var(--fontDefaultcolor);
-}
-
-.textField:hover {
-    border-color: var(--base05color);
-}
-
-.textField > .unity-base-field__input {
-    border-width: 0;
-    background-color: var(--base01color);
-}
-
-.checkBox .unity-toggle__checkmark {
-    color: var(--fontDefaultcolor);
-    background-color: var(--base01color);
-    border-color: var(--base04color);
-    -unity-background-image-tint-color: var(--fontDefaultcolor);
-}
-
-.checkBox:hover .unity-toggle__checkmark {
-    border-color: var(--base05color);
-}
-
-.checkBox:focus Label {
-    color: var(--fontDefaultcolor);
-}
-
-.dropdown {
-    margin: 2;
-}
-
-.dropdown > .unity-popup-field__label {
-    min-width: 120px;
-    color: var(--fontDefaultcolor);
-}
-
-.dropdown > .unity-base-field__input {
-    margin: 0;
-    height: 36px;
-    color: var(--fontDefaultcolor);
-    background-color: var(--base01color);
-    border-color: var(--base01color);
-    border-width: 1px;
-    border-radius: 10px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-}
-
-.dropdown:hover > .unity-base-field__input {
-    border-color: var(--base05color);
-}
-
-.dropdown:active > .unity-base-field__input {
-    border-color: var(--base05color);
-}
-
-.dropdown > .unity-base-field__input > .unity-base-popup-field__arrow {
-    -unity-background-image-tint-color: var(--base05color);
-}
-
-.unity-base-dropdown__container-inner {
-    border-radius: 10px;
-    background-color: var(--base01color);
-}
-
-.unity-base-dropdown__container-outer {
-    margin: 0;
-    border-radius: 10px;
-    border-color: var(--base05color);
-    color: var(--fontDefaultcolor);
-}
-
-.unity-base-dropdown__container-outer .unity-base-slider--horizontal {
-    min-height: 0px;
-    max-height: 0px;
-}
-
-.unity-base-dropdown__container-outer .unity-scroller--horizontal {
-    min-height: 0px;
-    max-height: 0px;
-}
-
-.unity-base-dropdown__label {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    margin-right: 12px;
-}
-
-.unity-base-dropdown__checkmark {
-    -unity-background-image-tint-color: var(--fontDefaultcolor);
-}
-
-.popup {
-    position: absolut;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.iconbutton {
-    width: 20px;
-    height: 20px;
-    margin: 2px;
-    padding: 0;
-    -unity-slice-left: 2px;
-    -unity-slice-right: 2px;
-    -unity-slice-top: 2px;
-    -unity-slice-bottom: 2px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0.1px;
-    border-color: var(--base01color);
-    -unity-background-image-tint-color: var(--fontDefaultcolor);
-}
-
-.iconbutton:hover {
-    -unity-background-image-tint-color: var(--fontLightcolor);
-}
-
-.customcolorfield {
-    margin: 0;
-}
-
-.customcolorfield .color-field__input {
-    width: 20px;
-    height: 20px;
-    margin: 2px;
-    border-width: 0.1px;
-    border-color: var(--base01color);
-}
-
-.clickableLabel:hover {
-    color: var(--fontLightcolor);
-}
-
-.previewText {
-    color: var(--fontDarkcolor);
-}
-
-.hidePreviewText .previewText {
-    display: none;
-}
-
-.hide {
-    display: none;
 }

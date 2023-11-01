@@ -1,12 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
-    <ui:VisualElement name="background" class="popup" style="justify-content: center;">
-        <ui:VisualElement name="spinner" usage-hints="None" style="width: 80px; height: 80px; align-self: center;">
-            <ui:VisualElement name="image" usage-hints="None" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: resource(&apos;loader&apos;); -unity-background-scale-mode: scale-to-fit; align-self: auto; align-items: center; justify-content: center; width: 100%; height: 100%; display: flex; -unity-slice-top: 0; -unity-slice-bottom: 0;" />
+    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/loadingOverlay.uss?fileID=7433441132597879392&amp;guid=63b7cb3b560c84d46a03e42570481a07&amp;type=3#loadingOverlay" />
+    <ui:VisualElement name="background">
+        <ui:VisualElement name="spinner">
+            <ui:VisualElement name="image" style="background-image: resource(&apos;loader&apos;);" />
         </ui:VisualElement>
-        <ui:VisualElement style="background-color: rgba(0, 0, 0, 0); flex-direction: row; align-self: center;">
-            <ui:Label tabindex="-1" name="loadingLabel" text="loading..." style="align-self: center; -unity-text-align: middle-center; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; color: rgb(255, 255, 255);" />
-            <ui:Button display-tooltip-when-elided="true" name="abortButton" class="xButton" style="background-image: resource(&apos;x&apos;); max-height: 20px; max-width: 20px; min-width: 20px; min-height: 20px; margin-left: 5px;" />
+        <ui:VisualElement name="labelContainer">
+            <ui:Label name="loadingLabel" text="loading..." />
+            <ui:Button name="abortButton" class="xButton" style="background-image: resource(&apos;x&apos;);" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

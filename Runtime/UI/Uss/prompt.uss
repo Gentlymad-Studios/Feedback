@@ -1,0 +1,49 @@
+#background {
+    min-height: 150px;
+    max-height: 150px;
+    min-width: 250px;
+    max-width: 250px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.5);
+    border-width: 1px;
+    border-radius: 11px;
+}
+
+#prompt {
+    max-height: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    border-radius: 10px;
+}
+
+#header {
+    min-height: 25px;
+    justify-content: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#header > Label {
+    -unity-text-align: middle-center;
+    color: rgb(255, 255, 255);
+    padding: 0;
+    margin: 0;
+    -unity-font-style: bold;
+}
+
+#promptDescriptionLbl {
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+    margin: 0;
+    white-space: normal;
+    text-overflow: ellipsis;
+}
+
+Button {
+    margin: 0;
+    max-height: 25px;
+    min-height: 25px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
