@@ -57,6 +57,9 @@ public class UIPopup : UIPopUpBase {
     private WindowType currentWindowType;
     private WindowType activeWindow = WindowType.Search;
 
+    private bool devMode = false;
+    private bool devModeFlag = false;
+
     private bool currentlyLoading = false;
     private LoadAsanaAttachmentFiles fileLoader;
 
@@ -74,6 +77,11 @@ public class UIPopup : UIPopUpBase {
             ActiveWindow = currentWindowType;
             base.GetData();
         }
+    }
+
+    public void SetDevModeFlag(bool enabled) {
+        devModeFlag = enabled;
+        CheckDevLogin();
     }
 
     private void Awake() {
@@ -231,8 +239,11 @@ public class UIPopup : UIPopUpBase {
 
     #region Auth and login
     private void CheckDevLogin() {
-        if (Debug.isDebugBuild) {
+        devMode = false;
+
+        if (Debug.isDebugBuild || devModeFlag) {
             PanelComponents.loginSection.SetEnabled(true);
+            devMode = true;
         }
     }
 
