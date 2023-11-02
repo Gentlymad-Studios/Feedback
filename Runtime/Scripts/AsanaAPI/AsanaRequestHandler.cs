@@ -260,38 +260,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
     }
 
     /// <summary>
-    /// Use AsanaRequestHandler upvote endpoint to send upvotes.
-    /// </summary>
-    /// <param name="ticket"></param>
-    public async override void PostUpvoteCount(string ticketId, int count) {
-        requestRunning = true;
-
-        string userID = CheckForUserGid();
-        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.UpdateUpvotesEndpoint}{userID}/{ticketId}/{count}";
-
-        request = (HttpWebRequest)WebRequest.Create(url);
-        request.Method = RequestMethods.GET.ToString();
-        request.ContentType = "application/json";
-        request.Timeout = 5000;
-
-        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-        using (Stream stream = response.GetResponseStream())
-        using (StreamReader reader = new StreamReader(stream)) {
-            try {
-                List<TaskModels.AsanaTaskModel> ticketModels = new List<TaskModels.AsanaTaskModel>();
-                string result = await reader.ReadToEndAsync();
-                Debug.Log(result);
-                response.Close();
-                return;
-            } catch (Exception e) {
-                Debug.LogError("An error occoured while posting increased upvote count: " + e.Message);
-            }
-        }
-
-        requestRunning = false;
-    }
-
-    /// <summary>
     /// Add a tag to the tag list. 
     /// </summary>
     /// <param name="tag"></param>
@@ -462,7 +430,6 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
         requestRunning = false;
     }
-
     #endregion
 }
 

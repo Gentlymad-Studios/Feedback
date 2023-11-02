@@ -1,9 +1,7 @@
 using System;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 public class TicketPreview {
-    public Action<string,int> sendUpvoteAction;
     public Action openDetailPopup;
     public Action addToMentions;
     public Action removeFromMentions;
@@ -13,7 +11,6 @@ public class TicketPreview {
     public Label taskTitleLbl;
     public Label taskTypeLbl;
     public Label taskDescriptionLbl;
-    private Label upvoteLbl;
     private Toggle mentionTgl;
     private VisualElement tagContainer;
     private VisualElement tagHolder;
@@ -34,7 +31,6 @@ public class TicketPreview {
         taskTitleLbl = ui.Q("taskTitleLbl") as Label;
         taskTypeLbl = ui.Q("taskTypeLbl") as Label;
         taskDescriptionLbl = ui.Q("taskDescriptionLbl") as Label;
-        upvoteLbl = ui.Q("upvoteLbl") as Label;
         mentionTgl = ui.Q("mentionedTgl") as Toggle;
         tagContainer = ui.Q("TagContainer");
         tagHolder = ui.Q("TagHolder");
@@ -49,14 +45,12 @@ public class TicketPreview {
     public void RegisterEvents() {
         UnregisterEvents();
         ui.RegisterCallback<ClickEvent>(Card_clicked);
-        upvoteLbl.RegisterCallback<ClickEvent>(Upvote_clicked);
         mentionTgl.RegisterValueChangedCallback(Mention_changed);
         mentionTgl.RegisterCallback<ClickEvent>(Mention_clicked);
     }
 
     public void UnregisterEvents() {
         ui.UnregisterCallback<ClickEvent>(Card_clicked);
-        upvoteLbl.UnregisterCallback<ClickEvent>(Upvote_clicked);
         mentionTgl.UnregisterValueChangedCallback(Mention_changed);
         mentionTgl.UnregisterCallback<ClickEvent>(Mention_clicked);
 
@@ -65,12 +59,6 @@ public class TicketPreview {
     #region ClickEvents
     private void Card_clicked(ClickEvent evt) {
         openDetailPopup.Invoke();
-    }
-
-    private void Upvote_clicked(ClickEvent evt) {
-        Vote();
-        sendUpvoteAction.Invoke(gid, int.Parse(upvoteLbl.text));
-        evt.StopPropagation();
     }
 
     private void Mention_clicked(ClickEvent evt) {
@@ -94,8 +82,6 @@ public class TicketPreview {
                 break;
             }
         }
-
-        upvoteLbl.text = ticketModel.custom_fields[0]?.display_value.ToString();
 
         string[] tags = null;
         string value = ticketModel.custom_fields[1]?.display_value?.ToString();
@@ -121,24 +107,8 @@ public class TicketPreview {
         taskTitleLbl.text = string.Empty;
         taskDescriptionLbl.text = string.Empty;
         gid = string.Empty;
-        upvoteLbl.text = "0";
         mentioned = false;
         mentionTgl.SetValueWithoutNotify(false);
-    }
-    public string Vote() {
-        int value;
-        int.TryParse(upvoteLbl.text.ToString(), out value);
-        Debug.Log(value);
-
-        if (!voted) {
-            value += 1;
-            voted = true;
-        } else {
-            value -= 1;
-            voted = false;
-        }
-        upvoteLbl.text = value.ToString();
-        return value.ToString();
     }
 
     private void Mention(bool mentioned) {
@@ -158,12 +128,6 @@ public class TicketPreview {
     public void ResetTicketModel() {
         resetPreview.Invoke();
         ticketModel = null;
-    }
-    public bool PreviewEmpty() {
-        if (taskTitleLbl.text.Equals(string.Empty)) {
-            return true;
-        }
-        return false;
     }
 
     public void Select() {

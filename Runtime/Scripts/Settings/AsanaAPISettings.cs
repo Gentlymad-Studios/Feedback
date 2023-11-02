@@ -11,7 +11,6 @@ public class AsanaAPISettings : APISettings {
     public string LoginEndpoint;
     public string LogoutEndpoint;
     public string PostNewTaskDataEndpoint;
-    public string UpdateUpvotesEndpoint;
     public string GetUserWithUniqueId;
 
     [Header("Asana Workspace")]

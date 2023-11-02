@@ -34,8 +34,6 @@ public class TicketBrowser {
             TicketPreview taskPreview = new TicketPreview(taskCard, uIPopup.TagUi);
             //add to tasklist
             taskPreviewList.Add(taskPreview);
-            //add events
-            taskPreview.sendUpvoteAction = uIPopup.Api.RequestHandler.PostUpvoteCount;
         }
 
         RegisterEvents();
