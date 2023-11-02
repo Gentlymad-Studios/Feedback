@@ -66,10 +66,10 @@ public class AsanaProject {
     public bool includeLatestSavegame = true;
     public bool includeGlobalCustomFiles = false;
     public bool includeCustomFiles = false;
-    [Tooltip("If this is set, the project is only available logged in users")]
-    public bool visibleOnLoginOnly = false;
-    [Tooltip("If this is set, the project is hidden for logged in users")]
-    public bool hideOnLogin = false;
+    [Tooltip("If this is set, the project is available for logged in users")]
+    public bool visibleForDev = false;
+    [Tooltip("If this is set, the project is available players")]
+    public bool visibleForPlayer = false;
     [Tooltip("List of Files that should be attached for to this Project")]
     public List<string> CustomFiles;
 

@@ -227,7 +227,7 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.searchTxtFld.value = string.Empty;
         PanelComponents.taskDescriptionTxt.value = string.Empty;
         PanelComponents.taskTitleTxt.value = string.Empty;
-        PanelComponents.taskTypeDrpDwn.value = settings.asanaProjects[0].name;
+        PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
 
         MentionedTask.Clear();
 
@@ -368,11 +368,11 @@ public class UIPopup : UIPopUpBase {
             AsanaProject project = settings.asanaProjects[i];
 
             if (loggedIn) {
-                if (project.hideOnLogin) {
+                if (!project.visibleForDev) {
                     continue;
                 }
             } else {
-                if (project.visibleOnLoginOnly) {
+                if (!project.visibleForPlayer) {
                     continue;
                 }
             }
@@ -480,6 +480,19 @@ public class UIPopup : UIPopUpBase {
     }
 
     private void SendData() {
+        AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
+        bool loggedIn = Api.RequestHandler.User != null;
+
+        if (loggedIn) {
+            if (!asanaProject.visibleForDev) {
+                return;
+            }
+        } else {
+            if (!asanaProject.visibleForPlayer) {
+                return;
+            }
+        }
+
         if (Api is AsanaAPI) {
             var asanaAPI = (AsanaAPI)Api;
             asanaAPI.Mentions.AddRange(MentionedTask.Keys);
@@ -488,8 +501,6 @@ public class UIPopup : UIPopUpBase {
         List<Texture2D> textureList = new List<Texture2D>();
         textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
         DrawImage.drawingCanBeDestroyed = true;
-
-        AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
 
         Dictionary<string, string> fileList = fileLoader.LoadAttachments(asanaProject);
         //fileList.Add("Test text to represent textual data");
