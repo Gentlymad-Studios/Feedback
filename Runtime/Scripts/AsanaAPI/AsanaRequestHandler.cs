@@ -243,9 +243,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
 
         if (projectType.CustomDataCallback != null) {
-            List<CustomData> customData = projectType.CustomDataCallback.Invoke();
+            List<AsanaProject.CustomData> customData = projectType.CustomDataCallback.Invoke();
             for (int i = 0; i < customData.Count; i++) {
-                if (customData[i].gid > 0) {
+                if (!string.IsNullOrEmpty(customData[i].gid)) {
                     customFields.Add(customData[i].gid.ToString(), customData[i].values);
                 }
             }

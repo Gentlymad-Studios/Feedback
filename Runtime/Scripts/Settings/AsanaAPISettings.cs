@@ -75,9 +75,10 @@ public class AsanaProject {
 
     public delegate List<CustomData> Callback();
     public Callback CustomDataCallback;
+
+    public class CustomData {
+        public string gid;
+        public List<string> values;
+    }
 }
 
-public class CustomData {
-    public int gid;
-    public List<string> values;
-}
