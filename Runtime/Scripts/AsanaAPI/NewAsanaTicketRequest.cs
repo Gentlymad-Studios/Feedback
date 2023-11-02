@@ -9,7 +9,7 @@ public class NewAsanaTicketRequest {
         public Attachment[] attachments { get; set; }
         public string html_notes { get; set; } 
 
-        public List<string> custom_fields = new List<string>();
+        public Dictionary<string, List<string>> custom_fields = new Dictionary<string, List<string>>();
 
     }
     public class Attachment {

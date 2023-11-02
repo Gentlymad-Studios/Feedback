@@ -6,7 +6,7 @@ using UnityEngine;
 public class AsanaAPISettings : APISettings {
     [Header("AsanaRequestManager Endpoints")]
     public string BaseUrl;
-    public string GetCustomFields;
+    public string GetReportTags;
     public string GetAllTaskDataEndpoint;
     public string LoginEndpoint;
     public string LogoutEndpoint;
@@ -72,4 +72,12 @@ public class AsanaProject {
     public bool hideOnLogin = false;
     [Tooltip("List of Files that should be attached for to this Project")]
     public List<string> CustomFiles;
+
+    public delegate List<CustomData> Callback();
+    public Callback CustomDataCallback;
+}
+
+public class CustomData {
+    public int gid;
+    public List<string> values;
 }

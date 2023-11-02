@@ -74,7 +74,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
             }
 
 
-            url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
+            url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.GET.ToString();
             request.Timeout = 3000;
@@ -164,14 +164,12 @@ public class AsanaRequestHandler : BaseRequestHandler {
             }
         }
 
-        BuildCustomFields();
-
         NewAsanaTicketRequest.NewTicketData newTicketRequest = new NewAsanaTicketRequest.NewTicketData();
         newTicketRequest.name = data.Title;
         newTicketRequest.notes = data.Text;
         newTicketRequest.projects = projectId;
         newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
-        newTicketRequest.custom_fields = asanaAPI.CustomFields;
+        newTicketRequest.custom_fields = BuildCustomFields(data.AsanaProject).Result;
         newTicketRequest.attachments = attachments.ToArray();
         newTicketRequest.html_notes = BuildRichText(data.Text);
         string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
@@ -217,8 +215,9 @@ public class AsanaRequestHandler : BaseRequestHandler {
         return attachment;
     }
 
-    private async void BuildCustomFields() {
-        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetCustomFields}";
+    private async Task<Dictionary<string, List<string>>> BuildCustomFields(AsanaProject projectType) {
+        Dictionary<string, List<string>> customFields = new Dictionary<string, List<string>>();
+        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
         request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = RequestMethods.GET.ToString();
         using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -229,19 +228,30 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 string result = await reader.ReadToEndAsync();
                 reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
                 //first member of list is always gid of custom field
-                asanaAPI.CustomFields.Add(reportTags.gid);
+                List<string> tags = new List<string>();
                 foreach (TaskModels.Tags tag in reportTags.enum_options) {
                     foreach (TagPreview stag in Tags) {
                         if (stag.title.ToLower().Equals(tag.name.ToLower())) {
-                            asanaAPI.CustomFields.Add(tag.gid);
+                            tags.Add(tag.gid);
                         }
                     }
                 }
-                return;
+                customFields.Add(reportTags.gid, tags);
             } catch (Exception e) {
                 Debug.LogWarning("An exception occured while building custom field object " + e.Message);
             }
         }
+
+        if (projectType.CustomDataCallback != null) {
+            List<CustomData> customData = projectType.CustomDataCallback.Invoke();
+            for (int i = 0; i < customData.Count; i++) {
+                if (customData[i].gid > 0) {
+                    customFields.Add(customData[i].gid.ToString(), customData[i].values);
+                }
+            }
+        }
+
+        return customFields;
     }
 
     private string BuildRichText(string notes) {
