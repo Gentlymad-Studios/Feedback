@@ -1,26 +1,23 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
-    <ui:VisualElement name="CardContainer" style="min-height: 250px; max-height: 100%; max-width: 350px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 350px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 1;">
-        <ui:VisualElement name="Card" class="base04" style="margin-left: 15px; margin-right: 15px; margin-top: 15px; margin-bottom: 15px; flex-grow: 1; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
-            <ui:VisualElement name="Header" class="base02" style="flex-grow: 1; max-width: none; min-width: 100%; max-height: 50px; min-height: 50px; padding-left: 7px; padding-right: 7px; padding-top: 7px; padding-bottom: 7px; width: auto; height: 50px; justify-content: center; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <ui:Label tabindex="-1" text="HEADLINE dsa dsa dsa weg rgtr tr rht htrhtr thr hrt" display-tooltip-when-elided="true" name="taskTitleLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-font-style: bold; overflow: hidden; text-overflow: ellipsis; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
-                <ui:Label tabindex="-1" text="Type: Bug" display-tooltip-when-elided="true" name="taskTypeLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; overflow: hidden; text-overflow: ellipsis; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/base.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#base" />
+    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/ticketCard.uss?fileID=7433441132597879392&amp;guid=49bcb02e2bf83d840b5a17690ef8f689&amp;type=3#ticketCard" />
+    <ui:VisualElement name="CardContainer">
+        <ui:VisualElement name="Card" class="base04">
+            <ui:VisualElement name="Header" class="base02">
+                <ui:Label text="HEADLINE dsa dsa dsa weg rgtr tr rht htrhtr thr hrt" name="taskTitleLbl" />
+                <ui:Label tabindex="-1" text="Type: Bug" display-tooltip-when-elided="true" name="taskTypeLbl" />
             </ui:VisualElement>
-            <ui:VisualElement name="Content" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); max-width: 100%; min-width: 250px; max-height: none; height: auto; width: 100%; min-height: 100px; flex-wrap: nowrap; margin-bottom: 50px;">
-                <ui:ScrollView name="ScrollView" vertical-scroller-visibility="Hidden" mouse-wheel-scroll-size="100" style="flex-grow: 1; padding-left: 7px; padding-right: 7px; padding-top: 7px; padding-bottom: 7px;">
-                    <ui:Label tabindex="-1" text="CONTENT TEXT" display-tooltip-when-elided="true" name="taskDescriptionLbl" class="fontSizeSmall" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-wrap: wrap; white-space: normal;" />
+            <ui:VisualElement name="Content">
+                <ui:ScrollView name="ScrollView" vertical-scroller-visibility="Hidden" mouse-wheel-scroll-size="100">
+                    <ui:Label text="CONTENT TEXT" name="taskDescriptionLbl" class="fontSizeSmall" />
                 </ui:ScrollView>
-                <ui:VisualElement name="TagContainer" style="background-color: rgba(0, 0, 0, 0); min-height: 46px;">
-                    <ui:VisualElement class="base03" style="min-height: 1px; max-height: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 0;" />
+                <ui:VisualElement name="TagContainer">
+                    <ui:VisualElement name="Separator" class="base03" />
                     <ui:ScrollView name="TagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="Footer" class="base02" style="flex-grow: 1; width: 100%; height: 50px; max-width: 350px; min-height: 50px; max-height: 10%; flex-direction: row; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; align-self: flex-end; align-items: flex-end; bottom: 0; position: absolute; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;">
-                <ui:VisualElement name="UpvoteContainer" style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: flex-end;">
-                    <ui:VisualElement name="upvoteIcon" style="flex-grow: 1; background-image: resource(&apos;thumb-up-filled&apos;); min-height: 23px; max-width: 23px; min-width: 23px; max-height: 23px; display: none;" />
-                    <ui:Label tabindex="-1" text="UPVOTES" display-tooltip-when-elided="true" name="upvoteLbl" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 1; -unity-text-align: middle-left; display: none;" />
-                    <ui:Toggle label="link to my ticket" name="mentionedTgl" class="checkBox" style="-unity-text-align: middle-right;" />
-                </ui:VisualElement>
+            <ui:VisualElement name="Footer" class="base02">
+                <ui:Toggle label="link to my ticket" name="mentionedTgl" class="checkBox" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
