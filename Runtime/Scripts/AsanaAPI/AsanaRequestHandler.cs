@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using static TaskModels;
 using Debug = UnityEngine.Debug;
 
 //query builder https://developers.asana.com/reference/searchtasksforworkspace
@@ -169,7 +170,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
         newTicketRequest.notes = data.Text;
         newTicketRequest.projects = projectId;
         newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
-        newTicketRequest.custom_fields = BuildCustomFields(data.AsanaProject).Result;
+        newTicketRequest.custom_fields = BuildCustomFields(data.AsanaProject);
         newTicketRequest.attachments = attachments.ToArray();
         newTicketRequest.html_notes = BuildRichText(data.Text);
         string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
@@ -215,33 +216,20 @@ public class AsanaRequestHandler : BaseRequestHandler {
         return attachment;
     }
 
-    private async Task<Dictionary<string, List<string>>> BuildCustomFields(AsanaProject projectType) {
+    private Dictionary<string, List<string>> BuildCustomFields(AsanaProject projectType) {
         Dictionary<string, List<string>> customFields = new Dictionary<string, List<string>>();
-        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
-        request = (HttpWebRequest)WebRequest.Create(url);
-        request.Method = RequestMethods.GET.ToString();
-        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-        using (Stream stream = response.GetResponseStream())
-        using (StreamReader reader = new StreamReader(stream)) {
-            try {
-                TaskModels.ReportTags reportTags = new TaskModels.ReportTags();
-                string result = await reader.ReadToEndAsync();
-                reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
-                //first member of list is always gid of custom field
-                List<string> tags = new List<string>();
-                foreach (TaskModels.Tags tag in reportTags.enum_options) {
-                    foreach (TagPreview stag in Tags) {
-                        if (stag.title.ToLower().Equals(tag.name.ToLower())) {
-                            tags.Add(tag.gid);
-                        }
-                    }
+        //Build ReportTags CustomField
+        List<string> tags = new List<string>();
+        foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
+            foreach (TagPreview stag in Tags) {
+                if (stag.title.ToLower().Equals(tag.name.ToLower())) {
+                    tags.Add(tag.gid);
                 }
-                customFields.Add(reportTags.gid, tags);
-            } catch (Exception e) {
-                Debug.LogWarning("An exception occured while building custom field object " + e.Message);
             }
         }
+        customFields.Add(asanaAPI.ReportTagsBackup.gid, tags);
 
+        //Build Custom CustomFields
         if (projectType.CustomDataCallback != null) {
             List<AsanaProject.CustomData> customData = projectType.CustomDataCallback.Invoke();
             for (int i = 0; i < customData.Count; i++) {
