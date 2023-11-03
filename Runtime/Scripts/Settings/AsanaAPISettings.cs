@@ -7,7 +7,8 @@ public class AsanaAPISettings : APISettings {
     [Header("AsanaRequestManager Endpoints")]
     public string BaseUrl;
     public string GetReportTags;
-    public string GetAllTaskDataEndpoint;
+    public string GetPlayerTaskDataEndpoint;
+    public string GetDevTaskDataEndpoint;
     public string LoginEndpoint;
     public string LogoutEndpoint;
     public string PostNewTaskDataEndpoint;

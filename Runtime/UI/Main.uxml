@@ -9,30 +9,32 @@
     <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/ColorFieldStyleSheet.uss?fileID=7433441132597879392&amp;guid=bdacf44a7b5bf5c4d94ea5784f944720&amp;type=3#ColorFieldStyleSheet" />
     <Style src="project://database/Assets/Feedback/Plugins/GameUI/USS/ColorPopupStyleSheet.uss?fileID=7433441132597879392&amp;guid=9153a560cf1694b4cb538dbd33d91d63&amp;type=3#ColorPopupStyleSheet" />
     <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=d414830a5f034ae46b36bcec56d68eb8&amp;type=3#main" />
-    <ui:VisualElement name="Main">
-        <ui:VisualElement name="TopBar" class="base01">
-            <ui:VisualElement name="TopBarButtons">
-                <ui:Button text="Concern" name="searchBtn" class="menuItem menuItemActive" />
-                <ui:Button text="Report" name="reportBtn" class="menuItem" />
+    <ui:VisualElement name="Background">
+        <ui:VisualElement name="Main">
+            <ui:VisualElement name="TopBar" class="base01">
+                <ui:VisualElement name="TopBarButtons">
+                    <ui:Button text="Concern" name="searchBtn" class="menuItem menuItemActive" />
+                    <ui:Button text="Report" name="reportBtn" class="menuItem" />
+                </ui:VisualElement>
+                <ui:VisualElement name="loginSection">
+                    <ui:Button name="loginBtn" text="&lt;u&gt;Login&lt;/u&gt;" class="loginButton" />
+                    <ui:VisualElement name="loginAvatar" style="background-image: resource(&apos;question-mark&apos;);" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="loginSection">
-                <ui:Button name="loginBtn" text="&lt;u&gt;Login&lt;/u&gt;" class="loginButton" />
-                <ui:VisualElement name="loginAvatar" style="background-image: resource(&apos;question-mark&apos;);" />
+            <ui:VisualElement name="Description" class="base04">
+                <ui:Label text="description...." name="tabDescriptionLbl" />
+                <ui:VisualElement name="howToContainer">
+                    <ui:Label text="For a detailed instruction on how to use this tool, follow this" name="howTo" />
+                    <ui:Label text="&lt;u&gt;link&lt;/u&gt;." name="howToLbl" class="clickableLabel" />
+                </ui:VisualElement>
             </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="Description" class="base04">
-            <ui:Label text="description...." name="tabDescriptionLbl" />
-            <ui:VisualElement name="howToContainer">
-                <ui:Label text="For a detailed instruction on how to use this tool, follow this" name="howTo" />
-                <ui:Label text="&lt;u&gt;link&lt;/u&gt;." name="howToLbl" class="clickableLabel" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="ContentContainer">
-            <ui:VisualElement name="SearchTab">
-                <ui:Instance template="Report" name="Search" class="instance" />
-            </ui:VisualElement>
-            <ui:VisualElement name="ReportTab">
-                <ui:Instance template="_Report" name="Report" class="instance" />
+            <ui:VisualElement name="ContentContainer">
+                <ui:VisualElement name="SearchTab">
+                    <ui:Instance template="Report" name="Search" class="instance" />
+                </ui:VisualElement>
+                <ui:VisualElement name="ReportTab">
+                    <ui:Instance template="_Report" name="Report" class="instance" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

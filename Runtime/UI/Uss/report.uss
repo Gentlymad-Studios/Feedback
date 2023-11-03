@@ -2,6 +2,7 @@
 	width: 100%;
 	height: 100%;
 	flex-direction: row;
+	border-radius: 0px 0px 10px 10px;
 }
 
 #LeftContainer {

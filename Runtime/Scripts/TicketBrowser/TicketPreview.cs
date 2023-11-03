@@ -22,7 +22,6 @@ public class TicketPreview {
     private Action<TaskModels.AsanaTaskModel> fillPreview;
     private Action resetPreview;
 
-    private bool voted = false;
 
     public TicketPreview(VisualElement ui, VisualTreeAsset tagUi) {
         this.ui = ui;
@@ -38,7 +37,6 @@ public class TicketPreview {
         fillPreview = FillPreview;
         resetPreview = ResetPreview;
 
-        voted = false;
         RegisterEvents();
     }
 

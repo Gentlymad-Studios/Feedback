@@ -31,7 +31,7 @@ public class Prompt : VisualElement {
         Hide();
 
         RegisterCallback<KeyDownEvent>(e => {
-            if (e.keyCode == KeyCode.Escape) {
+            if (e.keyCode == KeyCode.Escape || e.keyCode == KeyCode.Return) {
                 e.StopImmediatePropagation();
                 Hide();
             }
@@ -42,6 +42,8 @@ public class Prompt : VisualElement {
         this.title.text = title;
         this.description.text = description;
         okButton.text = buttonText;
+
+        okButton.Focus();
 
         this.callback = callback;
 

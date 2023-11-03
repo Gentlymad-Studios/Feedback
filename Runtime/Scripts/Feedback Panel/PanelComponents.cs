@@ -5,6 +5,8 @@ public class PanelComponents {
     public UIDocument uiDocument;
     public VisualElement root;
 
+    public VisualElement main;
+
     // Tab Buttons
     public VisualElement searchTab;
     public VisualElement reportTab;
@@ -54,6 +56,8 @@ public class PanelComponents {
         
         root = uiDocument.rootVisualElement;
         root.panel.visualTree.styleSheets.Add(root.styleSheets[0]);
+
+        main = uiDocument.rootVisualElement.Q("Main");
 
         searchTab = uiDocument.rootVisualElement.Q("SearchTab");
         reportTab = uiDocument.rootVisualElement.Q("ReportTab");

@@ -1,49 +1,59 @@
+#Background {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
 #Main {
-	width: 100%;
-	height: 100%;
+    width: 1720px;
+    height: 880px;
+    border-radius: 10px;
 }
 
 #TopBar {
-	flex-direction: row;
-	max-height: 40px;
-	min-height: 40px;
+    flex-direction: row;
+    max-height: 40px;
+    min-height: 40px;
+    border-radius: 10px;
 }
 
 #Description {
-	padding: 0 15px 15px 15px;
+    padding: 0 15px 15px 15px;
 }
 
 #howToContainer {
-	flex-direction: row;
+    flex-direction: row;
 }
 
 #howTo {
-	padding-right: 0;
-	padding-top: 0;
-	margin-top: 0;
+    padding-right: 0;
+    padding-top: 0;
+    margin-top: 0;
 }
 
 #howToLbl {
-	margin-left: 0;
-	padding-left: 0;
-	margin-top: 0;
-	padding-top: 0;
+    margin-left: 0;
+    padding-left: 0;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 #ContentContainer {
-	flex-grow: 1;
+    flex-grow: 1;
 }
 
 #ContentContainer > VisualElement {
-	flex-grow: 1;
+    flex-grow: 1;
 }
 
 .instance {
-	flex-grow: 1;
+    flex-grow: 1;
 }
 
 #loginSection {
-	flex-direction: row;
+    flex-direction: row;
 }
 
 .loginButton {
@@ -63,15 +73,16 @@
 }
 
 #loginAvatar {
-	background-color: rgb(0, 0, 0);
-	-unity-background-image-tint-color: rgb(255, 255, 255);
-	min-height: 100%;
-	min-width: 43px;
+    background-color: rgb(0, 0, 0);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    min-height: 100%;
+    min-width: 43px;
+    border-top-right-radius: 10px;
 }
 
 #TopBarButtons {
-	flex-grow: 1;
-	flex-direction: row;
+    flex-grow: 1;
+    flex-direction: row;
 }
 
 .menuItem {
@@ -80,13 +91,17 @@
     border-width: 0;
     background-color: var(--base02color);
     color: var(--fontDarkcolor);
-	min-width: 150px;
-	max-width: 150px;
-	max-height: 100%;
-	min-height: 100%;
-	height: 10%;
-	width: 150px;
-	-unity-font-style: bold;
+    min-width: 150px;
+    max-width: 150px;
+    max-height: 100%;
+    min-height: 100%;
+    height: 10%;
+    width: 150px;
+    -unity-font-style: bold;
+}
+
+#searchBtn {
+    border-top-left-radius: 10px;
 }
 
 .menuItem:hover {

@@ -76,7 +76,7 @@ public class UIPopup : UIPopUpBase {
             currentWindowType = before;
         } else {
             ActiveWindow = currentWindowType;
-            base.GetData();
+            base.GetData(false);
         }
     }
 
@@ -93,6 +93,7 @@ public class UIPopup : UIPopUpBase {
             PanelComponents.Initialize(UIDocument);
         }
 
+        PanelComponents.root.RegisterCallback<MouseDownEvent>(Click);
         PanelComponents.howToDescLbl.text = settings.howToDescription;
         PanelComponents.howToLbl.text = settings.howToName;
 
@@ -208,6 +209,8 @@ public class UIPopup : UIPopUpBase {
     }
 
     protected override void OnHideWindow() {
+        Prompt?.Hide();
+
         SetLoadingStatus(false);
         UnregisterEvents();
 
@@ -280,6 +283,8 @@ public class UIPopup : UIPopUpBase {
             SetupTaskTypeDrowndown();
             PanelComponents.loginBtn.text = "<u>Login</u>";
             PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
+
+            UpdateTasksAfterLogInOut();
         }
     }
 
@@ -289,11 +294,21 @@ public class UIPopup : UIPopUpBase {
             //PanelComponents.loginBtn.text = "Logout " + Api.RequestHandler.User.name;
 
             Api.RequestHandler.LoadAvatar();
+            UpdateTasksAfterLogInOut();
         } else {
             OnLoginFail("Unable to Login!");
         }
         SetupTaskTypeDrowndown();
-        SetLoadingStatus(false);
+    }
+
+    private void UpdateTasksAfterLogInOut() {
+        currentlyLoading = true;
+        initializedAfterLoad = false;
+        base.GetData(true);
+
+        MentionedTask.Clear();
+        PanelComponents.mentionedTickets.Clear();
+        PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.None;
     }
 
     private void AvatarLoaded() {
@@ -441,6 +456,13 @@ public class UIPopup : UIPopUpBase {
                 tag.ToggleTag();
                 break;
             }
+        }
+    }
+
+    public void Click(MouseDownEvent evt) {
+        if (!PanelComponents.main.layout.Contains(evt.mousePosition)) {
+            ActiveWindow = WindowType.None;
+            SetWindowTypes();
         }
     }
     #endregion

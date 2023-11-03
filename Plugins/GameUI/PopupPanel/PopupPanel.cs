@@ -62,6 +62,10 @@ namespace Game.UI {
                     Hide();
                 }
             });
+            RegisterCallback<MouseDownEvent>(e => {
+                e.StopImmediatePropagation();
+                Hide();
+            });
 
             // panel
             mainPanel = new VisualElement();

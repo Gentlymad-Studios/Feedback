@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// Api class which inherits from the basic api class.  
 /// </summary>
 public class AsanaAPI : BaseAPI {
-    public delegate void DataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags);
+    public delegate void DataReceived(List<TaskModels.AsanaTaskModel> playerTasks, List<TaskModels.AsanaTaskModel> devTasks, TaskModels.ReportTags reportTags);
     public static event DataReceived DataReceivedEvent;
 
     public delegate void LoginResult(bool success);
@@ -15,7 +15,8 @@ public class AsanaAPI : BaseAPI {
     public static event AvatarLoaded AvatarLoadedEvent;
 
     public AsanaAPISettings AsanaSpecificSettings;
-    public List<TaskModels.AsanaTaskModel> TicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
+    public List<TaskModels.AsanaTaskModel> PlayerTicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
+    public List<TaskModels.AsanaTaskModel> DevTicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
     public TaskModels.ReportTags ReportTagsBackup = new TaskModels.ReportTags();
     public List<string> CustomFields = new List<string>();
     public List<string> Mentions = new List<string>();
@@ -31,8 +32,8 @@ public class AsanaAPI : BaseAPI {
         Settings = AsanaSpecificSettings;
     }
 
-    public void FireDataCreated(List<TaskModels.AsanaTaskModel> tickets, TaskModels.ReportTags reportTags) {
-        DataReceivedEvent.Invoke(tickets, reportTags);
+    public void FireDataCreated(List<TaskModels.AsanaTaskModel> playerTickets, List<TaskModels.AsanaTaskModel> devTickets, TaskModels.ReportTags reportTags) {
+        DataReceivedEvent.Invoke(playerTickets, devTickets, reportTags);
     }
 
     public void FireLoginResult(bool success) {

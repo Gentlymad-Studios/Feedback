@@ -33,15 +33,17 @@ public class AsanaRequestHandler : BaseRequestHandler {
     /// Get all tasks from AsanaRequestManager, 
     /// fire TicketsRecievedEvent to create lucene index with tickets.
     /// </summary>
-    public async override void GetAllData() {
-        if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now || requestRunning) {
-            if (asanaAPI.TicketModelsBackup != null && asanaAPI.TicketModelsBackup.Count != 0 && asanaAPI.ReportTagsBackup != null) {
-                asanaAPI.FireDataCreated(asanaAPI.TicketModelsBackup, asanaAPI.ReportTagsBackup);
-                return;
+    public async override void GetData(bool force) {
+        if (!force) {
+            if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now || requestRunning) {
+                if (asanaAPI.PlayerTicketModelsBackup != null && asanaAPI.PlayerTicketModelsBackup.Count != 0 && asanaAPI.ReportTagsBackup != null) {
+                    asanaAPI.FireDataCreated(asanaAPI.PlayerTicketModelsBackup, asanaAPI.DevTicketModelsBackup, asanaAPI.ReportTagsBackup);
+                    return;
+                }
             }
         }
 
-        Task task = new Task(GetAllDataAsync);
+        Task task = new Task(GetDataAsync);
         try {
             task.Start();
             await task;
@@ -50,30 +52,48 @@ public class AsanaRequestHandler : BaseRequestHandler {
         }
     }
 
-    private async void GetAllDataAsync() {
+    private async void GetDataAsync() {
         requestRunning = true;
 
-        List<TaskModels.AsanaTaskModel> ticketModels;
-        TaskModels.ReportTags reportTags;
+        List<AsanaTaskModel> devTicketModels = new List<AsanaTaskModel>();
+        List<AsanaTaskModel> playerTicketModels = new List<AsanaTaskModel>();
+        ReportTags reportTags = new ReportTags();
 
-        string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetAllTaskDataEndpoint}";
-        request = (HttpWebRequest)WebRequest.Create(url);
-        request.Method = RequestMethods.GET.ToString();
-        request.Timeout = 3000;
+        string url = "";
         try {
+            url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
+            request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = RequestMethods.GET.ToString();
+            request.Timeout = 3000;
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream)) {
                 string result = await reader.ReadToEndAsync();
-                ticketModels = new List<TaskModels.AsanaTaskModel>();
-                ticketModels = JsonConvert.DeserializeObject<List<TaskModels.AsanaTaskModel>>(result);
-                asanaAPI.TicketModelsBackup.Clear();
-                if (ticketModels != null) {
-                    asanaAPI.TicketModelsBackup.AddRange(ticketModels);
+                playerTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
+                asanaAPI.PlayerTicketModelsBackup.Clear();
+                if (playerTicketModels != null) {
+                    asanaAPI.PlayerTicketModelsBackup.AddRange(playerTicketModels);
                     asanaAPI.lastUpdateTime = DateTime.Now;
                 }
             }
 
+            if (base.User != null) {
+                url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
+                request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = RequestMethods.GET.ToString();
+                request.Timeout = 3000;
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream)) {
+                    string result = await reader.ReadToEndAsync();
+                    devTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
+                    asanaAPI.DevTicketModelsBackup.Clear();
+                    if (devTicketModels != null) {
+                        asanaAPI.DevTicketModelsBackup.AddRange(devTicketModels);
+                        asanaAPI.lastUpdateTime = DateTime.Now;
+                    }
+                }
+            }
 
             url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
             request = (HttpWebRequest)WebRequest.Create(url);
@@ -82,18 +102,17 @@ public class AsanaRequestHandler : BaseRequestHandler {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream)) {
-                reportTags = new TaskModels.ReportTags();
                 string result = await reader.ReadToEndAsync();
-                reportTags = JsonConvert.DeserializeObject<TaskModels.ReportTags>(result);
+                reportTags = JsonConvert.DeserializeObject<ReportTags>(result);
                 asanaAPI.ReportTagsBackup = reportTags;
             }
 
-            if (ticketModels != null && reportTags != null) {
-                asanaAPI.FireDataCreated(ticketModels, reportTags);
+            if (playerTicketModels != null && devTicketModels != null && reportTags != null) {
+                asanaAPI.FireDataCreated(playerTicketModels, devTicketModels, reportTags);
             }
         } catch (Exception e) {
             Debug.LogException(e);
-            asanaAPI.FireDataCreated(null, null);
+            asanaAPI.FireDataCreated(null, null, null);
         }
 
         requestRunning = false;

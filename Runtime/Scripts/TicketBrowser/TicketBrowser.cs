@@ -75,11 +75,12 @@ public class TicketBrowser {
     }
 
     //Needs to be fired to operate on tickets!
-    private void OnDataReceived(List<TaskModels.AsanaTaskModel> tasks, TaskModels.ReportTags reportTags) {
-        Debug.Log($"<color=cyan>{tasks.Count} Tasks received. Load to RAM...</color>");
+    private void OnDataReceived(List<TaskModels.AsanaTaskModel> playerTasks, List<TaskModels.AsanaTaskModel> devTasks, TaskModels.ReportTags reportTags) {
+        Debug.Log($"<color=cyan>{playerTasks.Count} PlayerTasks received. Load to RAM...</color>");
+        Debug.Log($"<color=cyan>{devTasks.Count} DevTasks received. Load to RAM...</color>");
 
         //change nulls to empty strings
-        foreach (TaskModels.AsanaTaskModel task in tasks) {
+        foreach (TaskModels.AsanaTaskModel task in playerTasks) {
             for (int i = 0; i < task.GetType().GetProperties().Length; i++) {
                 PropertyInfo pinfo = task.GetType().GetProperties()[i];
                 if (pinfo.PropertyType == typeof(string)) {
@@ -89,7 +90,24 @@ public class TicketBrowser {
                 }
             }
         }
-        SearchWithLucene.Instance.CreateIndex(tasks);
+
+        //change nulls to empty strings
+        foreach (TaskModels.AsanaTaskModel task in devTasks) {
+            for (int i = 0; i < task.GetType().GetProperties().Length; i++) {
+                PropertyInfo pinfo = task.GetType().GetProperties()[i];
+                if (pinfo.PropertyType == typeof(string)) {
+                    if (pinfo.GetValue(task) == null) {
+                        pinfo.SetValue(task, "...");
+                    }
+                }
+            }
+        }
+
+        if (devTasks.Count > 0) {
+            SearchWithLucene.Instance.CreateIndex(devTasks);
+        } else {
+            SearchWithLucene.Instance.CreateIndex(playerTasks);
+        }
 
         Debug.Log($"<color=cyan>{reportTags.enum_options.Count} ReportTags received.</color>");
 

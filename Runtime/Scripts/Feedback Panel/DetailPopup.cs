@@ -44,6 +44,7 @@ public class DetailPopup : VisualElement {
     public void Click(MouseDownEvent evt) {
         if (!popup.layout.Contains(evt.mousePosition)) {
             Hide();
+            evt.StopPropagation();
         }
     }
 

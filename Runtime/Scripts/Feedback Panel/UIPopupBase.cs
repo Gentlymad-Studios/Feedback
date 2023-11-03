@@ -8,8 +8,8 @@ public abstract class UIPopUpBase : MonoBehaviour {
     public BaseAPI Api = null;
     private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
 
-    protected void GetData() {
-        Api.RequestHandler.GetAllData();
+    protected void GetData(bool force) {
+        Api.RequestHandler.GetData(force);
     }
 
     protected void PostData<T1, T2>(RequestData<T1, T2> data) {
