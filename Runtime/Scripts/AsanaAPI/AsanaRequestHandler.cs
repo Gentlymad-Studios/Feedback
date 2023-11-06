@@ -310,7 +310,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
     public override void LogIn() {
         uniqueId = Guid.NewGuid().ToString();
         string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.LoginEndpoint}{uniqueId}";
-        Application.OpenURL(url);
+        asanaAPISettings.Adapter.OpenUrl(url);
 
         TryGetUser();
     }
