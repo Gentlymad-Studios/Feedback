@@ -437,17 +437,24 @@ public class AsanaRequestHandler : BaseRequestHandler {
     public async override void LoadAvatar() {
         requestRunning = true;
 
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(User.picture);
-        request.timeout = 2000;
+        if (!string.IsNullOrWhiteSpace(User.picture)) {
+            try {
+                UnityWebRequest request = UnityWebRequestTexture.GetTexture(User.picture);
+                request.timeout = 2000;
 
-        UnityWebRequestAsyncOperation operation = request.SendWebRequest();
-        while (!operation.isDone) {
-            await Task.Yield();
-        }
+                UnityWebRequestAsyncOperation operation = request.SendWebRequest();
+                while (!operation.isDone) {
+                    await Task.Yield();
+                }
 
-        if (request.result == UnityWebRequest.Result.Success) {
-            User.avatar = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            asanaAPI.FireAvatarLoaded();
+                if (request.result == UnityWebRequest.Result.Success) {
+                    User.avatar = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                    asanaAPI.FireAvatarLoaded();
+                }
+            } catch (Exception e) {
+                Debug.LogWarning($"tried to fetch avatar picture @ url: {User.picture} and failed!");
+                Debug.LogWarning(e.Message);
+            }
         }
 
         requestRunning = false;
