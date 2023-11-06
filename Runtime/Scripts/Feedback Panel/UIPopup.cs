@@ -230,7 +230,11 @@ public class UIPopup : UIPopUpBase {
         PanelComponents.searchTxtFld.value = string.Empty;
         PanelComponents.taskDescriptionTxt.value = string.Empty;
         PanelComponents.taskTitleTxt.value = string.Empty;
-        PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
+        if(PanelComponents.taskTypeDrpDwn.choices.Count != 0) {
+            PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
+        } else {
+            PanelComponents.taskTypeDrpDwn.value = "";
+        }
 
         MentionedTask.Clear();
 
