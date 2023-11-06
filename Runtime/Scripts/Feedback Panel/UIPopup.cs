@@ -383,18 +383,30 @@ public class UIPopup : UIPopUpBase {
             AsanaProject project = settings.asanaProjects[i];
 
             if (loggedIn) {
-                if (!project.visibleForDev) {
+                if (!project.visibleForDev || !settings.enableDevProjects) {
                     continue;
                 }
             } else {
-                if (!project.visibleForPlayer) {
+                if (!project.visibleForPlayer || !settings.enablePlayerProjects) {
                     continue;
                 }
             }
             PanelComponents.taskTypeDrpDwn.choices.Add(settings.asanaProjects[i].name);
         }
 
-        if (string.IsNullOrEmpty(currentDataType) || !PanelComponents.taskTypeDrpDwn.choices.Contains(currentDataType)) {
+        if (PanelComponents.taskTypeDrpDwn.choices.Count == 0) {
+            currentDataType = string.Empty;
+            PanelComponents.taskTypeDrpDwn.value = string.Empty;
+
+            PanelComponents.taskSubmitBtn.SetEnabled(false);
+            PanelComponents.taskTypeDrpDwn.SetEnabled(false);
+            return;
+        }
+
+        PanelComponents.taskSubmitBtn.SetEnabled(true);
+        PanelComponents.taskTypeDrpDwn.SetEnabled(true);
+
+        if ((string.IsNullOrEmpty(currentDataType) || !PanelComponents.taskTypeDrpDwn.choices.Contains(currentDataType))) {
             PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
             currentDataType = PanelComponents.taskTypeDrpDwn.choices[0];
         }
@@ -525,11 +537,8 @@ public class UIPopup : UIPopUpBase {
         DrawImage.drawingCanBeDestroyed = true;
 
         Dictionary<string, string> fileList = fileLoader.LoadAttachments(asanaProject);
-        //fileList.Add("Test text to represent textual data");
 
-        Dictionary<Dictionary<string, string>, List<Texture2D>> attachmentSet = new Dictionary<Dictionary<string, string>, List<Texture2D>>();
-        
-        attachmentSet.Add(fileList, textureList);
+        Dictionary<Dictionary<string, string>, List<Texture2D>> attachmentSet = new Dictionary<Dictionary<string, string>, List<Texture2D>> {{ fileList, textureList }};
 
         RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachmentSet, asanaProject);
 

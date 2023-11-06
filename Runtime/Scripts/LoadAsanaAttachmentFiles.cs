@@ -38,7 +38,12 @@ public class LoadAsanaAttachmentFiles {
         settings.GlobalCustomFiles.ForEach(path => {
             string loc = Path.Combine(attachmentPath, path);
             if (File.Exists(loc)) {
-                string text = File.ReadAllText(loc);
+                string text;
+                using (FileStream logFileStream = new FileStream(loc, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    using (StreamReader logFileReader = new StreamReader(logFileStream)) {
+                        text = logFileReader.ReadToEnd();
+                    }
+                }
                 string name = Path.GetFileName(loc);
                 stringFileRepresentation.Add(name, text);
             } else {
@@ -51,7 +56,12 @@ public class LoadAsanaAttachmentFiles {
         files.ForEach(path => {
             string loc = Path.Combine(attachmentPath, path);
             if (File.Exists(loc)) {
-                string text = File.ReadAllText(loc);
+                string text;
+                using (FileStream logFileStream = new FileStream(loc, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    using (StreamReader logFileReader = new StreamReader(logFileStream)) {
+                        text = logFileReader.ReadToEnd();
+                    }
+                }
                 string name = Path.GetFileName(loc);
                 stringFileRepresentation.Add(name, text);
             } else {
@@ -72,7 +82,12 @@ public class LoadAsanaAttachmentFiles {
             return;
         }
         FileInfo latestLog = logDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).First();
-        string text = File.ReadAllText(latestLog.FullName);
+        string text;
+        using (FileStream logFileStream = new FileStream(latestLog.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+            using (StreamReader logFileReader = new StreamReader(logFileStream)) {
+                text = logFileReader.ReadToEnd();
+            }
+        }
         string name = Path.GetFileName(latestLog.FullName);
         stringFileRepresentation.Add(name, text);
     }

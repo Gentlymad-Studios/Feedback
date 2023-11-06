@@ -61,23 +61,25 @@ public class AsanaRequestHandler : BaseRequestHandler {
 
         string url = "";
         try {
-            url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = RequestMethods.GET.ToString();
-            request.Timeout = 3000;
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream)) {
-                string result = await reader.ReadToEndAsync();
-                playerTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
-                asanaAPI.PlayerTicketModelsBackup.Clear();
-                if (playerTicketModels != null) {
-                    asanaAPI.PlayerTicketModelsBackup.AddRange(playerTicketModels);
-                    asanaAPI.lastUpdateTime = DateTime.Now;
+            if (asanaAPISettings.enablePlayerProjects) {
+                url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
+                request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = RequestMethods.GET.ToString();
+                request.Timeout = 3000;
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream)) {
+                    string result = await reader.ReadToEndAsync();
+                    playerTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
+                    asanaAPI.PlayerTicketModelsBackup.Clear();
+                    if (playerTicketModels != null) {
+                        asanaAPI.PlayerTicketModelsBackup.AddRange(playerTicketModels);
+                        asanaAPI.lastUpdateTime = DateTime.Now;
+                    }
                 }
             }
 
-            if (base.User != null) {
+            if (base.User != null && asanaAPISettings.enableDevProjects) {
                 url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
                 request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = RequestMethods.GET.ToString();
@@ -111,6 +113,7 @@ public class AsanaRequestHandler : BaseRequestHandler {
                 asanaAPI.FireDataCreated(playerTicketModels, devTicketModels, reportTags);
             }
         } catch (Exception e) {
+            Debug.LogError("Something went wrong while getting data...");
             Debug.LogException(e);
             asanaAPI.FireDataCreated(null, null, null);
         }

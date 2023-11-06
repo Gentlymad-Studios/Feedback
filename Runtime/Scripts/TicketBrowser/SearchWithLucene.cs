@@ -96,6 +96,10 @@ public class SearchWithLucene {
     public IEnumerable<TaskModels.AsanaTaskModel> SearchTerm(string searchTerm) {
         var results = new List<TaskModels.AsanaTaskModel>();
         try {
+            if (!DirectoryReader.IndexExists(indexDirectory)) {
+                return results;
+            }
+
             directoryReader = DirectoryReader.Open(indexDirectory);
             indexSearcher = new IndexSearcher(directoryReader);
             QueryParser queryParser = new MultiFieldQueryParser(version, fieldsIncluded, analyzer);

@@ -18,6 +18,8 @@ public class AsanaAPISettings : APISettings {
     public string WorkspaceId;
 
     [Header("Asana Projects")]
+    public bool enablePlayerProjects = true;
+    public bool enableDevProjects = true;
     public List<AsanaProject> asanaProjects;
 
     [Header("Asana CustomField")]
