@@ -16,8 +16,12 @@ public class APISettings : ScriptableObject {
     public IAdapter adapter;
     public IAdapter Adapter {
         get {
-            if (customAdapter == null) {
-                adapter = new DefaultAdapter();
+            if (adapter == null) {
+                if (customAdapter == null) {
+                    adapter = new DefaultAdapter();
+                } else {
+                    adapter = customAdapter;
+                }
             }
             return adapter;
         }
