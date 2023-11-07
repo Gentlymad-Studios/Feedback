@@ -7,5 +7,6 @@ namespace Feedback {
         public abstract void OnCloseWindow();
         public abstract void OnOpenWindow();
         public abstract void OpenUrl(string url);
+        public abstract bool GetDevMode();
     }
 }

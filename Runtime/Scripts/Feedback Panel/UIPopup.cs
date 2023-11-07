@@ -51,7 +51,6 @@ namespace Feedback {
         private WindowType activeWindow = WindowType.Search;
 
         private bool devMode = false;
-        private bool devModeFlag = false;
 
         private bool initializedAfterLoad = false;
         private bool currentlyLoading = false;
@@ -71,11 +70,6 @@ namespace Feedback {
                 ActiveWindow = currentWindowType;
                 base.GetData(false);
             }
-        }
-
-        public void SetDevModeFlag(bool enabled) {
-            devModeFlag = enabled;
-            CheckDevLogin();
         }
 
         private void Awake() {
@@ -265,7 +259,7 @@ namespace Feedback {
         private void CheckDevLogin() {
             devMode = false;
 
-            if (Debug.isDebugBuild || devModeFlag) {
+            if (Debug.isDebugBuild || settings.adapter.GetDevMode()) {
                 PanelComponents.loginSection.SetEnabled(true);
                 devMode = true;
             }

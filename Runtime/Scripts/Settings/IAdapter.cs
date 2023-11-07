@@ -5,5 +5,7 @@ namespace Feedback {
         void OnOpenWindow();
 
         void OnCloseWindow();
+
+        bool GetDevMode();
     }
 }

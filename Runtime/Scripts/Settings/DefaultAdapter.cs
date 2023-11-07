@@ -9,5 +9,9 @@ namespace Feedback {
         public void OpenUrl(string url) {
             Application.OpenURL(url);
         }
+
+        public bool GetDevMode() {
+            return true;
+        }
     }
 }
