@@ -89,7 +89,12 @@ namespace Feedback {
             }
 
             current_brush = PenBrush;
+
+            //Reset Brush
+            panelComponents.brushBtn.AddToClassList("active");
+            panelComponents.eraseBtn.RemoveFromClassList("active");
             isEraser = false;
+            SetPenColor(pickedColor);
 
             panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
         }
@@ -128,11 +133,15 @@ namespace Feedback {
 
         private void ToolbarSetup() {
             panelComponents.brushBtn.clicked += (() => {
+                panelComponents.brushBtn.AddToClassList("active");
+                panelComponents.eraseBtn.RemoveFromClassList("active");
                 isEraser = false;
                 SetPenColor(pickedColor);
             });
 
             panelComponents.eraseBtn.clicked += (() => {
+                panelComponents.eraseBtn.AddToClassList("active");
+                panelComponents.brushBtn.RemoveFromClassList("active");
                 isEraser = true;
                 SetPenColor(Color.clear);
             });

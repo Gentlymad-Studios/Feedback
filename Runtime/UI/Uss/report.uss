@@ -84,3 +84,7 @@
 #taskCancelBtn {
 	width: 100px;
 }
+
+.active {
+    border-color: var(--fontDefaultcolor);
+}

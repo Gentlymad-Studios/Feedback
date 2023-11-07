@@ -81,7 +81,7 @@ namespace Feedback {
                     url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
                     request = (HttpWebRequest)WebRequest.Create(url);
                     request.Method = RequestMethods.GET.ToString();
-                    request.Timeout = 3000;
+                    request.Timeout = 5000;
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     using (Stream stream = response.GetResponseStream())
                     using (StreamReader reader = new StreamReader(stream)) {

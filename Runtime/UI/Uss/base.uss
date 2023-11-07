@@ -370,6 +370,12 @@
 
 .iconbutton:hover {
     -unity-background-image-tint-color: var(--fontLightcolor);
+    scale: 1.1;
+}
+
+.iconbutton:active {
+    -unity-background-image-tint-color: var(--fontDarkcolor);
+    scale: 0.9;
 }
 
 .customcolorfield {

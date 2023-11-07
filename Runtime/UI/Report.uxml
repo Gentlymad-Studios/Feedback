@@ -8,7 +8,7 @@
                     <ui:VisualElement name="ToolButtons">
                         <ui:Button name="brushSizeUpBtn" class="iconbutton" style="background-image: resource(&apos;plus&apos;);" />
                         <ui:Button name="brushSizeDownBtn" class="iconbutton" style="background-image: resource(&apos;minus&apos;);" />
-                        <ui:Button name="brushBtn" class="iconbutton" style="background-image: resource(&apos;brush&apos;);" />
+                        <ui:Button name="brushBtn" class="iconbutton active" style="background-image: resource(&apos;brush&apos;);" />
                         <ui:Button name="eraseBtn" class="iconbutton" style="background-image: resource(&apos;eraser&apos;);" />
                         <ui:Button name="clearCanvasBtn" class="iconbutton" style="background-image: resource(&apos;trash&apos;);" />
                         <Game.UI.ColorField name="color-field" class="customcolorfield" />
