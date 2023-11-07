@@ -6,6 +6,25 @@ using UnityEngine;
 namespace Feedback {
     [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]
     public class AsanaAPISettings : APISettings {
+        [Header("Adapter")]
+        [SerializeReference]
+        public CustomAdapter customAdapter = null;
+
+        [NonSerialized]
+        public IAdapter adapter;
+        public IAdapter Adapter {
+            get {
+                if (adapter == null) {
+                    if (customAdapter == null) {
+                        adapter = new DefaultAdapter();
+                    } else {
+                        adapter = customAdapter;
+                    }
+                }
+                return adapter;
+            }
+        }
+
         [Header("AsanaRequestManager Endpoints")]
         public string BaseUrl;
         public string GetReportTags;
