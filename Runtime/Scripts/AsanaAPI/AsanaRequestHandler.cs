@@ -269,9 +269,11 @@ namespace Feedback {
 
             //Build Custom CustomFields
             List<CustomData> customData = asanaAPISettings.Adapter.GetCustomFields(projectType);
-            for (int i = 0; i < customData.Count; i++) {
-                if (!string.IsNullOrEmpty(customData[i].gid)) {
-                    customFields.Add(customData[i].gid.ToString(), customData[i].values);
+            if (customData != null) {
+                for (int i = 0; i < customData.Count; i++) {
+                    if (!string.IsNullOrEmpty(customData[i].gid)) {
+                        customFields.Add(customData[i].gid.ToString(), customData[i].values);
+                    }
                 }
             }
 
