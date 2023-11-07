@@ -268,12 +268,10 @@ namespace Feedback {
             customFields.Add(asanaAPI.ReportTagsBackup.gid, tags);
 
             //Build Custom CustomFields
-            if (projectType.CustomDataCallback != null) {
-                List<AsanaProject.CustomData> customData = projectType.CustomDataCallback.Invoke();
-                for (int i = 0; i < customData.Count; i++) {
-                    if (!string.IsNullOrEmpty(customData[i].gid)) {
-                        customFields.Add(customData[i].gid.ToString(), customData[i].values);
-                    }
+            List<CustomData> customData = asanaAPISettings.Adapter.GetCustomFields(projectType);
+            for (int i = 0; i < customData.Count; i++) {
+                if (!string.IsNullOrEmpty(customData[i].gid)) {
+                    customFields.Add(customData[i].gid.ToString(), customData[i].values);
                 }
             }
 

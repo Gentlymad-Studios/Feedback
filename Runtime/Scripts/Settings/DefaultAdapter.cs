@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 namespace Feedback {
@@ -12,6 +14,10 @@ namespace Feedback {
 
         public bool GetDevMode() {
             return true;
+        }
+
+        public List<CustomData> GetCustomFields(AsanaProject projectType) {
+            return null;
         }
     }
 }

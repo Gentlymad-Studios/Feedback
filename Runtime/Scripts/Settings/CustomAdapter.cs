@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Feedback {
@@ -8,5 +9,6 @@ namespace Feedback {
         public abstract void OnOpenWindow();
         public abstract void OpenUrl(string url);
         public abstract bool GetDevMode();
+        public abstract List<CustomData> GetCustomFields(AsanaProject projectType);
     }
 }

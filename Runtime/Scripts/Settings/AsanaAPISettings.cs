@@ -95,13 +95,9 @@ namespace Feedback {
         public bool visibleForPlayer = false;
         [Tooltip("List of Files that should be attached for to this Project")]
         public List<string> CustomFiles;
-
-        public delegate List<CustomData> Callback();
-        public Callback CustomDataCallback;
-
-        public class CustomData {
-            public string gid;
-            public List<string> values;
-        }
+    }
+    public class CustomData {
+        public string gid;
+        public List<string> values;
     }
 }

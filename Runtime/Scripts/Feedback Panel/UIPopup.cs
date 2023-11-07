@@ -259,7 +259,7 @@ namespace Feedback {
         private void CheckDevLogin() {
             devMode = false;
 
-            if (Debug.isDebugBuild || settings.adapter.GetDevMode()) {
+            if (Debug.isDebugBuild || settings.Adapter.GetDevMode()) {
                 PanelComponents.loginSection.SetEnabled(true);
                 devMode = true;
             }
