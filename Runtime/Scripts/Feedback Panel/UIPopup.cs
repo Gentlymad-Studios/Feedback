@@ -26,10 +26,6 @@ namespace Feedback {
 
         private List<TagPreview> tagPreviewList = new List<TagPreview>();
 
-        public delegate void Callback();
-        public Callback OnOpen;
-        public Callback OnClose;
-
         public static AsanaAPISettings settings;
         public AsanaAPISettings asanaSpecificSettings;
 
@@ -41,14 +37,10 @@ namespace Feedback {
             set {
                 if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
                     OnShowWindow();
-                    if (OnOpen != null) {
-                        OnOpen();
-                    }
+                    settings.Adapter.OnOpenWindow();
                 } else if (activeWindow != WindowType.None && value == WindowType.None) {
                     OnHideWindow();
-                    if (OnClose != null) {
-                        OnClose();
-                    }
+                    settings.Adapter.OnCloseWindow();
                 }
                 activeWindow = value;
             }
