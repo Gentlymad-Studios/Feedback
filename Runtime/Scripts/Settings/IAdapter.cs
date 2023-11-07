@@ -1,3 +1,5 @@
-public interface IAdapter {
-    void OpenUrl(string url);
+namespace Feedback {
+    public interface IAdapter {
+        void OpenUrl(string url);
+    }
 }
