@@ -49,7 +49,6 @@ namespace Feedback {
 
         [Header("Attachments")]
         public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
-        public string SavegameLocation = "\\savegame";
         public string LogLocation = "\\logs";
         [Tooltip("List of Files that should be attached for any Project")]
         public List<string> GlobalCustomFiles;
@@ -85,8 +84,8 @@ namespace Feedback {
         public string titlePlaceholder = "Title...";
         [Multiline]
         public string descriptionPlaceholder = "Description...";
-        public bool includeLatesOutputLog = true;
-        public bool includeLatestSavegame = true;
+        public bool includeOutputLog = true;
+        public bool includeSavegame = true;
         public bool includeGlobalCustomFiles = false;
         public bool includeCustomFiles = false;
         [Tooltip("If this is set, the project is available for logged in users")]

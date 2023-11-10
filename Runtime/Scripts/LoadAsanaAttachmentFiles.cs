@@ -9,28 +9,23 @@ namespace Feedback {
     public class LoadAsanaAttachmentFiles {
         private AsanaAPISettings settings;
         private string attachmentPath;
-        private string savegamePath;
         private string logPath;
-        private string tempDirPath;
-        private string tempDirName = "\\_temp_savegame.zip";
         private Dictionary<string, string> stringFileRepresentation = new Dictionary<string, string>();
 
         public LoadAsanaAttachmentFiles(AsanaAPISettings settings) {
             this.settings = settings;
             attachmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                 .Replace("Roaming", "LocalLow") + settings.AttachmentLocation;
-            savegamePath = attachmentPath + settings.SavegameLocation;
-            tempDirPath = savegamePath + tempDirName;
             logPath = attachmentPath + settings.LogLocation;
         }
 
         public Dictionary<string, string> LoadAttachments(AsanaProject project) {
             stringFileRepresentation.Clear();
 
-            if (project.includeLatesOutputLog) {
+            if (project.includeOutputLog) {
                 LoadLatestOutputLog();
             }
-            if (project.includeLatestSavegame) {
+            if (project.includeSavegame) {
                 LoadLatestSavegame();
             }
             if (project.includeGlobalCustomFiles) {
@@ -102,25 +97,22 @@ namespace Feedback {
         }
 
         private void LoadLatestSavegame() {
-            var savegameDirectory = new DirectoryInfo(savegamePath);
+            List<string> savegameDataPaths = settings.Adapter.GetSavegame();
 
-            if (!savegameDirectory.Exists) {
-                Debug.LogWarning($"[FeedbackService] Savegame Directory not found ({savegamePath}).");
+            if (savegameDataPaths == null) {
                 return;
             }
 
-            if (savegameDirectory.GetFiles().Length == 0) {
-                return;
+            for (int i = 0; i < savegameDataPaths.Count; i++) {
+                var savegame = new FileInfo(savegameDataPaths[i]);
+
+                if (!savegame.Exists) {
+                    Debug.LogWarning($"[FeedbackService] Savegame Directory not found ({savegame}).");
+                    continue;
+                }
+
+                stringFileRepresentation.Add(savegame.Name, File.ReadAllText(savegame.FullName));
             }
-            List<FileInfo> orderdFileInfoList = savegameDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).ToList();
-
-            string firstName = orderdFileInfoList.Find(d => d.Name.Contains(".savegame")).Name;
-            List<FileInfo> saveGamesFileInfo = orderdFileInfoList.FindAll(d => d.Name.Contains(firstName));
-
-            foreach (FileInfo fileInfo in saveGamesFileInfo) {
-                stringFileRepresentation.Add(fileInfo.Name, File.ReadAllText(fileInfo.FullName));
-            }
-
         }
 
         //Todo: to send zip files, the content type application/zip is required for Http requests. To use it, adjust the buildAttachment method
@@ -140,16 +132,6 @@ namespace Feedback {
             }
 
             return null;
-        }
-
-        public Dictionary<string, string> GetFileRepresentatios() {
-            return stringFileRepresentation;
-        }
-
-        public void DeleteDirectroy() {
-            if (Directory.Exists(tempDirPath)) {
-                Directory.Delete(tempDirPath, true);
-            }
         }
     }
 }
