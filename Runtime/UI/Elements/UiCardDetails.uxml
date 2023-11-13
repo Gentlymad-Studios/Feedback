@@ -3,7 +3,9 @@
     <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/ticketCard.uss?fileID=7433441132597879392&amp;guid=49bcb02e2bf83d840b5a17690ef8f689&amp;type=3#ticketCard" />
     <ui:VisualElement name="popup" class="base04">
         <ui:VisualElement name="Header" class="base02">
-            <ui:Label text="HEADLINE" name="taskTitleLbl" />
+            <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:Label name="taskTitleLbl" text="HEADLINE" />
+            </ui:VisualElement>
             <ui:Button name="closeBtn" class="xButton" style="background-image: resource(&apos;x&apos;);" />
         </ui:VisualElement>
         <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="ScrollView">

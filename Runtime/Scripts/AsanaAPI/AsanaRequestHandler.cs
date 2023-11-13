@@ -148,7 +148,7 @@ namespace Feedback {
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
 
             string requestData = BuildTaskData(data);
-            Debug.Log(requestData);
+            //Debug.Log(requestData);
 
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.POST.ToString();
@@ -166,7 +166,7 @@ namespace Feedback {
                 Stream stream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(stream);
 
-                Debug.Log(reader.ReadToEnd());
+                //Debug.Log(reader.ReadToEnd());
                 response.Close();
 
                 asanaAPI.CustomFields.Clear();
