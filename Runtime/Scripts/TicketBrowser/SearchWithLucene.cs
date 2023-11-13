@@ -79,12 +79,14 @@ namespace Feedback {
                     }
 
                     writer.AddDocument(document);
+
+                    //Apply all changes so index
+                    writer.Commit();
+                } catch (ObjectDisposedException e) {
+                    break;
                 } catch (Exception e) {
                     Debug.LogException(e);
                 }
-
-                //Apply all changes so index
-                writer.Commit();
             }
         }
 
