@@ -1,8 +1,15 @@
 using System.Collections.Generic;
 
 namespace Feedback {
-    public class NewAsanaTicketRequest {
-        public class NewTicketData {
+    public class AsanaTicketRequest {
+        public static class ContentTypes {
+            public const string Image = "image/jpg";
+            public const string Text = "text/plain";
+            public const string Zip = "application/zip";
+            public const string Octet = "application/octet-stream";
+        }
+
+        public class TicketData {
             public string name {
                 get; set;
             }

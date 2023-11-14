@@ -9,7 +9,8 @@ namespace Feedback {
         public abstract void OnOpenWindow();
         public abstract void OpenUrl(string url);
         public abstract bool GetDevMode();
-        public abstract List<string> GetSavegame();
+        public abstract List<string> GetSavegame(out bool archive);
+        public abstract List<string> GetLog(out bool archive);
         public abstract List<CustomData> GetCustomFields(AsanaProject projectType);
     }
 }

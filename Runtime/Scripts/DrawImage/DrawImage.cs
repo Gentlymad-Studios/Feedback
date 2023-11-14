@@ -242,15 +242,16 @@ namespace Feedback {
         private void ColourBetween(Vector2 start_point, Vector2 end_point, int width, Color color) {
             // Get the distance from start to finish
             float distance = Vector2.Distance(start_point, end_point);
-            Vector2 direction = (start_point - end_point).normalized;
-
-            Vector2 cur_position = start_point;
+            int lerp_steps = Mathf.CeilToInt(distance / (drawWidth / 4));
 
             // Calculate how many times we should interpolate between start_point and end_point based on the amount of time that has passed since the last update
-            float lerp_steps = 1 / distance * (drawWidth / 4);
+            Vector2[] positions = new Vector2[lerp_steps];
+            for (int i = 0; i < lerp_steps; i++) {
+                float lerp = i / (float)(lerp_steps - 1);
+                positions[i] = Vector2.Lerp(start_point, end_point, lerp);
+            }
 
-            for (float lerp = 0; lerp <= 1; lerp += lerp_steps) {
-                cur_position = Vector2.Lerp(start_point, end_point, lerp);
+            foreach (Vector2 cur_position in positions) {
                 MarkPixelsToColour(cur_position, width, color);
             }
         }
@@ -281,8 +282,9 @@ namespace Feedback {
             int array_pos = y * (int)drawSurfaceWidth + x;
 
             // Check if this is a valid position
-            if (array_pos > cur_colors.Length || array_pos < 0)
+            if (array_pos > cur_colors.Length || array_pos < 0 || array_pos > last_colors.Length || array_pos > cur_colors.Length) {
                 return;
+            }
 
             if (isEraser) {
                 cur_colors[array_pos].a = (byte)(cur_colors[array_pos].a * color.a);

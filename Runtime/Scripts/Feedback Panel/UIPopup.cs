@@ -539,19 +539,20 @@ namespace Feedback {
                 asanaAPI.Mentions.AddRange(MentionedTask.Keys);
             }
 
-            List<Texture2D> textureList = new List<Texture2D>();
-            textureList.Add(MergeTextures(screenshot, DrawImage.drawSurfaceTexture));
+            List<Texture2D> textureList = new List<Texture2D> {
+                MergeTextures(screenshot, DrawImage.drawSurfaceTexture)
+            };
             DrawImage.drawingCanBeDestroyed = true;
 
-            Dictionary<string, string> fileList = fileLoader.LoadAttachments(asanaProject);
+            List<AsanaTicketRequest.Attachment> attachments = fileLoader.LoadAttachments(asanaProject, textureList);
 
-            Dictionary<Dictionary<string, string>, List<Texture2D>> attachmentSet = new Dictionary<Dictionary<string, string>, List<Texture2D>> { { fileList, textureList } };
-
-            RequestData<string, Texture2D> data = new RequestData<string, Texture2D>(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachmentSet, asanaProject);
+            RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachments, asanaProject);
 
             PostData(data);
 
-            Prompt.Show("Feedback", "Feedback gesendet", () => {
+            fileLoader.ClearTemp();
+
+            Prompt.Show("Feedback", "Feedback sent", () => {
                 ActiveWindow = WindowType.None;
                 SetWindowTypes();
             });

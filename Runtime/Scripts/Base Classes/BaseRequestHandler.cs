@@ -8,7 +8,7 @@ namespace Feedback {
 
         protected string contentType = "application/json; charset=UTF-8";
         public abstract void GetData(bool force);
-        public abstract void PostNewData<T1, T2>(RequestData<T1, T2> data);
+        public abstract void PostNewData(RequestData data);
         public abstract AuthorizationUser GetUser();
         public abstract void AddTagToTagList(TagPreview tag);
         public abstract void RemoveTagFromTagList(TagPreview tag);

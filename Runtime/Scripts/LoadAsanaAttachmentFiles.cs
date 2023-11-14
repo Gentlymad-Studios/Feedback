@@ -2,136 +2,214 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Random = System.Random;
 
 namespace Feedback {
     public class LoadAsanaAttachmentFiles {
         private AsanaAPISettings settings;
         private string attachmentPath;
-        private string logPath;
-        private Dictionary<string, string> stringFileRepresentation = new Dictionary<string, string>();
+        private string tempPath;
+        private List<AsanaTicketRequest.Attachment> attachments = new List<AsanaTicketRequest.Attachment>();
 
         public LoadAsanaAttachmentFiles(AsanaAPISettings settings) {
             this.settings = settings;
-            attachmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                .Replace("Roaming", "LocalLow") + settings.AttachmentLocation;
-            logPath = attachmentPath + settings.LogLocation;
+            attachmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).Replace("Roaming", "LocalLow") + settings.AttachmentLocation;
+            tempPath = Path.Combine(attachmentPath, "Temp");
         }
 
-        public Dictionary<string, string> LoadAttachments(AsanaProject project) {
-            stringFileRepresentation.Clear();
+        public List<AsanaTicketRequest.Attachment> LoadAttachments(AsanaProject project, List<Texture2D> images) {
+            attachments.Clear();
 
-            if (project.includeOutputLog) {
-                LoadLatestOutputLog();
+            LoadImages(images);
+
+            if (project.includeLog) {
+                LoadLog();
             }
             if (project.includeSavegame) {
-                LoadLatestSavegame();
+                LoadSavegame();
             }
-            if (project.includeGlobalCustomFiles) {
-                LoadCustomFileList();
+            if (project.includeGlobalFiles) {
+                LoadFileList(settings.Files);
+                LoadArchiveFiles(settings.ArchivedFiles);
             }
-            if (project.includeCustomFiles) {
-                LoadCustomFileList(project.CustomFiles);
+            if (project.includeProjectFiles) {
+                LoadFileList(project.Files);
+                LoadArchiveFiles(project.ArchivedFiles);
             }
 
-            return stringFileRepresentation;
+            return attachments;
         }
 
-        private void LoadCustomFileList() {
-            settings.GlobalCustomFiles.ForEach(path => {
-                string loc = Path.Combine(attachmentPath, path);
-                if (File.Exists(loc)) {
-                    string text;
-                    using (FileStream logFileStream = new FileStream(loc, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                        using (StreamReader logFileReader = new StreamReader(logFileStream)) {
-                            text = logFileReader.ReadToEnd();
-                        }
-                    }
-                    string name = Path.GetFileName(loc);
-                    stringFileRepresentation.Add(name, text);
+        private void LoadImages(List<Texture2D> images) {
+            for (int i = 0; i < images.Count; i++) {
+                AsanaTicketRequest.Attachment attachment = new AsanaTicketRequest.Attachment();
+                attachment.filename = "image.jpg";
+                attachment.contentType = AsanaTicketRequest.ContentTypes.Image;
+
+                byte[] jpg = images[i].EncodeToJPG();
+                if (jpg.LongLength > settings.maxFileSize) {
+                    Debug.Log($"File is to large {attachment.filename}.");
                 } else {
-                    Debug.LogWarning($"[FeedbackService] File not found ({loc}).");
+                    attachment.content = Convert.ToBase64String(jpg);
+                    attachments.Add(attachment);
                 }
-            });
+            }
         }
 
-        private void LoadCustomFileList(List<string> files) {
+        private void LoadFileList(List<string> files) {
             files.ForEach(path => {
                 string loc = Path.Combine(attachmentPath, path);
-                if (File.Exists(loc)) {
-                    string text;
-                    using (FileStream logFileStream = new FileStream(loc, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                        using (StreamReader logFileReader = new StreamReader(logFileStream)) {
-                            text = logFileReader.ReadToEnd();
-                        }
-                    }
-                    string name = Path.GetFileName(loc);
-                    stringFileRepresentation.Add(name, text);
-                } else {
-                    Debug.LogWarning($"[FeedbackService] File not found ({loc}).");
+                AsanaTicketRequest.Attachment attachment = LoadAttachment(loc, AsanaTicketRequest.ContentTypes.Text);
+                if (attachment != null) {
+                    attachments.Add(attachment);
                 }
             });
         }
 
-        private void LoadLatestOutputLog() {
-            var logDirectory = new DirectoryInfo(logPath);
-
-            if (!logDirectory.Exists) {
-                Debug.LogWarning($"[FeedbackService] Log Directory not found ({logPath}).");
-                return;
-            }
-
-            if (logDirectory.GetFiles().Length == 0) {
-                return;
-            }
-            FileInfo latestLog = logDirectory.GetFiles().OrderByDescending(n => n.LastWriteTime).First();
-            string text;
-            using (FileStream logFileStream = new FileStream(latestLog.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                using (StreamReader logFileReader = new StreamReader(logFileStream)) {
-                    text = logFileReader.ReadToEnd();
+        private void LoadArchiveFiles(List<ArchivedFiles> files) {
+            files.ForEach(archive => {
+                List<string> paths = new List<string>();
+                for (int i = 0; i < archive.Files.Count; i++) {
+                    paths.Add(Path.Combine(attachmentPath, archive.Files[i]));
                 }
-            }
-            string name = Path.GetFileName(latestLog.FullName);
-            stringFileRepresentation.Add(name, text);
+
+                AsanaTicketRequest.Attachment attachment = CreateZipArchive(archive.name, paths);
+                if (attachment != null) {
+                    attachments.Add(attachment);
+                }
+            });
         }
 
-        private void LoadLatestSavegame() {
-            List<string> savegameDataPaths = settings.Adapter.GetSavegame();
+        private void LoadLog() {
+            List<string> logDataPaths = settings.Adapter.GetLog(out bool archive);
+
+            if (logDataPaths == null) {
+                return;
+            }
+
+            if (archive) {
+                AsanaTicketRequest.Attachment attachment = CreateZipArchive("log", logDataPaths);
+                if (attachment != null) {
+                    attachments.Add(attachment);
+                }
+            } else {
+                for (int i = 0; i < logDataPaths.Count; i++) {
+                    AsanaTicketRequest.Attachment attachment = LoadAttachment(logDataPaths[i], AsanaTicketRequest.ContentTypes.Text);
+                    if (attachment != null) {
+                        attachments.Add(attachment);
+                    }
+                }
+            }
+        }
+
+        private void LoadSavegame() {
+            List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive);
 
             if (savegameDataPaths == null) {
                 return;
             }
 
-            for (int i = 0; i < savegameDataPaths.Count; i++) {
-                var savegame = new FileInfo(savegameDataPaths[i]);
-
-                if (!savegame.Exists) {
-                    Debug.LogWarning($"[FeedbackService] Savegame Directory not found ({savegame}).");
-                    continue;
+            if (archive) {
+                AsanaTicketRequest.Attachment attachment = CreateZipArchive("savegame", savegameDataPaths);
+                if (attachment != null) {
+                    attachments.Add(attachment);
                 }
-
-                stringFileRepresentation.Add(savegame.Name, File.ReadAllText(savegame.FullName));
+            } else {
+                for (int i = 0; i < savegameDataPaths.Count; i++) {
+                    AsanaTicketRequest.Attachment attachment = LoadAttachment(savegameDataPaths[i], AsanaTicketRequest.ContentTypes.Text);
+                    if (attachment != null) {
+                        attachments.Add(attachment);
+                    }
+                }
             }
         }
 
         //Todo: to send zip files, the content type application/zip is required for Http requests. To use it, adjust the buildAttachment method
         //the generic RequestData object and the implementation in AsanaRequestManager. 
         //https://stackoverflow.com/questions/834527/how-do-i-generate-and-send-a-zip-file-to-a-user-in-c-sharp-asp-net
-        private string CreateZipArchive(string fileName, List<FileInfo> sources) {
+        private AsanaTicketRequest.Attachment CreateZipArchive(string fileName, List<string> files) {
+            AsanaTicketRequest.Attachment attachment = new AsanaTicketRequest.Attachment();
+            fileName += ".zip";
+
+            List<FileInfo> sources = new List<FileInfo>();
+            for (int i = 0; i < files.Count; i++) {
+                FileInfo fileInfo = new(files[i]);
+                if (fileInfo.Exists) {
+                    sources.Add(fileInfo);
+                } else {
+                    Debug.LogWarning($"[FeedbackService] File not found ({files[i]}).");
+                }
+            }
+
+            if (sources.Count == 0) {
+                return null;
+            }
+
+            if (!Directory.Exists(tempPath)) {
+                Directory.CreateDirectory(tempPath);
+            }
+
+            string file = Path.Combine(tempPath, fileName);
+            if (File.Exists(file)) {
+                Random rnd = new Random();
+                file = Path.Combine(tempPath, fileName + "_" + rnd.Next().ToString("x"));
+            }
+
             try {
-                using (var zip = ZipFile.Open(fileName, ZipArchiveMode.Create)) {
+                using (var zip = ZipFile.Open(file, ZipArchiveMode.Create)) {
                     foreach (var source in sources) {
                         zip.CreateEntryFromFile(source.FullName, source.Name);
                     }
                 }
-                string f = File.ReadAllBytes(fileName).ToString();
-                return f;
+                attachment.filename = fileName;
+                attachment.contentType = AsanaTicketRequest.ContentTypes.Zip;
+                byte[] bytes = File.ReadAllBytes(file);
+                if (bytes.LongLength > settings.maxFileSize) {
+                    Debug.Log($"File is to large {attachment.filename}.");
+                } else {
+                    attachment.content = Convert.ToBase64String(bytes);
+                    return attachment;
+                }
             } catch (Exception e) {
                 Debug.LogError(e);
             }
 
             return null;
+        }
+
+        public void ClearTemp() {
+            Directory.Delete(tempPath, true);
+        }
+
+        private AsanaTicketRequest.Attachment LoadAttachment(string path, string contentType) {
+            AsanaTicketRequest.Attachment attachment = new AsanaTicketRequest.Attachment();
+            attachment.filename = Path.GetFileName(path);
+            attachment.contentType = contentType;
+
+            if (File.Exists(path)) {
+                using (FileStream logFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    byte[] bytes = StreamToByteArray(logFileStream);
+                    if (bytes.LongLength > settings.maxFileSize) {
+                        Debug.Log($"File is to large {attachment.filename}.");
+                    } else {
+                        attachment.content = Convert.ToBase64String(bytes);
+                        return attachment;
+                    }
+                }
+            } else {
+                Debug.LogWarning($"[FeedbackService] File not found ({path}).");
+            }
+
+            return null;
+        }
+
+        private static byte[] StreamToByteArray(Stream input) {
+            using (MemoryStream ms = new MemoryStream()) {
+                input.CopyTo(ms);
+                return ms.ToArray();
+            }
         }
     }
 }

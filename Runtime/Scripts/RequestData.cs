@@ -4,14 +4,14 @@ namespace Feedback {
     /// <summary>
     /// Generic data structure. 
     /// </summary>
-    public class RequestData<T1, T2> {
+    public class RequestData {
 
         public string Title;
         public string Text;
-        public Dictionary<Dictionary<T1, T1>, List<T2>> Attachments;
+        public List<AsanaTicketRequest.Attachment> Attachments;
         public AsanaProject AsanaProject;
 
-        public RequestData(string title, string text, Dictionary<Dictionary<T1, T1>, List<T2>> attachments, AsanaProject asanaProject) {
+        public RequestData(string title, string text, List<AsanaTicketRequest.Attachment> attachments, AsanaProject asanaProject) {
             Title = title;
             Text = text;
             Attachments = attachments;

@@ -3,11 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 using static Feedback.TaskModels;
 using Debug = UnityEngine.Debug;
 
@@ -141,7 +139,7 @@ namespace Feedback {
         /// Post the new data object to AsanaRequestManager.
         /// </summary>
         /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
-        public override void PostNewData<T1, T2>(RequestData<T1, T2> data) {
+        public override void PostNewData(RequestData data) {
             requestRunning = true;
 
             string userID = CheckForUserGid();
@@ -186,72 +184,20 @@ namespace Feedback {
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private string BuildTaskData<T1, T2>(RequestData<T1, T2> data) {
+        private string BuildTaskData(RequestData data) {
             string projectId = data.AsanaProject != null ? data.AsanaProject.id : string.Empty;
 
-            List<NewAsanaTicketRequest.Attachment> attachments = new List<NewAsanaTicketRequest.Attachment>();
-
-            foreach (var dictonarySet in data.Attachments) {
-                //Dictionary with filename and file text representation
-                Dictionary<T1, T1> typeOneFileSets = dictonarySet.Key;
-                foreach (var fileSet in typeOneFileSets) {
-                    attachments.Add(BuildAttachment(fileSet.Value, fileName: fileSet.Key.ToString()));
-                }
-
-                foreach (T2 typeTwoListEntry in dictonarySet.Value) {
-                    attachments.Add(BuildAttachment(typeTwoListEntry));
-                }
-            }
-
-            NewAsanaTicketRequest.NewTicketData newTicketRequest = new NewAsanaTicketRequest.NewTicketData();
+            AsanaTicketRequest.TicketData newTicketRequest = new AsanaTicketRequest.TicketData();
             newTicketRequest.name = data.Title;
             newTicketRequest.notes = data.Text;
             newTicketRequest.projects = projectId;
             newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
             newTicketRequest.custom_fields = BuildCustomFields(data.AsanaProject);
-            newTicketRequest.attachments = attachments.ToArray();
+            newTicketRequest.attachments = data.Attachments.ToArray();
             newTicketRequest.html_notes = BuildRichText(data.Text);
             string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
 
             return output;
-        }
-
-        private NewAsanaTicketRequest.Attachment BuildAttachment<T>(T attachmentData, string fileName = "") {
-            string name = fileName;
-            string ending = "";
-            if (fileName.Equals("")) {
-                name = "attachment";
-                ending = ".txt";
-            }
-            string contentType = "text/plain";
-            string content = "";
-
-            using (var ms = new MemoryStream()) {
-                if (attachmentData is Texture2D tex) {
-                    content = Convert.ToBase64String(tex.EncodeToJPG());
-                } else {
-                    try {
-                        new BinaryFormatter().Serialize(ms, attachmentData);
-                        byte[] byteArray = ms.ToArray();
-                        content = Convert.ToBase64String(byteArray, Base64FormattingOptions.None);
-                    } catch (Exception e) {
-                        Debug.LogException(e);
-                    }
-                }
-            }
-
-            if (attachmentData is Texture2D) {
-                ending = ".jpg";
-                contentType = "image/jpg";
-            }
-
-            NewAsanaTicketRequest.Attachment attachment = new NewAsanaTicketRequest.Attachment() {
-                filename = name + ending,
-                contentType = contentType,
-                content = content
-            };
-
-            return attachment;
         }
 
         private Dictionary<string, List<string>> BuildCustomFields(AsanaProject projectType) {
@@ -460,18 +406,24 @@ namespace Feedback {
 
             if (!string.IsNullOrWhiteSpace(User.picture)) {
                 try {
-                    UnityWebRequest request = UnityWebRequestTexture.GetTexture(User.picture);
-                    request.timeout = 2000;
+                    byte[] imageData = new byte[0];
 
-                    UnityWebRequestAsyncOperation operation = request.SendWebRequest();
-                    while (!operation.isDone) {
-                        await Task.Yield();
+                    // Create a HttpWebRequest with the image URL
+                    request = (HttpWebRequest)WebRequest.Create(User.picture);
+                    request.Timeout = 5000;
+
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    using (Stream stream = response.GetResponseStream())
+                    using (MemoryStream memoryStream = new MemoryStream()) {
+                        stream.CopyTo(memoryStream);
+                        imageData = memoryStream.ToArray();
                     }
 
-                    if (request.result == UnityWebRequest.Result.Success) {
-                        User.avatar = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                        asanaAPI.FireAvatarLoaded();
-                    }
+                    Texture2D loadedTexture = new Texture2D(2, 2);
+                    loadedTexture.LoadImage(imageData);
+
+                    User.avatar = loadedTexture;
+                    asanaAPI.FireAvatarLoaded();
                 } catch (Exception e) {
                     Debug.LogWarning($"tried to fetch avatar picture @ url: {User.picture} and failed!");
                     Debug.LogWarning(e.Message);

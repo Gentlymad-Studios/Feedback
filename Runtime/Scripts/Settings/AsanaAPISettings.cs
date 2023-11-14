@@ -48,10 +48,13 @@ namespace Feedback {
         public string tagField = "Report Tags";
 
         [Header("Attachments")]
+        [Tooltip("Maximum Size per File in bytes")]
+        public long maxFileSize = 10000000;
         public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
-        public string LogLocation = "\\logs";
-        [Tooltip("List of Files that should be attached for any Project")]
-        public List<string> GlobalCustomFiles;
+        [Tooltip("List of Files that should be attached for any Project, realtive to the Attachment Location")]
+        public List<string> Files;
+        [Tooltip("List of Files that should be attached for any Project, realtive to the Attachment Location, these files will bundled in one archive")]
+        public List<ArchivedFiles> ArchivedFiles;
 
         [Header("Tab GUI Settings")]
         [Multiline]
@@ -84,19 +87,29 @@ namespace Feedback {
         public string titlePlaceholder = "Title...";
         [Multiline]
         public string descriptionPlaceholder = "Description...";
-        public bool includeOutputLog = true;
+        public bool includeLog = true;
         public bool includeSavegame = true;
-        public bool includeGlobalCustomFiles = false;
-        public bool includeCustomFiles = false;
+        [Tooltip("Enable this if you want to include global files")]
+        public bool includeGlobalFiles = false;
+        [Tooltip("Enable this if you want to include project specific files")]
+        public bool includeProjectFiles = false;
         [Tooltip("If this is set, the project is available for logged in users")]
         public bool visibleForDev = false;
         [Tooltip("If this is set, the project is available players")]
         public bool visibleForPlayer = false;
-        [Tooltip("List of Files that should be attached for to this Project")]
-        public List<string> CustomFiles;
+        [Tooltip("List of Files that should be attached to this Project, realtive to the Attachment Location")]
+        public List<string> Files;
+        [Tooltip("List of Files that should be attached to this Project, realtive to the Attachment Location, these files will bundled in one archive")]
+        public List<ArchivedFiles> ArchivedFiles;
     }
     public class CustomData {
         public string gid;
         public List<string> values;
+    }
+
+    [Serializable]
+    public class ArchivedFiles {
+        public string name;
+        public List<string> Files;
     }
 }

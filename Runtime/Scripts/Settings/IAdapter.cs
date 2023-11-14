@@ -10,7 +10,9 @@ namespace Feedback {
 
         bool GetDevMode();
 
-        List<string> GetSavegame();
+        List<string> GetSavegame(out bool archive);
+
+        List<string> GetLog(out bool archive);
 
         List<CustomData> GetCustomFields(AsanaProject projectType);
     }
