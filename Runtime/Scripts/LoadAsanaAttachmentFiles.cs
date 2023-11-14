@@ -180,7 +180,9 @@ namespace Feedback {
         }
 
         public void ClearTemp() {
-            Directory.Delete(tempPath, true);
+            if(Directory.Exists(tempPath)) {
+                Directory.Delete(tempPath, true);
+            }
         }
 
         private AsanaTicketRequest.Attachment LoadAttachment(string path, string contentType) {
