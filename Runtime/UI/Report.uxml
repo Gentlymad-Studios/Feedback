@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/base.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#base" />
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/report.uss?fileID=7433441132597879392&amp;guid=3e0d049e26b6704489afa4a009110028&amp;type=3#report" />
+    <Style src="../Uss/base.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#base" />
+    <Style src="../Uss/report.uss?fileID=7433441132597879392&amp;guid=3e0d049e26b6704489afa4a009110028&amp;type=3#report" />
     <ui:VisualElement name="ReportContainer" class="base04">
         <ui:VisualElement name="LeftContainer">
             <ui:VisualElement name="PainterContainer">

@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/search.uss?fileID=7433441132597879392&amp;guid=24124b02aacad71409d5e3486915d1d9&amp;type=3#search" />
+    <Style src="../Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
+    <Style src="../Uss/search.uss?fileID=7433441132597879392&amp;guid=24124b02aacad71409d5e3486915d1d9&amp;type=3#search" />
     <ui:VisualElement name="Content" class="base04">
         <ui:VisualElement name="SearchContainer">
             <ui:VisualElement>

@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/base.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#base" />
+    <Style src="../Uss/base.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#base" />
     <ui:VisualElement name="tag" class="tag">
         <ui:Label tabindex="-1" text="Label fds fds fh tr trh tr fds fd" display-tooltip-when-elided="true" name="label" />
         <ui:Button display-tooltip-when-elided="true" name="removeBtn" class="xButton" style="background-image: resource(&apos;x&apos;);" />

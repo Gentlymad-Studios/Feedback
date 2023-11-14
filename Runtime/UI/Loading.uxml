@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
-    <Style src="project://database/Assets/Feedback/Runtime/UI/Uss/loadingOverlay.uss?fileID=7433441132597879392&amp;guid=63b7cb3b560c84d46a03e42570481a07&amp;type=3#loadingOverlay" />
+    <Style src="../Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
+    <Style src="../Uss/loadingOverlay.uss?fileID=7433441132597879392&amp;guid=63b7cb3b560c84d46a03e42570481a07&amp;type=3#loadingOverlay" />
     <ui:VisualElement name="background">
         <ui:VisualElement name="spinner">
             <ui:VisualElement name="image" style="background-image: resource(&apos;loader&apos;);" />
