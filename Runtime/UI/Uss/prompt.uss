@@ -3,7 +3,7 @@
     max-height: 150px;
     min-width: 250px;
     max-width: 250px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: var(--darkenBackground);
     border-color: rgba(0, 0, 0, 0.5);
     border-width: 1px;
     border-radius: 11px;

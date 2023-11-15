@@ -25,6 +25,7 @@
     --fontSizeSmall: 12px;
     --fontSizeMiddle: 13px;
     --fontSizeLarge: 16px;
+    --darkenBackground: rgba(0, 0, 0, 0.7);
     
     --unity-metrics-single_line-height: 500px;
     font-size: var(--fontSizeMiddle);
@@ -350,7 +351,7 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--darkenBackground);
 }
 
 .iconbutton {
