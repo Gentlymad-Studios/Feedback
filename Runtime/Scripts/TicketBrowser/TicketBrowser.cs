@@ -104,7 +104,7 @@ namespace Feedback {
                 }
             }
 
-            if (devTasks.Count > 0) {
+            if (devTasks.Count > 0 && uIPopup.Api.RequestHandler.User != null) {
                 SearchWithLucene.Instance.CreateIndex(devTasks);
             } else {
                 SearchWithLucene.Instance.CreateIndex(playerTasks);

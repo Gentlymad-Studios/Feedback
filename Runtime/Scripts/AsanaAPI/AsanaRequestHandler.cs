@@ -329,7 +329,6 @@ namespace Feedback {
         /// Get User Data Sync
         /// </summary>
         private async void TryGetUser() {
-
             try {
                 bool loginRunning = true;
                 int maxTrys = 120; //2 minutes to login
@@ -371,6 +370,7 @@ namespace Feedback {
             }
 
             requestRunning = true;
+            logginChange = false;
 
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{UniqueId}";
             request = (HttpWebRequest)WebRequest.Create(url);
@@ -382,8 +382,17 @@ namespace Feedback {
             using (StreamReader reader = new StreamReader(stream)) {
                 try {
                     string result = await reader.ReadToEndAsync();
-                    User = JsonConvert.DeserializeObject<AuthorizationUser>(result);
-                } catch { }
+                    AuthorizationUser newUser = JsonConvert.DeserializeObject<AuthorizationUser>(result);
+
+                    if (User == null && newUser != null) {
+                        logginChange = true;
+                    }
+
+                    User = newUser;
+                } catch {
+                    logginChange = User != null;
+                    User = null;
+                }
             }
 
             requestRunning = false;
@@ -401,7 +410,7 @@ namespace Feedback {
             killLogin = true;
         }
 
-        public async override void LoadAvatar() {
+        public override void LoadAvatar() {
             requestRunning = true;
 
             if (!string.IsNullOrWhiteSpace(User.picture)) {

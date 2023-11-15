@@ -68,7 +68,9 @@ namespace Feedback {
                 currentWindowType = before;
             } else {
                 ActiveWindow = currentWindowType;
-                base.GetData(false);
+                if (!StartupLoginCheck()) {
+                    base.GetData(false);
+                }
             }
         }
 
@@ -93,7 +95,6 @@ namespace Feedback {
 
             ConfigureAPI();
             RegisterEvents();
-            StartupLoginCheck();
             SetupTaskTypeDrowndown();
 
             TicketBrowser = new TicketBrowser(this);
@@ -245,17 +246,24 @@ namespace Feedback {
         #endregion
 
         #region Auth and login
-        private void StartupLoginCheck() {
+        private bool StartupLoginCheck() {
             if (!devMode) {
-                return;
+                return false;
             }
 
-            currentlyLoading = true;
+            SetLoadingStatus(true);
             Api.RequestHandler.TryGetUserAsync();
-            if (Api.RequestHandler.User != null) {
-                SetLoginSucessUI();
+            bool loggedIn = Api.RequestHandler.User != null;
+
+            SetLoginUI(loggedIn);
+
+            if (Api.RequestHandler.logginChange) {
+                UpdateTasksAfterLogInOut();
             }
+
+            return Api.RequestHandler.logginChange;
         }
+
         private void CheckDevLogin() {
             devMode = false;
 
@@ -280,9 +288,7 @@ namespace Feedback {
                 }
             } else {
                 LogOut();
-                SetupTaskTypeDrowndown();
-                PanelComponents.loginBtn.text = "<u>Login</u>";
-                PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
+                SetLoginUI(false);
 
                 UpdateTasksAfterLogInOut();
             }
@@ -290,17 +296,17 @@ namespace Feedback {
 
         private void LoginResult(bool success) {
             if (success) {
-                SetLoginSucessUI();
+                SetLoginUI(success);
                 UpdateTasksAfterLogInOut();
             } else {
                 OnLoginFail("Unable to Login!");
-                currentlyLoading = false;
+                SetLoadingStatus(false);
             }
             SetupTaskTypeDrowndown();
         }
 
         private void UpdateTasksAfterLogInOut() {
-            currentlyLoading = true;
+            SetLoadingStatus(true);
             initializedAfterLoad = false;
             base.GetData(true);
 
@@ -313,13 +319,18 @@ namespace Feedback {
             PanelComponents.userImg.style.backgroundImage = Api.RequestHandler.User.avatar;
         }
 
-        private void SetLoginSucessUI() {
-            PanelComponents.loginBtn.text = "<u>Logout</u>";
-            //PanelComponents.loginBtn.text = "Logout " + Api.RequestHandler.User.name;
+        private void SetLoginUI(bool loggedIn) {
+            if (loggedIn) {
+                PanelComponents.loginBtn.text = "<u>Logout</u>";
 
-            AvatarLoadedEvent -= AvatarLoaded;
-            AvatarLoadedEvent += AvatarLoaded;
-            Api.RequestHandler.LoadAvatar();
+                AvatarLoadedEvent -= AvatarLoaded;
+                AvatarLoadedEvent += AvatarLoaded;
+                Api.RequestHandler.LoadAvatar();
+            } else {
+                SetupTaskTypeDrowndown();
+                PanelComponents.loginBtn.text = "<u>Login</u>";
+                PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
+            }
         }
 
         protected override void OnLoginFail(string failMessage) {
@@ -458,8 +469,9 @@ namespace Feedback {
         }
 
         private void TaskSubmit_clicked(ClickEvent evt) {
-            SendData();
-            Reset();
+            if (SendData()) {
+                Reset();
+            }
         }
 
         private void TaskTagDrpDwn_changed(ChangeEvent<string> evt) {
@@ -520,18 +532,23 @@ namespace Feedback {
             ShowReportPanel();
         }
 
-        private void SendData() {
+        private bool SendData() {
             AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
             bool loggedIn = Api.RequestHandler.User != null;
 
             if (loggedIn) {
                 if (!asanaProject.visibleForDev) {
-                    return;
+                    return false;
                 }
             } else {
                 if (!asanaProject.visibleForPlayer) {
-                    return;
+                    return false;
                 }
+            }
+
+            if (string.IsNullOrWhiteSpace(PanelComponents.taskTitleTxt.text)) {
+                PanelComponents.taskTitleTxt.Focus();
+                return false;
             }
 
             if (Api is AsanaAPI) {
@@ -556,6 +573,8 @@ namespace Feedback {
                 ActiveWindow = WindowType.None;
                 SetWindowTypes();
             });
+
+            return true;
         }
         #endregion
 
