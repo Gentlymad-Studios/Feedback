@@ -302,7 +302,6 @@ namespace Feedback {
                 OnLoginFail("Unable to Login!");
                 SetLoadingStatus(false);
             }
-            SetupTaskTypeDrowndown();
         }
 
         private void UpdateTasksAfterLogInOut() {
@@ -327,10 +326,10 @@ namespace Feedback {
                 AvatarLoadedEvent += AvatarLoaded;
                 Api.RequestHandler.LoadAvatar();
             } else {
-                SetupTaskTypeDrowndown();
                 PanelComponents.loginBtn.text = "<u>Login</u>";
                 PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
             }
+            SetupTaskTypeDrowndown();
         }
 
         protected override void OnLoginFail(string failMessage) {
