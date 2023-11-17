@@ -14,6 +14,10 @@ namespace Feedback {
         public float sigma = 1; //describes the pen fallof / hardness
         public Texture2D drawSurfaceTexture;
 
+        private int minDrawWidth = 4;
+        private int maxDrawWidth = 30;
+        private int drawWidthSteprate = 2;
+
         private Color tempDrawColor = Color.black;
         private Color pickedColor = Color.black;
 
@@ -103,11 +107,13 @@ namespace Feedback {
             UnregisterEvents();
             panelComponents.overpaintContainer.RegisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+            panelComponents.overpaintContainer.RegisterCallback<WheelEvent>(OnWheelEvent, TrickleDown.TrickleDown);
         }
 
         private void UnregisterEvents() {
             panelComponents.overpaintContainer.UnregisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.UnregisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+            panelComponents.overpaintContainer.UnregisterCallback<WheelEvent>(OnWheelEvent, TrickleDown.TrickleDown);
         }
 
         private void OnPointerMoveEvent(PointerMoveEvent evt) {
@@ -129,6 +135,14 @@ namespace Feedback {
         private void OnPointerLeaveEvent(PointerLeaveEvent evt) {
             // We're not over our destination texture
             previous_drag_position = Vector2.zero;
+        }
+
+        private void OnWheelEvent(WheelEvent evt) {
+            if (evt.delta.y < 0) {
+                SetPenSize(drawWidth + drawWidthSteprate);
+            } else if (evt.delta.y > 0) {
+                SetPenSize(drawWidth - drawWidthSteprate);
+            }
         }
 
         private void ToolbarSetup() {
@@ -156,11 +170,11 @@ namespace Feedback {
             });
 
             panelComponents.brushSizeDownBtn.clicked += (() => {
-                SetPenSize(drawWidth - 2);
+                SetPenSize(drawWidth - drawWidthSteprate);
             });
 
             panelComponents.brushSizeUpBtn.clicked += (() => {
-                SetPenSize(drawWidth + 2);
+                SetPenSize(drawWidth + drawWidthSteprate);
             });
 
             // call it to calculate the first kernel
@@ -174,25 +188,21 @@ namespace Feedback {
         }
 
         private void SetPenSize(int size) {
-            drawWidth = size;
-            CalculatePenKernel(size);
+            drawWidth = Mathf.Max(minDrawWidth, Mathf.Min(maxDrawWidth, size));
+            CalculatePenKernel();
         }
 
-        private void CalculatePenKernel(int size) {
+        private void CalculatePenKernel() {
             try {
-                if (drawWidth <= 0) {
-                    drawWidth = 0;
-                    return;
-                }
-                int kernelSize = size * 2 + 1;
+                int kernelSize = drawWidth * 2 + 1;
                 float kernelMid = 0;
                 drawKernel = new float[kernelSize, kernelSize];
                 // Fit sigma to kernel size -> rule of thumb -> half kernelsize = 3*sigma
-                sigma = (size + 1) / 3.0f;
+                sigma = (drawWidth + 1) / 3.0f;
 
                 // calculate each kernel field
-                for (int x = -size, xIndex = 0; x <= size; x++, xIndex++) {
-                    for (int y = -size, yIndex = 0; y <= size; y++, yIndex++) {
+                for (int x = -drawWidth, xIndex = 0; x <= drawWidth; x++, xIndex++) {
+                    for (int y = -drawWidth, yIndex = 0; y <= drawWidth; y++, yIndex++) {
                         drawKernel[xIndex, yIndex] = (float)(1 / (2 * Mathf.PI * (sigma * sigma))) * (float)Mathf.Exp(-((x * x + y * y) / (2 * (sigma * sigma))));
 
                         //     (1/B) * 1/(1+exp(A*(x-B))) * 1/(1+exp(-A*(x+B)))
