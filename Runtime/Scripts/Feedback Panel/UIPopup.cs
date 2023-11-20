@@ -161,6 +161,12 @@ namespace Feedback {
             }
         }
 
+        private void OnGUI() {
+            if (activeWindow == WindowType.Report && !currentlyLoading && screenshot != null) {
+                DrawImage?.OnGUI();
+            }
+        }
+
         #region Manage Windows
         private void SetWindowTypes() {
             if (activeWindow == WindowType.Search) {
@@ -586,7 +592,7 @@ namespace Feedback {
             screenshot.hideFlags = HideFlags.HideAndDontSave;
             screenshot.name = "Screenshot";
             screenshot.Apply();
-            DrawImage.Setup(PanelComponents, screenshot.width, screenshot.height);
+            DrawImage.Setup(PanelComponents, screenshot);
             SetWindowTypes();
         }
 

@@ -3,6 +3,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
+//DarkEdge Issue
+//https://forum.unity.com/threads/paintable-rendertexture-premultiplied-alpha-problems.1072268/
+//https://forum.unity.com/threads/dark-edge-around-textures-drawn-into-a-rendertexture.516545/
+
 namespace Feedback {
     public class DrawImage {
         private PanelComponents panelComponents;
@@ -13,9 +17,12 @@ namespace Feedback {
         public float[,] drawKernel;
         public float sigma = 1; //describes the pen fallof / hardness
         public Texture2D drawSurfaceTexture;
+        private RenderTexture drawRenderTexture;
+        private Texture2D brushTexture;
+        private Texture2D brushIndicator;
 
         private int minDrawWidth = 4;
-        private int maxDrawWidth = 30;
+        private int maxDrawWidth = 100;
         private int drawWidthSteprate = 2;
 
         private Color tempDrawColor = Color.black;
@@ -29,12 +36,12 @@ namespace Feedback {
         // see drawable
         Vector2 previous_drag_position;
         bool color_changed = true;
-        public delegate void Brush_Function(Vector2 world_position);
-
-        // This is the function called when a left click happens
-        // Pass in your own custom one to change the brush type
-        // Set the default function in the Awake method
-        public Brush_Function current_brush;
+        bool rtDirty = false;
+        bool rtReload = true;
+        bool draw = false;
+        bool firstDraw = false;
+        bool drawIndicator = false;
+        bool interuptClick = false;
 
         Color32[] resetColorArray;
         Color32[] last_colors;
@@ -47,13 +54,14 @@ namespace Feedback {
         public void Dispose() {
             UnregisterEvents();
             panelComponents.overpaintContainer.style.backgroundImage = null;
+            drawRenderTexture?.Release();
             if (drawingCanBeDestroyed) {
                 UnityEngine.Object.Destroy(drawSurfaceTexture);
                 drawingCanBeDestroyed = false;
             }
         }
 
-        public void Setup(PanelComponents panelComponents, float width, float height) {
+        public void Setup(PanelComponents panelComponents, Texture2D screenshot) {
             this.panelComponents = panelComponents;
 
             RegisterEvents();
@@ -61,8 +69,8 @@ namespace Feedback {
             ToolbarSetup();
 
             //for correct size, multiply width canvas scale, use screensize or use screenshot size
-            drawSurfaceWidth = width;
-            drawSurfaceHeight = height;
+            drawSurfaceWidth = screenshot.width;
+            drawSurfaceHeight = screenshot.height;
 
             bool recreateDrawSurfaceTexture = false;
             if (drawSurfaceTexture == null) {
@@ -92,8 +100,6 @@ namespace Feedback {
                 drawSurfaceTexture.Apply();
             }
 
-            current_brush = PenBrush;
-
             //Reset Brush
             panelComponents.brushBtn.AddToClassList("active");
             panelComponents.eraseBtn.RemoveFromClassList("active");
@@ -103,25 +109,91 @@ namespace Feedback {
             panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
         }
 
+        public void OnGUI() {
+            if (Event.current.type.Equals(EventType.Repaint)) {
+                if (drawIndicator) {
+                    DrawIndicator(Mouse.current.position.value);
+                }
+
+                if ((draw || firstDraw) && !isEraser) {
+                    if (previous_drag_position == Vector2.zero) {
+                        // If this is the first time we've ever dragged on this image, simply colour the pixels at our mouse position
+                        DrawTexture(localPointerPosition);
+                    } else if (previous_drag_position == localPointerPosition) {
+                        // just testing for now -> prevents draw on the same spot
+                    } else {
+                        // Colour in a line from where we were on the last update call
+                        Vector2 start_point = previous_drag_position;
+                        Vector2 end_point = localPointerPosition;
+
+                        // Get the distance from start to finish
+                        float distance = Vector2.Distance(start_point, end_point);
+                        int lerp_steps = Mathf.CeilToInt(distance / (drawWidth / 4));
+
+                        // Calculate how many times we should interpolate between start_point and end_point based on the amount of time that has passed since the last update
+                        Vector2[] positions = new Vector2[lerp_steps];
+                        for (int i = 0; i < lerp_steps; i++) {
+                            float lerp = i / (float)Mathf.Max(1, lerp_steps - 1);
+                            positions[i] = Vector2.Lerp(start_point, end_point, lerp);
+                        }
+
+                        for (int i = 0; i < positions.Length; i++) {
+                            DrawTexture(positions[i]);
+                        }
+                    }
+
+                    previous_drag_position = localPointerPosition;
+
+                    if (firstDraw && !draw) {
+                        RtIsDirty();
+                    }
+
+                    firstDraw = false;
+                }
+            }
+        }
+
         private void RegisterEvents() {
             UnregisterEvents();
             panelComponents.overpaintContainer.RegisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+            panelComponents.overpaintContainer.RegisterCallback<ClickEvent>(OnClickEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.RegisterCallback<WheelEvent>(OnWheelEvent, TrickleDown.TrickleDown);
         }
 
         private void UnregisterEvents() {
             panelComponents.overpaintContainer.UnregisterCallback<PointerMoveEvent>(OnPointerMoveEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.UnregisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
+            panelComponents.overpaintContainer.UnregisterCallback<ClickEvent>(OnClickEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.UnregisterCallback<WheelEvent>(OnWheelEvent, TrickleDown.TrickleDown);
         }
 
+        private void OnClickEvent(ClickEvent evt) {
+            if (!interuptClick) {
+                localPointerPosition = CalculatePointerPosition(evt.localPosition);
+                firstDraw = true;
+                ReloadRt();
+            }
+
+            interuptClick = false;
+        }
+
         private void OnPointerMoveEvent(PointerMoveEvent evt) {
+            drawIndicator = true;
+
             if (Mouse.current.leftButton.isPressed) {
                 localPointerPosition = CalculatePointerPosition(evt.localPosition);
-                current_brush(localPointerPosition);
-                color_changed = true;
+                draw = true;
+                interuptClick = true;
+
+                if (isEraser) {
+                    PenBrush(localPointerPosition);
+                    color_changed = true;
+                } else {
+                    ReloadRt();
+                }
             } else {
+                draw = false;
                 previous_drag_position = Vector2.zero;
 
                 if (color_changed) {
@@ -129,12 +201,24 @@ namespace Feedback {
                     color_changed = false;
                     ResetMaxOpacity();
                 }
+
+                RtIsDirty();
             }
         }
 
         private void OnPointerLeaveEvent(PointerLeaveEvent evt) {
+            drawIndicator = false;
+
             // We're not over our destination texture
             previous_drag_position = Vector2.zero;
+            draw = false;
+
+            if (rtDirty) {
+                rtReload = true;
+                rtDirty = false;
+                RtToTex();
+                panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
+            }
         }
 
         private void OnWheelEvent(WheelEvent evt) {
@@ -185,11 +269,14 @@ namespace Feedback {
         private void SetPenColor(Color color) {
             drawColor = color;
             tempDrawColor = color;
+            BuildBrushTexture();
         }
 
         private void SetPenSize(int size) {
             drawWidth = Mathf.Max(minDrawWidth, Mathf.Min(maxDrawWidth, size));
             CalculatePenKernel();
+            BuildBrushTexture();
+            CalculateIndicator();
         }
 
         private void CalculatePenKernel() {
@@ -219,8 +306,30 @@ namespace Feedback {
                     }
                 }
             } catch (Exception e) {
-                Debug.Log(e.Message);
+                Debug.LogException(e);
             }
+        }
+
+        private void BuildBrushTexture() {
+            int kernelSize = drawWidth * 2 + 1;
+
+            if (brushTexture == null || brushTexture.width != kernelSize) {
+                brushTexture = new Texture2D(kernelSize, kernelSize, TextureFormat.ARGB32, false);
+            }
+            Color32[] brushPixel = brushTexture.GetPixels32();
+            int index = 0;
+
+            for (int x = 0; x < kernelSize; x++) {
+                for (int y = 0; y < kernelSize; y++) {
+                    Color color = drawColor;
+                    color.a *= drawKernel[x, y];
+                    brushPixel[index] = color;
+                    index++;
+                }
+            }
+
+            brushTexture.SetPixels32(brushPixel);
+            brushTexture.Apply();
         }
         #endregion
 
@@ -231,6 +340,35 @@ namespace Feedback {
             return pos;
         }
 
+        /// <summary>
+        /// Draw to RenderTexture
+        /// </summary>
+        /// <param name="pos"></param>
+        private void DrawTexture(Vector2 pos) {
+            RenderTexture.active = drawRenderTexture;
+            GL.PushMatrix();
+            GL.LoadPixelMatrix(0, drawSurfaceWidth, drawSurfaceHeight, 0);
+            Graphics.DrawTexture(new Rect(pos.x - brushTexture.width * 0.5f, (drawRenderTexture.height - pos.y) - brushTexture.height * 0.5f, brushTexture.width, brushTexture.height), brushTexture);
+            GL.PopMatrix();
+            RenderTexture.active = null;
+        }
+
+        /// <summary>
+        /// Draw the Brush Indicator
+        /// </summary>
+        /// <param name="pos"></param>
+        private void DrawIndicator(Vector2 pos) {
+            GL.PushMatrix();
+            GL.LoadPixelMatrix(0, drawSurfaceWidth, drawSurfaceHeight, 0);
+            Graphics.DrawTexture(new Rect(pos.x - brushIndicator.width * 0.5f, (drawSurfaceHeight - pos.y) - brushIndicator.height * 0.5f, brushIndicator.width, brushIndicator.height), brushIndicator);
+            GL.PopMatrix();
+        }
+
+        #region Old Draw procedure (used for eraser)
+        /// <summary>
+        /// Old Draw (used for eraser)
+        /// </summary>
+        /// <param name="pos"></param>
         private void PenBrush(Vector2 pos) {
             cur_colors = drawSurfaceTexture.GetPixels32();
 
@@ -317,6 +455,7 @@ namespace Feedback {
             drawSurfaceTexture.SetPixels32(cur_colors);
             drawSurfaceTexture.Apply();
         }
+        #endregion
 
         // Changes every pixel to be the reset colour
         private void ResetCanvas() {
@@ -330,6 +469,71 @@ namespace Feedback {
             for (int i = 0; i < max_opacity.Length; i++) {
                 max_opacity[i] = 0;
             }
+        }
+
+        private void CalculateIndicator() {
+            int fullSize = Mathf.FloorToInt(drawWidth * 1.5f);
+            int center = fullSize / 2;
+            int circleRadius = center - 2;
+            int outlineWidth = 1;
+
+            brushIndicator = new Texture2D(fullSize, fullSize);
+
+            Color32[] colors = new Color32[fullSize * fullSize];
+
+            for (int x = 0; x < fullSize; x++) {
+                for (int y = 0; y < fullSize; y++) {
+                    float distance = Mathf.Sqrt((x - center) * (x - center) + (y - center) * (y - center));
+                    int distanceToOutline = Mathf.Abs(Mathf.FloorToInt(distance) - circleRadius);
+
+                    if (distanceToOutline <= outlineWidth) {
+                        colors[y * fullSize + x] = Color.white;
+                    } else {
+                        colors[y * fullSize + x] = Color.clear;
+                    }
+                }
+            }
+
+            brushIndicator.SetPixels32(colors);
+            brushIndicator.Apply();
+        }
+
+        private void RtIsDirty() {
+            if (rtDirty) {
+                rtReload = true;
+                rtDirty = false;
+                RtToTex();
+                panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
+            }
+        }
+
+        private void ReloadRt() {
+            if (rtReload) {
+                rtReload = false;
+                drawRenderTexture = new RenderTexture((int)drawSurfaceWidth, (int)drawSurfaceHeight, 0, RenderTextureFormat.ARGBFloat);
+                drawRenderTexture.filterMode = FilterMode.Point;
+                TexToRt();
+            }
+            rtDirty = true;
+            panelComponents.overpaintContainer.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(drawRenderTexture));
+        }
+
+        private void RtToTex() {
+            drawSurfaceTexture = new Texture2D(drawRenderTexture.width, drawRenderTexture.height);
+            RenderTexture.active = drawRenderTexture;
+            drawSurfaceTexture.ReadPixels(new Rect(0, 0, drawRenderTexture.width, drawRenderTexture.height), 0, 0);
+            drawSurfaceTexture.Apply();
+            RenderTexture.active = null;
+            drawRenderTexture.Release();
+        }
+
+        private void TexToRt() {
+            RenderTexture.active = drawRenderTexture;
+            GL.PushMatrix();
+            GL.LoadPixelMatrix(0, drawSurfaceWidth, drawSurfaceHeight, 0);
+            Graphics.DrawTexture(new Rect(0, 0, drawSurfaceWidth, drawSurfaceHeight), drawSurfaceTexture);
+            GL.PopMatrix();
+            RenderTexture.active = null;
         }
     }
 }
