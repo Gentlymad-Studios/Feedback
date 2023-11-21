@@ -134,7 +134,7 @@ namespace Game.UI {
 
                 var alphaFieldContainer = new VisualElement();
                 alphaFieldContainer.AddToClassList(ussFieldInputAlphaContainer);
-                Add(alphaFieldContainer);
+                //Add(alphaFieldContainer);
 
                 alphaField = new VisualElement();
                 alphaField.AddToClassList(ussFieldInputAlpha);

@@ -127,19 +127,21 @@ namespace Feedback {
                     AsanaAPI asanaAPI = Api as AsanaAPI;
 
                     //Init Tag DropDown
-                    foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
-                        VisualElement tagUi = TagUi.Instantiate();
-                        PanelComponents.tagContainer.Add(tagUi);
+                    if (asanaAPI.ReportTagsBackup.enum_options != null) {
+                        foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
+                            VisualElement tagUi = TagUi.Instantiate();
+                            PanelComponents.tagContainer.Add(tagUi);
 
-                        TagPreview tagPreview = new TagPreview(tagUi, tag.name, tag.gid);
-                        tagPreviewList.Add(tagPreview);
+                            TagPreview tagPreview = new TagPreview(tagUi, tag.name, tag.gid);
+                            tagPreviewList.Add(tagPreview);
 
-                        tagPreview.addTagToTagList = () => SetTag(tagPreview);
-                        tagPreview.removeFromTagList = () => RemoveTag(tagPreview);
+                            tagPreview.addTagToTagList = () => SetTag(tagPreview);
+                            tagPreview.removeFromTagList = () => RemoveTag(tagPreview);
 
-                        tagPreview.ToggleTag(false);
+                            tagPreview.ToggleTag(false);
 
-                        PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
+                            PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
+                        }
                     }
                 }
 

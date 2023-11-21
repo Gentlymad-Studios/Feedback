@@ -72,6 +72,7 @@ namespace Feedback {
             List<AsanaTaskModel> devTicketModels = new List<AsanaTaskModel>();
             List<AsanaTaskModel> playerTicketModels = new List<AsanaTaskModel>();
             ReportTags reportTags = new ReportTags();
+            reportTags.enum_options = new List<Tags>();
 
             string url = "";
             try {
@@ -97,7 +98,7 @@ namespace Feedback {
                     url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
                     request = (HttpWebRequest)WebRequest.Create(url);
                     request.Method = RequestMethods.GET.ToString();
-                    request.Timeout = 3000;
+                    request.Timeout = 5000;
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     using (Stream stream = response.GetResponseStream())
                     using (StreamReader reader = new StreamReader(stream)) {
@@ -114,7 +115,7 @@ namespace Feedback {
                 url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
                 request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = RequestMethods.GET.ToString();
-                request.Timeout = 3000;
+                request.Timeout = 5000;
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(stream)) {
@@ -123,15 +124,12 @@ namespace Feedback {
                     asanaAPI.ReportTagsBackup = reportTags;
                 }
 
-                if (playerTicketModels != null && devTicketModels != null && reportTags != null) {
-                    asanaAPI.FireDataCreated(playerTicketModels, devTicketModels, reportTags);
-                }
             } catch (Exception e) {
-                Debug.LogError("Something went wrong while getting data...");
+                Debug.LogWarning("Something went wrong while getting data, no tickets or tags are loaded. New requests can still be sent.");
                 Debug.LogException(e);
-                asanaAPI.FireDataCreated(null, null, null);
             }
 
+            asanaAPI.FireDataCreated(playerTicketModels, devTicketModels, reportTags);
             requestRunning = false;
         }
 
@@ -377,10 +375,10 @@ namespace Feedback {
             request.Method = RequestMethods.GET.ToString();
             request.Timeout = 3000;
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream)) {
-                try {
+            try {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream)) {
                     string result = await reader.ReadToEndAsync();
                     AuthorizationUser newUser = JsonConvert.DeserializeObject<AuthorizationUser>(result);
 
@@ -389,10 +387,10 @@ namespace Feedback {
                     }
 
                     User = newUser;
-                } catch {
-                    logginChange = User != null;
-                    User = null;
                 }
+            } catch {
+                logginChange = User != null;
+                User = null;
             }
 
             requestRunning = false;

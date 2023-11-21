@@ -303,6 +303,7 @@ namespace Feedback {
                 for (int x = 0; x < kernelSize; x++) {
                     for (int y = 0; y < kernelSize; y++) {
                         drawKernel[x, y] *= 1 / kernelMid;
+                        drawKernel[x, y] = Mathf.Round(drawKernel[x, y]);
                     }
                 }
             } catch (Exception e) {
@@ -472,7 +473,7 @@ namespace Feedback {
         }
 
         private void CalculateIndicator() {
-            int fullSize = Mathf.FloorToInt(drawWidth * 1.5f);
+            int fullSize = Mathf.FloorToInt(drawWidth * 0.5f) + 2;
             int center = fullSize / 2;
             int circleRadius = center - 2;
             int outlineWidth = 1;
@@ -511,7 +512,7 @@ namespace Feedback {
             if (rtReload) {
                 rtReload = false;
                 drawRenderTexture = new RenderTexture((int)drawSurfaceWidth, (int)drawSurfaceHeight, 0, RenderTextureFormat.ARGBFloat);
-                drawRenderTexture.filterMode = FilterMode.Point;
+                //drawRenderTexture.filterMode = FilterMode.Point;
                 TexToRt();
             }
             rtDirty = true;

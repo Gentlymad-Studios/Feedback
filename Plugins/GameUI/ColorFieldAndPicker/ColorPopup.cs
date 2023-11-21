@@ -99,7 +99,7 @@ namespace Game.UI {
             content.Add(rSlider);
             content.Add(gSlider);
             content.Add(bSlider);
-            content.Add(aSlider);
+            //content.Add(aSlider);
 
             rSlider.RegisterValueChangedCallback(ev => SetColorFromRSliders(ev.newValue));
             gSlider.RegisterValueChangedCallback(ev => SetColorFromGSliders(ev.newValue));
