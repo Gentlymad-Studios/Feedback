@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Feedback {
     public class AsanaTicketRequest {
         public static class ContentTypes {
-            public const string Image = "image/jpg";
+            public const string Image = "image/jpeg";
             public const string Text = "text/plain";
             public const string Zip = "application/zip";
             public const string Octet = "application/octet-stream";
