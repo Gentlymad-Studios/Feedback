@@ -7,6 +7,8 @@ namespace Feedback {
     public abstract class CustomAdapter : ScriptableObject, IAdapter {
         public abstract void OnCloseWindow();
         public abstract void OnOpenWindow();
+        public abstract void OnBeforeScreenshot();
+        public abstract void OnAfterScreenshot();
         public abstract void OpenUrl(string url);
         public abstract bool GetDevMode();
         public abstract List<string> GetSavegame(out bool archive);

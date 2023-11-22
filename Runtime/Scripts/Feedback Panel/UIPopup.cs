@@ -201,11 +201,13 @@ namespace Feedback {
         }
 
         protected override void OnShowWindow() {
-            SetLoadingStatus(true);
+            settings.Adapter.OnBeforeScreenshot();
             base.OnShowWindow();
+            SetLoadingStatus(true);
             Loading.Show("loading...");
             RegisterEvents();
             TicketBrowser?.InitEvents();
+            StartupLoginCheck();
         }
 
         protected override void OnHideWindow() {
@@ -612,9 +614,9 @@ namespace Feedback {
             screenshot.hideFlags = HideFlags.HideAndDontSave;
             screenshot.name = "Screenshot";
             screenshot.Apply();
+            settings.adapter.OnAfterScreenshot();
             DrawImage.Setup(PanelComponents, screenshot);
             SetWindowTypes();
-            StartupLoginCheck();
         }
 
         private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {

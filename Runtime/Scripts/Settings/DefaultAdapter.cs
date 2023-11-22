@@ -8,6 +8,10 @@ namespace Feedback {
 
         public void OnOpenWindow() {}
 
+        public void OnBeforeScreenshot() {}
+
+        public void OnAfterScreenshot() {}
+
         public void OpenUrl(string url) {
             Application.OpenURL(url);
         }
@@ -26,5 +30,6 @@ namespace Feedback {
         public List<CustomData> GetCustomFields(AsanaProject projectType) {
             return null;
         }
+
     }
 }

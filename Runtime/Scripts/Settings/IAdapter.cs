@@ -8,6 +8,10 @@ namespace Feedback {
 
         void OnCloseWindow();
 
+        void OnBeforeScreenshot();
+
+        void OnAfterScreenshot();
+
         bool GetDevMode();
 
         List<string> GetSavegame(out bool archive);
