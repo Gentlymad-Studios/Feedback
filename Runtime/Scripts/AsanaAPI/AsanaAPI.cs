@@ -12,6 +12,9 @@ namespace Feedback {
         public delegate void LoginResult(bool success);
         public static event LoginResult LoginResultEvent;
 
+        public delegate void GetUserResult();
+        public static event GetUserResult GetUserResultEvent;
+
         public delegate void AvatarLoaded();
         public static event AvatarLoaded AvatarLoadedEvent;
 
@@ -39,6 +42,10 @@ namespace Feedback {
 
         public void FireLoginResult(bool success) {
             LoginResultEvent.Invoke(success);
+        }
+
+        public void FireGetUserResult() {
+            GetUserResultEvent.Invoke();
         }
 
         public void FireAvatarLoaded() {

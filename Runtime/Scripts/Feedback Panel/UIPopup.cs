@@ -1,6 +1,7 @@
 using Game.UI;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -52,6 +53,7 @@ namespace Feedback {
 
         private bool devMode = false;
 
+        private bool initializedAfterLogin = false;
         private bool initializedAfterLoad = false;
         private bool currentlyLoading = false;
         private LoadAsanaAttachmentFiles fileLoader;
@@ -68,9 +70,6 @@ namespace Feedback {
                 currentWindowType = before;
             } else {
                 ActiveWindow = currentWindowType;
-                if (!StartupLoginCheck()) {
-                    base.GetData(false);
-                }
             }
         }
 
@@ -116,6 +115,10 @@ namespace Feedback {
         private void Update() {
             if (currentlyLoading) {
                 Loading.SpinLoadingIcon();
+            }
+
+            if (initializedAfterLogin) {
+                InitializeStartupLoginResult();
             }
 
             if (!currentlyLoading && !ActiveWindow.Equals(WindowType.None)) {
@@ -200,7 +203,7 @@ namespace Feedback {
         protected override void OnShowWindow() {
             SetLoadingStatus(true);
             base.OnShowWindow();
-            Loading.Show("load tickets...");
+            Loading.Show("loading...");
             RegisterEvents();
             TicketBrowser?.InitEvents();
         }
@@ -254,22 +257,36 @@ namespace Feedback {
         #endregion
 
         #region Auth and login
-        private bool StartupLoginCheck() {
+        private void StartupLoginCheck() {
             if (!devMode) {
-                return false;
+                return;
             }
 
             SetLoadingStatus(true);
-            Api.RequestHandler.TryGetUserAsync();
+            Loading.SetText("check login...");
+
+            GetUserResultEvent -= StartupLoginCheckFinished;
+            GetUserResultEvent += StartupLoginCheckFinished;
+
+            string id = Api.RequestHandler.UniqueId;
+            Task task = new Task(() => Api.RequestHandler.TryGetUserAsync(id));
+            task.Start();
+        }
+
+        private void StartupLoginCheckFinished() {
+            initializedAfterLogin = true;
+        }
+
+        private void InitializeStartupLoginResult() {
             bool loggedIn = Api.RequestHandler.User != null;
 
             SetLoginUI(loggedIn);
 
-            if (Api.RequestHandler.logginChange) {
-                UpdateTasksAfterLogInOut();
-            }
+            Loading.SetText("load tickets...");
+            base.GetData(false);
 
-            return Api.RequestHandler.logginChange;
+            initializedAfterLogin = false;
+            GetUserResultEvent -= StartupLoginCheckFinished;
         }
 
         private void CheckDevLogin() {
@@ -314,6 +331,7 @@ namespace Feedback {
 
         private void UpdateTasksAfterLogInOut() {
             SetLoadingStatus(true);
+
             initializedAfterLoad = false;
             base.GetData(true);
 
@@ -596,6 +614,7 @@ namespace Feedback {
             screenshot.Apply();
             DrawImage.Setup(PanelComponents, screenshot);
             SetWindowTypes();
+            StartupLoginCheck();
         }
 
         private void UpdateScreenshotUiScale(GeometryChangedEvent evt) {

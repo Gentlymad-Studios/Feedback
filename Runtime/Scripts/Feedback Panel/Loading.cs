@@ -51,6 +51,10 @@ namespace Feedback {
             style.display = DisplayStyle.Flex;
         }
 
+        public void SetText(string text) {
+            loadingLbl.text = text;
+        }
+
         public void Hide() {
             style.display = DisplayStyle.None;
         }

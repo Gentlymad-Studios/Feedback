@@ -21,7 +21,7 @@ namespace Feedback {
         private HttpWebRequest request;
         private bool killLogin = false;
         private string uniqueId = string.Empty;
-        public string UniqueId {
+        public override string UniqueId {
             get {
                 if (!string.IsNullOrEmpty(uniqueId)) {
                     return uniqueId;
@@ -333,7 +333,8 @@ namespace Feedback {
                 int trys = 0;
 
                 while (loginRunning) {
-                    Task task = new Task(TryGetUserAsync);
+                    string id = UniqueId;
+                    Task task = new Task(() => TryGetUserAsync(id));
 
                     task.Start();
                     await task;
@@ -362,19 +363,19 @@ namespace Feedback {
         /// <summary>
         /// Get User Data Sync
         /// </summary>
-        public override async void TryGetUserAsync() {
-            if (string.IsNullOrEmpty(UniqueId)) {
+        public override async void TryGetUserAsync(string uniqueId) {
+            if (string.IsNullOrEmpty(uniqueId)) {
+                asanaAPI.FireGetUserResult();
                 return;
             }
 
             requestRunning = true;
             logginChange = false;
 
-            string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{UniqueId}";
+            string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.GET.ToString();
             request.Timeout = 3000;
-
             try {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
@@ -392,6 +393,8 @@ namespace Feedback {
                 logginChange = User != null;
                 User = null;
             }
+
+            asanaAPI.FireGetUserResult();
 
             requestRunning = false;
         }

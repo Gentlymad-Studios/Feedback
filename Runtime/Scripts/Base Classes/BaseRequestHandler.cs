@@ -5,6 +5,7 @@ namespace Feedback {
         public bool requestRunning = false;
         public bool logginChange = false;
         public AuthorizationUser User;
+        public abstract string UniqueId { get; set; }
         public List<TagPreview> Tags = new List<TagPreview>();
 
         protected string contentType = "application/json; charset=UTF-8";
@@ -17,7 +18,7 @@ namespace Feedback {
         public abstract void LogOut();
         public abstract void AbortLogin();
         public abstract void LoadAvatar();
-        public abstract void TryGetUserAsync();
+        public abstract void TryGetUserAsync(string id);
     }
 
     public enum RequestMethods {
