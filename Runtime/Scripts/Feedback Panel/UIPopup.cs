@@ -333,6 +333,8 @@ namespace Feedback {
 
         private void UpdateTasksAfterLogInOut() {
             SetLoadingStatus(true);
+            Loading.ToggleAbort(false);
+            Loading.SetText("update tickets...");
 
             initializedAfterLoad = false;
             base.GetData(true);

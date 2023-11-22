@@ -55,6 +55,16 @@ namespace Feedback {
             loadingLbl.text = text;
         }
 
+        public void ToggleAbort(bool abortable, Action abortCallback = null) {
+            loadingAbort.style.display = abortable ? DisplayStyle.Flex : DisplayStyle.None;
+
+            this.abortCallback = abortCallback;
+
+            if (abortCallback != null) {
+                RegisterEvents();
+            }
+        }
+
         public void Hide() {
             style.display = DisplayStyle.None;
         }
