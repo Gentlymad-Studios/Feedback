@@ -193,12 +193,17 @@ namespace Feedback {
             if (File.Exists(path)) {
                 using (FileStream logFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
                     byte[] bytes = StreamToByteArray(logFileStream);
+
                     if (bytes.LongLength > settings.maxFileSize) {
-                        Debug.Log($"File is to large {attachment.filename}.");
-                    } else {
-                        attachment.content = Convert.ToBase64String(bytes);
-                        return attachment;
+                        Span<byte> span = bytes.AsSpan();
+                        Span<byte> slice = span.Slice((int)(bytes.LongLength - settings.maxFileSize));
+                        bytes = slice.ToArray();
+                        Debug.Log($"File is to large {attachment.filename} and was reduced.");
                     }
+
+                    attachment.content = Convert.ToBase64String(bytes);
+
+                    return attachment;
                 }
             } else {
                 Debug.LogWarning($"[FeedbackService] File not found ({path}).");
