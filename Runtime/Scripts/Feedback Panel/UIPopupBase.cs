@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Feedback {
     public abstract class UIPopUpBase : MonoBehaviour {
-        public BaseAPI Api = null;
+        public AsanaAPI Api = null;
         private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
 
         protected void GetData(bool force) {

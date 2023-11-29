@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// Api class which inherits from the basic api class.  
 /// </summary>
 namespace Feedback {
-    public class AsanaAPI : BaseAPI {
+    public class AsanaAPI {
         public delegate void DataReceived(List<TaskModels.AsanaTaskModel> playerTasks, List<TaskModels.AsanaTaskModel> devTasks, TaskModels.ReportTags reportTags);
         public static event DataReceived DataReceivedEvent;
 
@@ -18,6 +18,7 @@ namespace Feedback {
         public delegate void AvatarLoaded();
         public static event AvatarLoaded AvatarLoadedEvent;
 
+        public BaseRequestHandler RequestHandler;
         public AsanaAPISettings AsanaSpecificSettings;
         public List<TaskModels.AsanaTaskModel> PlayerTicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
         public List<TaskModels.AsanaTaskModel> DevTicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
@@ -29,11 +30,7 @@ namespace Feedback {
 
         public AsanaAPI(AsanaAPISettings s) {
             AsanaSpecificSettings = s;
-            base.RequestHandler = new AsanaRequestHandler(this);
-        }
-
-        public override void CreateAPISpecificSettings() {
-            Settings = AsanaSpecificSettings;
+            RequestHandler = new AsanaRequestHandler(this);
         }
 
         public void FireDataCreated(List<TaskModels.AsanaTaskModel> playerTickets, List<TaskModels.AsanaTaskModel> devTickets, TaskModels.ReportTags reportTags) {

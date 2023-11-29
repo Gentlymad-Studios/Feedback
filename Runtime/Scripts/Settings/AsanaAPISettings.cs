@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Feedback {
     [CreateAssetMenu(fileName = nameof(AsanaAPISettings), menuName = nameof(AsanaAPISettings), order = 1)]
-    public class AsanaAPISettings : APISettings {
+    public class AsanaAPISettings : ScriptableObject {
         [Header("Adapter")]
         [SerializeReference]
         public CustomAdapter customAdapter = null;

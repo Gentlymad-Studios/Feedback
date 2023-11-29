@@ -11,7 +11,6 @@ using Debug = UnityEngine.Debug;
 
 namespace Feedback {
     public class UIPopup : UIPopUpBase {
-        public APISettings.APIType Type;
         public DrawImage DrawImage;
         public PanelComponents PanelComponents;
         public UIDocument UIDocument;
@@ -400,9 +399,7 @@ namespace Feedback {
             PanelComponents.taskCancelBtn.clicked -= CancelBtn_clicked;
         }
         public void ConfigureAPI() {
-            if (Type.Equals(APISettings.APIType.Asana)) {
-                Api = new AsanaAPI(asanaSpecificSettings);
-            }
+            Api = new AsanaAPI(asanaSpecificSettings);
         }
         public void SetDataType(ChangeEvent<string> changeEvent) {
             currentDataType = changeEvent.newValue;
