@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -90,10 +91,8 @@ namespace Feedback {
             }
 
             if (recreateDrawSurfaceTexture) {
-                drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight);
-                drawSurfaceTexture.name = "DrawSurfaceTex";
+                drawSurfaceTexture = new Texture2D((int)drawSurfaceWidth, (int)drawSurfaceHeight, TextureFormat.ARGB32, false);
                 drawSurfaceTexture.hideFlags = HideFlags.HideAndDontSave;
-                drawSurfaceTexture.filterMode = FilterMode.Point; //prevent grey outlines for now
 
                 // Reset all pixels color to transparent
                 Color32 resetColor = new Color32(0, 0, 0, 0);
@@ -529,8 +528,8 @@ namespace Feedback {
         private void ReloadRt() {
             if (rtReload) {
                 rtReload = false;
-                drawRenderTexture = new RenderTexture((int)drawSurfaceWidth, (int)drawSurfaceHeight, 0, RenderTextureFormat.ARGBFloat);
-                //drawRenderTexture.filterMode = FilterMode.Point;
+                RenderTextureDescriptor rtd = new RenderTextureDescriptor((int)drawSurfaceWidth, (int)drawSurfaceHeight) { depthBufferBits = 24, msaaSamples = 8, useMipMap = false, sRGB = true, colorFormat = RenderTextureFormat.ARGB32 };
+                drawRenderTexture = new RenderTexture(rtd);
                 TexToRt();
             }
             rtDirty = true;
@@ -538,7 +537,11 @@ namespace Feedback {
         }
 
         private void RtToTex() {
-            drawSurfaceTexture = new Texture2D(drawRenderTexture.width, drawRenderTexture.height);
+            if (drawSurfaceTexture == null || drawSurfaceTexture.width != drawRenderTexture.width || drawSurfaceTexture.height != drawRenderTexture.height) {
+                drawSurfaceTexture = new Texture2D(drawRenderTexture.width, drawRenderTexture.height, TextureFormat.ARGB32, false);
+                drawSurfaceTexture.hideFlags = HideFlags.HideAndDontSave;
+            }
+
             RenderTexture.active = drawRenderTexture;
             drawSurfaceTexture.ReadPixels(new Rect(0, 0, drawRenderTexture.width, drawRenderTexture.height), 0, 0);
             drawSurfaceTexture.Apply();
