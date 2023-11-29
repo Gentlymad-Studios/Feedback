@@ -69,6 +69,11 @@ namespace Feedback {
         public string howToName;
         public string howToUrl;
 
+        [Header("Painter")]
+        [ColorUsage(false)]
+        public Color defaultColor = Color.red;
+        public bool showBrushIndicator = true;
+
         public AsanaProject GetProjectByName(string projectName) {
             for (int i = 0; i < asanaProjects.Count; i++) {
                 if (asanaProjects[i].name == projectName) {
@@ -102,14 +107,15 @@ namespace Feedback {
         [Tooltip("List of Files that should be attached to this Project, realtive to the Attachment Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
     }
-    public class CustomData {
-        public string gid;
-        public List<string> values;
-    }
 
     [Serializable]
     public class ArchivedFiles {
         public string name;
         public List<string> Files;
+    }
+
+    public class CustomData {
+        public string gid;
+        public List<string> values;
     }
 }

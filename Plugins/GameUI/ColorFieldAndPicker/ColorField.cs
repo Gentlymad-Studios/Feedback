@@ -79,6 +79,15 @@ namespace Game.UI {
             colorFieldInput.SetColor(newValue);
         }
 
+        public void ShowPopup() {
+            if (ColorPopup == null) {
+                ColorPopup = new ColorPopup();
+                PopupRoot.Add(ColorPopup);
+            }
+
+            ColorPopup.Show(value, c => value = c);
+        }
+
         private void UpdateResetButton() {
             if (resetLabel == null) {
                 if (resetButton != null) {
@@ -102,12 +111,7 @@ namespace Game.UI {
         }
 
         private void OnClickEvent(ClickEvent ev) {
-            if (ColorPopup == null) {
-                ColorPopup = new ColorPopup();
-                PopupRoot.Add(ColorPopup);
-            }
-
-            ColorPopup.Show(value, c => value = c);
+            ShowPopup();
         }
 
         private void OnResetButton() {

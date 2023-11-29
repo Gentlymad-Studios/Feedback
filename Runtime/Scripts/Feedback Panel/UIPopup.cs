@@ -617,7 +617,7 @@ namespace Feedback {
             screenshot.name = "Screenshot";
             screenshot.Apply();
             settings.adapter.OnAfterScreenshot();
-            DrawImage.Setup(PanelComponents, screenshot);
+            DrawImage.Setup(PanelComponents, screenshot, settings);
             SetWindowTypes();
         }
 

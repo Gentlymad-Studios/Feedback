@@ -10,10 +10,11 @@ using UnityEngine.UIElements;
 namespace Feedback {
     public class DrawImage {
         private PanelComponents panelComponents;
+        private AsanaAPISettings settings;
 
         //Pen Settings
         public int drawWidth = 12;
-        public Color drawColor = Color.black;
+        public Color drawColor;
         public float[,] drawKernel;
         public float sigma = 1; //describes the pen fallof / hardness
         public Texture2D drawSurfaceTexture;
@@ -25,8 +26,9 @@ namespace Feedback {
         private int maxDrawWidth = 100;
         private int drawWidthSteprate = 2;
 
-        private Color tempDrawColor = Color.black;
-        private Color pickedColor = Color.black;
+        private bool colorIsSet = false;
+        private Color tempDrawColor;
+        private Color pickedColor;
 
         private float drawSurfaceWidth;
         private float drawSurfaceHeight;
@@ -61,8 +63,16 @@ namespace Feedback {
             }
         }
 
-        public void Setup(PanelComponents panelComponents, Texture2D screenshot) {
+        public void Setup(PanelComponents panelComponents, Texture2D screenshot, AsanaAPISettings settings) {
             this.panelComponents = panelComponents;
+            this.settings = settings;
+
+            if(!colorIsSet) {
+                drawColor = settings.defaultColor;
+                tempDrawColor = drawColor;
+                pickedColor = drawColor;
+                colorIsSet = true;
+            }
 
             RegisterEvents();
 
@@ -106,12 +116,13 @@ namespace Feedback {
             isEraser = false;
             SetPenColor(pickedColor);
 
+            panelComponents.colorField.SetValueWithoutNotify(pickedColor);
             panelComponents.overpaintContainer.style.backgroundImage = drawSurfaceTexture;
         }
 
         public void OnGUI() {
             if (Event.current.type.Equals(EventType.Repaint)) {
-                if (drawIndicator) {
+                if (drawIndicator && settings.showBrushIndicator) {
                     DrawIndicator(Mouse.current.position.value);
                 }
 
@@ -159,6 +170,7 @@ namespace Feedback {
             panelComponents.overpaintContainer.RegisterCallback<PointerLeaveEvent>(OnPointerLeaveEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.RegisterCallback<ClickEvent>(OnClickEvent, TrickleDown.TrickleDown);
             panelComponents.overpaintContainer.RegisterCallback<WheelEvent>(OnWheelEvent, TrickleDown.TrickleDown);
+            panelComponents.overpaintContainer.RegisterCallback<MouseDownEvent>(OnMouseDownEvent, TrickleDown.TrickleDown);
         }
 
         private void UnregisterEvents() {
@@ -176,6 +188,12 @@ namespace Feedback {
             }
 
             interuptClick = false;
+        }
+
+        private void OnMouseDownEvent(MouseDownEvent evt) {
+            if (evt.button == 1) {
+                panelComponents.colorField.ShowPopup();
+            }
         }
 
         private void OnPointerMoveEvent(PointerMoveEvent evt) {
