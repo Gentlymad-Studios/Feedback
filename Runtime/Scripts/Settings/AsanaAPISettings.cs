@@ -27,13 +27,13 @@ namespace Feedback {
 
         [Header("AsanaRequestManager Endpoints")]
         public string BaseUrl;
-        public string GetReportTags;
-        public string GetPlayerTaskDataEndpoint;
-        public string GetDevTaskDataEndpoint;
-        public string LoginEndpoint;
-        public string LogoutEndpoint;
-        public string PostNewTaskDataEndpoint;
-        public string GetUserWithUniqueId;
+        public string GetReportTags = "/GetReportTags";
+        public string GetPlayerTaskDataEndpoint = "GetAllPlayer";
+        public string GetDevTaskDataEndpoint = "GetAllDev";
+        public string LoginEndpoint = "Login/";
+        public string LogoutEndpoint = "Logout/";
+        public string PostNewTaskDataEndpoint = "PostNewTaskData/";
+        public string GetUserWithUniqueId = "GetUserWithUniqueId/";
 
         [Header("Asana Workspace")]
         public string WorkspaceId;
