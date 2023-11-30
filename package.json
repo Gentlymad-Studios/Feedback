@@ -22,9 +22,11 @@
 		"url": "https://gentlymadstudios.com",
 		"email": "team@gentlymadstudios.com"
 	},
-	"samples": {
-    "displayName": "Replit Project",
-    "description": "Contains sample replit project to get a connection between Unity and Asana",
-    "path": "Samples~/Replit"
-	}
+	"samples": [
+		{
+    	"displayName": "Replit Project",
+    	"description": "Contains sample replit project to get a connection between Unity and Asana",
+    	"path": "Samples~/Replit"
+		}
+	]
 }
