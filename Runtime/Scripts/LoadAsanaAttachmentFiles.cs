@@ -24,7 +24,10 @@ namespace Feedback {
 
             LoadImages(images);
 
-            if (project.includeLog) {
+            if (project.includePlayerLog) {
+                LoadFileList(new List<string> { "Player.log" });
+            }
+            if (project.includeCustomLog) {
                 LoadLog();
             }
             if (project.includeSavegame) {

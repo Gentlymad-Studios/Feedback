@@ -92,7 +92,8 @@ namespace Feedback {
         public string titlePlaceholder = "Title...";
         [Multiline]
         public string descriptionPlaceholder = "Description...";
-        public bool includeLog = true;
+        public bool includePlayerLog = true;
+        public bool includeCustomLog = true;
         public bool includeSavegame = true;
         [Tooltip("Enable this if you want to include global files")]
         public bool includeGlobalFiles = false;
