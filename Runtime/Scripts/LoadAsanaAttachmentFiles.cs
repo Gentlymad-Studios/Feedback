@@ -86,14 +86,14 @@ namespace Feedback {
         }
 
         private void LoadLog() {
-            List<string> logDataPaths = settings.Adapter.GetLog(out bool archive);
+            List<string> logDataPaths = settings.Adapter.GetLog(out bool archive, out string archiveName);
 
             if (logDataPaths == null) {
                 return;
             }
 
             if (archive) {
-                AsanaTicketRequest.Attachment attachment = CreateZipArchive("log", logDataPaths);
+                AsanaTicketRequest.Attachment attachment = CreateZipArchive(archiveName, logDataPaths);
                 if (attachment != null) {
                     attachments.Add(attachment);
                 }
@@ -108,14 +108,14 @@ namespace Feedback {
         }
 
         private void LoadSavegame() {
-            List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive);
+            List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive, out string archiveName);
 
             if (savegameDataPaths == null) {
                 return;
             }
 
             if (archive) {
-                AsanaTicketRequest.Attachment attachment = CreateZipArchive("savegame", savegameDataPaths);
+                AsanaTicketRequest.Attachment attachment = CreateZipArchive(archiveName, savegameDataPaths);
                 if (attachment != null) {
                     attachments.Add(attachment);
                 }
@@ -161,8 +161,8 @@ namespace Feedback {
             }
 
             try {
-                using (var zip = ZipFile.Open(file, ZipArchiveMode.Create)) {
-                    foreach (var source in sources) {
+                using (ZipArchive zip = ZipFile.Open(file, ZipArchiveMode.Create)) {
+                    foreach (FileInfo source in sources) {
                         zip.CreateEntryFromFile(source.FullName, source.Name);
                     }
                 }

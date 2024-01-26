@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 namespace Feedback {
@@ -19,12 +18,14 @@ namespace Feedback {
         public bool GetDevMode() {
             return true;
         }
-        public List<string> GetSavegame(out bool archive) {
+        public List<string> GetSavegame(out bool archive, out string archiveName) {
             archive = false;
+            archiveName = "savegame";
             return null;
         }
-        public List<string> GetLog(out bool archive) {
+        public List<string> GetLog(out bool archive, out string archiveName) {
             archive = false;
+            archiveName = "log";
             return null;
         }
         public List<CustomData> GetCustomFields(AsanaProject projectType) {
