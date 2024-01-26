@@ -11,8 +11,8 @@ namespace Feedback {
             Api.RequestHandler.GetData(force);
         }
 
-        protected void PostData(RequestData data) {
-            Api.RequestHandler.PostNewData(data);
+        protected bool PostData(RequestData data) {
+            return Api.RequestHandler.PostNewData(data);
         }
 
         protected void LogIn() {

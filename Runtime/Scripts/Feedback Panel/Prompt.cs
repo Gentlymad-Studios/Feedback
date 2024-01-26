@@ -39,7 +39,7 @@ namespace Feedback {
             });
         }
 
-        public void Show(string title, string description, Action callback, string buttonText = "Ok") {
+        public void Show(string title, string description, Action callback = null, string buttonText = "Ok") {
             this.title.text = title;
             this.description.text = description;
             okButton.text = buttonText;
@@ -60,7 +60,9 @@ namespace Feedback {
         public void RegisterEvents() {
             UnregisterEvents();
             okButton.clicked += Hide;
-            okButton.clicked += callback;
+            if (callback != null) {
+                okButton.clicked += callback;
+            }
         }
 
         public void UnregisterEvents() {

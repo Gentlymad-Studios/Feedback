@@ -591,16 +591,20 @@ namespace Feedback {
 
             RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachments, asanaProject);
 
-            PostData(data);
+            bool success = PostData(data);
 
-            fileLoader.ClearTemp();
+            if (success) {
+                fileLoader.ClearTemp();
 
-            Prompt.Show("Feedback", "Feedback sent", () => {
-                ActiveWindow = WindowType.None;
-                SetWindowTypes();
-            });
+                Prompt.Show("Feedback", "Feedback sent", () => {
+                    ActiveWindow = WindowType.None;
+                    SetWindowTypes();
+                });
+            } else {
+                Prompt.Show("Failure", "An error occurred while sending your feedback, please try again.");
+            }
 
-            return true;
+            return success;
         }
         #endregion
 
