@@ -15,7 +15,7 @@ namespace Feedback {
 
         public LoadAsanaAttachmentFiles(AsanaAPISettings settings) {
             this.settings = settings;
-            attachmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).Replace("Roaming", "LocalLow") + settings.AttachmentLocation;
+            attachmentPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)).FullName, string.Format("LocalLow/{0}/{1}/", Application.companyName, Application.productName));
             tempPath = Path.Combine(attachmentPath, "Temp");
         }
 

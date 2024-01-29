@@ -50,7 +50,6 @@ namespace Feedback {
         [Header("Attachments")]
         [Tooltip("Maximum Size per File in bytes")]
         public long maxFileSize = 10000000;
-        public string AttachmentLocation = "\\Gentlymad Studios\\Endzone";
         [Tooltip("List of Files that should be attached for any Project, realtive to the Attachment Location")]
         public List<string> Files;
         [Tooltip("List of Files that should be attached for any Project, realtive to the Attachment Location, these files will bundled in one archive")]
