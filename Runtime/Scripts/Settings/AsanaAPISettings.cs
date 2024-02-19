@@ -50,9 +50,9 @@ namespace Feedback {
         [Header("Attachments")]
         [Tooltip("Maximum Size per File in bytes")]
         public long maxFileSize = 10000000;
-        [Tooltip("List of Files that should be attached for any Project, realtive to the Attachment Location")]
+        [Tooltip("List of Files that should be attached for any Project, realtive to the Application Data Location")]
         public List<string> Files;
-        [Tooltip("List of Files that should be attached for any Project, realtive to the Attachment Location, these files will bundled in one archive")]
+        [Tooltip("List of Files that should be attached for any Project, realtive to the Application Data Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
 
         [Header("Tab GUI Settings")]
