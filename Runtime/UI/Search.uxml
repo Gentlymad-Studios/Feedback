@@ -7,7 +7,7 @@
                 <ui:Label text="What is your concern?" name="Headline" class="fontLightDefault fontSizeLarge" />
             </ui:VisualElement>
             <ui:VisualElement name="SearchBarContainer">
-                <ui:TextField picking-mode="Ignore" name="searchTxt" class="searchField">
+                <ui:TextField picking-mode="Ignore" name="searchTxt" max-length="1000" class="searchField">
                     <ui:Label text="Describe your Concern..." picking-mode="Ignore" name="previewTxt" class="previewText" />
                 </ui:TextField>
                 <ui:Button text="Create Report" name="searchSubmitBtn" class="defaultAccentButton" />

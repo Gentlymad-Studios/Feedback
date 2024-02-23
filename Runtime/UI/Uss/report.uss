@@ -63,10 +63,15 @@
 
 #taskDescriptionTxt {
 	flex-grow: 1;
+	max-height: 70%;
+}
+
+#taskDescriptionTxt > TextInput {
+	padding-right: 0px;
 }
 
 #tagHolder {
-	min-height: 53px
+	min-height: 53px;
 }
 
 #ButtonContainer {

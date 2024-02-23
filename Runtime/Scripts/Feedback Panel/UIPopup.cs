@@ -83,6 +83,11 @@ namespace Feedback {
             PanelComponents.root.RegisterCallback<MouseDownEvent>(Click);
             PanelComponents.howToDescLbl.text = settings.howToDescription;
             PanelComponents.howToLbl.text = settings.howToName;
+                        
+            //Setup Scrolling for the DescriptionField
+            PanelComponents.taskDescriptionTxt.SetVerticalScrollerVisibility(ScrollerVisibility.AlwaysVisible);
+            ScrollView descriptionScrollView = PanelComponents.taskDescriptionTxt.Q<ScrollView>();
+            descriptionScrollView.mouseWheelScrollSize = 1000;
 
             CheckDevLogin();
 
