@@ -56,11 +56,11 @@ namespace Feedback {
         public List<ArchivedFiles> ArchivedFiles;
 
         [Header("Request")]
-        [Tooltip("The Timeout for the HTTP Request when recieving data in seconds.")]
+        [Tooltip("The Timeout for the HTTP Request when recieving data in ms.")]
         public int recieveTimeout = 5000;
-        [Tooltip("The Timeout for the HTTP Request when sending data in seconds.")]
+        [Tooltip("The Timeout for the HTTP Request when sending data in ms.")]
         public int sendTimeout = 10000;
-        [Tooltip("The Timeout for the HTTP Request when login / logout / ... in seconds.")]
+        [Tooltip("The Timeout for the HTTP Request when login / logout / ... in ms.")]
         public int loginoutTimeout = 5000;
 
         [Header("Tab GUI Settings")]
