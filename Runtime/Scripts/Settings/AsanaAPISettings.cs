@@ -55,6 +55,14 @@ namespace Feedback {
         [Tooltip("List of Files that should be attached for any Project, realtive to the Application Data Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
 
+        [Header("Request")]
+        [Tooltip("The Timeout for the HTTP Request when recieving data in seconds.")]
+        public int recieveTimeout = 5000;
+        [Tooltip("The Timeout for the HTTP Request when sending data in seconds.")]
+        public int sendTimeout = 10000;
+        [Tooltip("The Timeout for the HTTP Request when login / logout / ... in seconds.")]
+        public int loginoutTimeout = 5000;
+
         [Header("Tab GUI Settings")]
         [Multiline]
         public string searchDescripton;

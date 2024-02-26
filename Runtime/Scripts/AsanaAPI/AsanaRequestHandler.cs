@@ -80,7 +80,7 @@ namespace Feedback {
                     url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
                     request = (HttpWebRequest)WebRequest.Create(url);
                     request.Method = RequestMethods.GET.ToString();
-                    request.Timeout = 5000;
+                    request.Timeout = asanaAPISettings.recieveTimeout;
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     using (Stream stream = response.GetResponseStream())
                     using (StreamReader reader = new StreamReader(stream)) {
@@ -98,7 +98,7 @@ namespace Feedback {
                     url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
                     request = (HttpWebRequest)WebRequest.Create(url);
                     request.Method = RequestMethods.GET.ToString();
-                    request.Timeout = 5000;
+                    request.Timeout = asanaAPISettings.recieveTimeout;
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     using (Stream stream = response.GetResponseStream())
                     using (StreamReader reader = new StreamReader(stream)) {
@@ -115,7 +115,7 @@ namespace Feedback {
                 url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
                 request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = RequestMethods.GET.ToString();
-                request.Timeout = 5000;
+                request.Timeout = asanaAPISettings.recieveTimeout;
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(stream)) {
@@ -149,7 +149,7 @@ namespace Feedback {
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.POST.ToString();
             request.ContentType = "application/json";
-            request.Timeout = 10000;
+            request.Timeout = asanaAPISettings.sendTimeout;
 
             try {
                 byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
@@ -287,6 +287,7 @@ namespace Feedback {
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.LogoutEndpoint}{UniqueId}";
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.GET.ToString();
+            request.Timeout = asanaAPISettings.loginoutTimeout;
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream)) {
@@ -309,7 +310,7 @@ namespace Feedback {
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{UniqueId}";
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.GET.ToString();
-
+            request.Timeout = asanaAPISettings.loginoutTimeout;
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream)) {
@@ -377,7 +378,7 @@ namespace Feedback {
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
             request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = RequestMethods.GET.ToString();
-            request.Timeout = 3000;
+            request.Timeout = asanaAPISettings.loginoutTimeout;
             try {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
@@ -422,7 +423,7 @@ namespace Feedback {
 
                     // Create a HttpWebRequest with the image URL
                     request = (HttpWebRequest)WebRequest.Create(User.picture);
-                    request.Timeout = 5000;
+                    request.Timeout = asanaAPISettings.loginoutTimeout;
 
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     using (Stream stream = response.GetResponseStream())
