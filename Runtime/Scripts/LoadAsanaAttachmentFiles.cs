@@ -107,8 +107,8 @@ namespace Feedback {
 
             using (StreamWriter writer = new StreamWriter(file, false)) {
                 for (int i = 0; i < errorCount; i++) {
-                    writer.WriteLine(errorHandler.ErrorList[i].LogString + "\n");
-                    writer.WriteLine(errorHandler.ErrorList[i].StackTrace + "\n\n");
+                    writer.WriteLine(errorHandler.ErrorList[i].LogString);
+                    writer.WriteLine(errorHandler.ErrorList[i].StackTrace + "\n");
                 }
             }
 
