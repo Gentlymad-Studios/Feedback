@@ -99,7 +99,9 @@ namespace Feedback {
         public string titlePlaceholder = "Title...";
         [Multiline]
         public string descriptionPlaceholder = "Description...";
-        public bool includeFirstErrors = true;
+        public bool includeErrorLog = true;
+        [Tooltip("The Amount of Errors we add to special Error Log. 0 = unlimited")]
+        public int errorLogCount = 5;
         public bool includePlayerLog = true;
         public bool includeCustomLog = true;
         public bool includeSavegame = true;

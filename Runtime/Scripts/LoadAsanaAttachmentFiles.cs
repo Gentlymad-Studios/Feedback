@@ -24,8 +24,8 @@ namespace Feedback {
 
             LoadImages(images);
 
-            if (project.includeFirstErrors) {
-                LoadFirstErrors(errorHandler);
+            if (project.includeErrorLog) {
+                LoadFirstErrors(errorHandler, project.errorLogCount);
             }
             if (project.includePlayerLog) {
                 LoadFileList(new List<string> { "Player.log" });
@@ -88,7 +88,7 @@ namespace Feedback {
             });
         }
 
-        private void LoadFirstErrors(ErrorHandler errorHandler) {
+        private void LoadFirstErrors(ErrorHandler errorHandler, int errorCount) {
             if (errorHandler.ErrorList.Count == 0) {
                 return;
             }  
@@ -97,10 +97,16 @@ namespace Feedback {
                 Directory.CreateDirectory(tempPath);
             }
 
-            string file = Path.Combine(tempPath, "firstErrors.txt");
+            string file = Path.Combine(tempPath, "firstErrors.log");
+
+            if (errorCount == 0) {
+                errorCount = errorHandler.ErrorList.Count;
+            } else {
+                errorCount = Math.Min(errorCount, errorHandler.ErrorList.Count);
+            }
 
             using (StreamWriter writer = new StreamWriter(file, false)) {
-                for (int i = 0; i < errorHandler.ErrorList.Count; i++) {
+                for (int i = 0; i < errorCount; i++) {
                     writer.WriteLine(errorHandler.ErrorList[i].LogString + "\n");
                     writer.WriteLine(errorHandler.ErrorList[i].StackTrace + "\n\n");
                 }
