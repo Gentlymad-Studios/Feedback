@@ -79,7 +79,7 @@ namespace Feedback {
             settings = asanaSpecificSettings;
 
             if (errorHandler == null) {
-                errorHandler = new ErrorHandler();
+                errorHandler = new ErrorHandler(settings);
             }
 
             if (PanelComponents == null) {

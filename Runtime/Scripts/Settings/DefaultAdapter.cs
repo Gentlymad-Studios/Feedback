@@ -11,6 +11,10 @@ namespace Feedback {
 
         public void OnAfterScreenshot() {}
 
+        public void OnErrorThrown(Error error) {}
+
+        public void OnFirstErrorThrown(Error error) {}
+
         public void OpenUrl(string url) {
             Application.OpenURL(url);
         }

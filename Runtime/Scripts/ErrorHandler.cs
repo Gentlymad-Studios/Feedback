@@ -3,16 +3,14 @@ using UnityEngine;
 
 namespace Feedback {
     public class ErrorHandler {
-        public delegate void FirstErrorThrown();
-        public FirstErrorThrown firstErrorThrown;
-
-        public delegate void ErrorThrown();
-        public FirstErrorThrown errorThrown;
+        private AsanaAPISettings settings;
 
         private List<Error> errorList = new List<Error>();
         public List<Error> ErrorList => errorList;
 
-        public ErrorHandler() {
+        public ErrorHandler(AsanaAPISettings settings) {
+            this.settings = settings;
+
             errorList.Clear();
 
             Application.logMessageReceived -= HandleLog;
@@ -21,15 +19,13 @@ namespace Feedback {
 
         private void HandleLog(string logString, string stackTrace, LogType type) {
             if (type == LogType.Error || type == LogType.Assert || type == LogType.Exception) {
-                Error error = new Error(logString, stackTrace);
+                Error error = new Error(logString, stackTrace, type);
 
-                if (firstErrorThrown != null && errorList.Count == 0) {
-                    firstErrorThrown();
+                if (errorList.Count == 0) {
+                    settings.Adapter.OnFirstErrorThrown(error);
                 }
 
-                if (errorThrown != null) {
-                    errorThrown();
-                }
+                settings.Adapter.OnErrorThrown(error);
 
                 errorList.Add(error);
             }
@@ -43,9 +39,13 @@ namespace Feedback {
         string stackTrace;
         public string StackTrace => stackTrace;
 
-        public Error(string logString, string stackTrace) {
+        LogType type;
+        public LogType Type => type;
+
+        public Error(string logString, string stackTrace, LogType type) {
             this.logString = logString;
             this.stackTrace = stackTrace;
+            this.type = type;
         }
     }
 }

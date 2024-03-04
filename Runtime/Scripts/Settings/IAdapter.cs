@@ -12,6 +12,10 @@ namespace Feedback {
 
         void OnAfterScreenshot();
 
+        void OnErrorThrown(Error error);
+
+        void OnFirstErrorThrown(Error error);
+
         bool GetDevMode();
 
         List<string> GetSavegame(out bool archive, out string archiveName);
