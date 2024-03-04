@@ -31,7 +31,7 @@ namespace Feedback {
                     errorThrown();
                 }
 
-                errorList.Add(error);
+                errorList.Add(error); //limit
             }
         }
     }

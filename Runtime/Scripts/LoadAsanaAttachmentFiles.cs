@@ -25,7 +25,7 @@ namespace Feedback {
             LoadImages(images);
 
             if (project.includeFirstErrors) {
-                LoadFirstErros(errorHandler);
+                LoadFirstErrors(errorHandler);
             }
             if (project.includePlayerLog) {
                 LoadFileList(new List<string> { "Player.log" });
@@ -88,7 +88,11 @@ namespace Feedback {
             });
         }
 
-        private void LoadFirstErros(ErrorHandler errorHandler) {
+        private void LoadFirstErrors(ErrorHandler errorHandler) {
+            if (errorHandler.ErrorList.Count == 0) {
+                return;
+            }  
+
             if (!Directory.Exists(tempPath)) {
                 Directory.CreateDirectory(tempPath);
             }
@@ -100,6 +104,11 @@ namespace Feedback {
                     writer.WriteLine(errorHandler.ErrorList[i].LogString + "\n");
                     writer.WriteLine(errorHandler.ErrorList[i].StackTrace + "\n\n");
                 }
+            }
+
+            AsanaTicketRequest.Attachment attachment = LoadAttachment(file, AsanaTicketRequest.ContentTypes.Text);
+            if (attachment != null) {
+                attachments.Add(attachment);
             }
         }
 
