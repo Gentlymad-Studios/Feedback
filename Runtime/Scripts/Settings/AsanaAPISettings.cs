@@ -99,6 +99,7 @@ namespace Feedback {
         public string titlePlaceholder = "Title...";
         [Multiline]
         public string descriptionPlaceholder = "Description...";
+        public bool includeFirstErrors = true;
         public bool includePlayerLog = true;
         public bool includeCustomLog = true;
         public bool includeSavegame = true;

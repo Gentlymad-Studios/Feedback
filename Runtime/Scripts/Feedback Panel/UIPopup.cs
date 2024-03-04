@@ -24,6 +24,9 @@ namespace Feedback {
         public VisualTreeAsset LoadingUi;
         public Texture2D avatarPlaceholderIcon;
 
+        [HideInInspector]
+        public ErrorHandler errorHandler;
+
         private List<TagPreview> tagPreviewList = new List<TagPreview>();
 
         public static AsanaAPISettings settings;
@@ -74,6 +77,10 @@ namespace Feedback {
 
         private void Awake() {
             settings = asanaSpecificSettings;
+
+            if (errorHandler == null) {
+                errorHandler = new ErrorHandler();
+            }
 
             if (PanelComponents == null) {
                 PanelComponents = new PanelComponents();
@@ -592,7 +599,7 @@ namespace Feedback {
             };
             DrawImage.drawingCanBeDestroyed = true;
 
-            List<AsanaTicketRequest.Attachment> attachments = fileLoader.LoadAttachments(asanaProject, textureList);
+            List<AsanaTicketRequest.Attachment> attachments = fileLoader.LoadAttachments(asanaProject, textureList, errorHandler);
 
             RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachments, asanaProject);
 

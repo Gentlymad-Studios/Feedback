@@ -19,11 +19,14 @@ namespace Feedback {
             tempPath = Path.Combine(attachmentPath, "Temp");
         }
 
-        public List<AsanaTicketRequest.Attachment> LoadAttachments(AsanaProject project, List<Texture2D> images) {
+        public List<AsanaTicketRequest.Attachment> LoadAttachments(AsanaProject project, List<Texture2D> images, ErrorHandler errorHandler) {
             attachments.Clear();
 
             LoadImages(images);
 
+            if (project.includeFirstErrors) {
+                LoadFirstErros(errorHandler);
+            }
             if (project.includePlayerLog) {
                 LoadFileList(new List<string> { "Player.log" });
             }
@@ -83,6 +86,21 @@ namespace Feedback {
                     attachments.Add(attachment);
                 }
             });
+        }
+
+        private void LoadFirstErros(ErrorHandler errorHandler) {
+            if (!Directory.Exists(tempPath)) {
+                Directory.CreateDirectory(tempPath);
+            }
+
+            string file = Path.Combine(tempPath, "firstErrors.txt");
+
+            using (StreamWriter writer = new StreamWriter(file, false)) {
+                for (int i = 0; i < errorHandler.ErrorList.Count; i++) {
+                    writer.WriteLine(errorHandler.ErrorList[i].LogString + "\n");
+                    writer.WriteLine(errorHandler.ErrorList[i].StackTrace + "\n\n");
+                }
+            }
         }
 
         private void LoadLog() {
@@ -183,7 +201,7 @@ namespace Feedback {
         }
 
         public void ClearTemp() {
-            if(Directory.Exists(tempPath)) {
+            if (Directory.Exists(tempPath)) {
                 Directory.Delete(tempPath, true);
             }
         }
