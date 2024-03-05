@@ -1,6 +1,6 @@
 {
 	"name": "com.gentlymadstudios.feedbackservice",
-	"version": "0.1.9",
+	"version": "0.2.0",
 	"displayName": "Feedback Service",
 	"description": "Feedback Service by Gentlymadstudios",
 	"unity": "2022.3",
