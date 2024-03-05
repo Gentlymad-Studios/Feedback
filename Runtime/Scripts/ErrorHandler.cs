@@ -6,6 +6,9 @@ namespace Feedback {
         private AsanaAPISettings settings;
 
         private static bool isUnstable = false;
+        /// <summary>
+        /// This is true after we successfully send an report after an error
+        /// </summary>
         public static bool IsUnstable => isUnstable;
 
         private static bool hasErrors = false;
