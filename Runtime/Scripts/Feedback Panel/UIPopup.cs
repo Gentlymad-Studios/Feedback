@@ -606,6 +606,10 @@ namespace Feedback {
             bool success = PostData(data);
 
             if (success) {
+                if (ErrorHandler.HasErrors) {
+                    errorHandler.SetUnstable();
+                }
+
                 fileLoader.ClearTemp();
 
                 Prompt.Show("Feedback", "Feedback sent", () => {
