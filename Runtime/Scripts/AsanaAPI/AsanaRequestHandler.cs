@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using UnityEngine;
 using static Feedback.TaskModels;
 using Debug = UnityEngine.Debug;
@@ -194,7 +195,7 @@ namespace Feedback {
             newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
             newTicketRequest.custom_fields = BuildCustomFields(data.AsanaProject);
             newTicketRequest.attachments = data.Attachments.ToArray();
-            newTicketRequest.html_notes = BuildRichText(data.Text);
+            newTicketRequest.html_notes = BuildRichText(HttpUtility.HtmlEncode(data.Text));
             string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
 
             return output;
