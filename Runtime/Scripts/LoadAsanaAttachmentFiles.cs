@@ -67,7 +67,7 @@ namespace Feedback {
         private void LoadFileList(List<string> files) {
             files.ForEach(path => {
                 string loc = Path.Combine(attachmentPath, path);
-                AsanaTicketRequest.Attachment attachment = LoadAttachment(loc, AsanaTicketRequest.ContentTypes.Text);
+                AsanaTicketRequest.Attachment attachment = LoadAttachment(loc, AsanaTicketRequest.ContentTypes.Text, true);
                 if (attachment != null) {
                     attachments.Add(attachment);
                 }
@@ -112,7 +112,7 @@ namespace Feedback {
                 }
             }
 
-            AsanaTicketRequest.Attachment attachment = LoadAttachment(file, AsanaTicketRequest.ContentTypes.Text);
+            AsanaTicketRequest.Attachment attachment = LoadAttachment(file, AsanaTicketRequest.ContentTypes.Text, true);
             if (attachment != null) {
                 attachments.Add(attachment);
             }
@@ -132,7 +132,7 @@ namespace Feedback {
                 }
             } else {
                 for (int i = 0; i < logDataPaths.Count; i++) {
-                    AsanaTicketRequest.Attachment attachment = LoadAttachment(logDataPaths[i], AsanaTicketRequest.ContentTypes.Text);
+                    AsanaTicketRequest.Attachment attachment = LoadAttachment(logDataPaths[i], AsanaTicketRequest.ContentTypes.Text, true);
                     if (attachment != null) {
                         attachments.Add(attachment);
                     }
@@ -154,7 +154,7 @@ namespace Feedback {
                 }
             } else {
                 for (int i = 0; i < savegameDataPaths.Count; i++) {
-                    AsanaTicketRequest.Attachment attachment = LoadAttachment(savegameDataPaths[i], AsanaTicketRequest.ContentTypes.Text);
+                    AsanaTicketRequest.Attachment attachment = LoadAttachment(savegameDataPaths[i], AsanaTicketRequest.ContentTypes.Text, false);
                     if (attachment != null) {
                         attachments.Add(attachment);
                     }
@@ -221,7 +221,7 @@ namespace Feedback {
             }
         }
 
-        private AsanaTicketRequest.Attachment LoadAttachment(string path, string contentType) {
+        private AsanaTicketRequest.Attachment LoadAttachment(string path, string contentType, bool tryReduce) {
             AsanaTicketRequest.Attachment attachment = new AsanaTicketRequest.Attachment();
             attachment.filename = Path.GetFileName(path);
             attachment.contentType = contentType;
@@ -231,10 +231,15 @@ namespace Feedback {
                     byte[] bytes = StreamToByteArray(logFileStream);
 
                     if (bytes.LongLength > settings.maxFileSize) {
-                        Span<byte> span = bytes.AsSpan();
-                        Span<byte> slice = span.Slice((int)(bytes.LongLength - settings.maxFileSize));
-                        bytes = slice.ToArray();
-                        Debug.Log($"File is to large {attachment.filename} and was reduced.");
+                        if (tryReduce) {
+                            Span<byte> span = bytes.AsSpan();
+                            Span<byte> slice = span.Slice((int)(bytes.LongLength - settings.maxFileSize));
+                            bytes = slice.ToArray();
+                            Debug.Log($"File is to large {attachment.filename} and was reduced.");
+                        } else {
+                            Debug.Log($"File is to large {attachment.filename} and was discarded.");
+                            return null;
+                        }
                     }
 
                     attachment.content = Convert.ToBase64String(bytes);

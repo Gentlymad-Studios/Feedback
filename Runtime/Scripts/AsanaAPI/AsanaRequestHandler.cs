@@ -194,7 +194,7 @@ namespace Feedback {
             newTicketRequest.workspace = asanaAPISettings.WorkspaceId;
             newTicketRequest.custom_fields = BuildCustomFields(data.AsanaProject);
             newTicketRequest.attachments = data.Attachments.ToArray();
-            newTicketRequest.html_notes = BuildRichText(WebUtility.HtmlEncode(data.Text));
+            newTicketRequest.html_notes = BuildRichText(data.Text);
             string output = JsonConvert.SerializeObject(newTicketRequest, Formatting.Indented);
 
             return output;
@@ -231,6 +231,8 @@ namespace Feedback {
             string middle = "";
             string back = "</body>";
 
+            notes = EscapeCharacters(notes);
+
             if (asanaAPI.Mentions.Count != 0) {
                 front += "<strong>Mentions</strong><ul>";
 
@@ -241,6 +243,14 @@ namespace Feedback {
             }
             middle += notes;
             return front + middle + back;
+        }
+
+        private string EscapeCharacters(string notes) {
+            notes = notes.Replace("&", "&amp;");
+            notes = notes.Replace("<", "&lt;");
+            notes = notes.Replace(">", "&gt;");
+
+            return notes;
         }
 
         /// <summary>
