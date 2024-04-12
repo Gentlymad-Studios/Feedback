@@ -75,7 +75,8 @@ namespace Feedback {
             }
         }
 
-        public void Open() {
+        public void Open(Texture2D externalScreenshot = null) {
+            this.externalScreenshot = externalScreenshot;
             ActiveWindow = currentWindowType;
         }
 
@@ -644,6 +645,10 @@ namespace Feedback {
         #endregion
 
         #region Screenshot
+        public void CaptureScreenshotExternal(Action<Texture2D> afterScreenshot) {
+            StartCoroutine(CaptureScreenshot(afterScreenshot));
+        }
+
         protected override void OnAfterScreenshotCapture(Texture2D screenshot) {
             PanelComponents.screenshotContainer.style.backgroundImage = screenshot;
             PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);

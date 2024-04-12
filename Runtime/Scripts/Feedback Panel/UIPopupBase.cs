@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Feedback {
     public abstract class UIPopUpBase : MonoBehaviour {
         public AsanaAPI Api = null;
+        public Texture2D externalScreenshot;
         private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
 
         protected void GetData(bool force) {
@@ -57,7 +58,11 @@ namespace Feedback {
         /// Method called when the window was opened
         /// </summary>
         protected virtual void OnShowWindow() {
-            StartCoroutine(CaptureScreenshot(OnAfterScreenshotCapture));
+            if (externalScreenshot == null) {
+                StartCoroutine(CaptureScreenshot(OnAfterScreenshotCapture));
+            } else {
+                OnAfterScreenshotCapture(externalScreenshot);
+            }
         }
 
 
@@ -79,7 +84,7 @@ namespace Feedback {
         /// </summary>
         /// <param name="onAfterCapture">callback with the captured texture</param>
         /// <returns></returns>
-        private IEnumerator CaptureScreenshot(Action<Texture2D> onAfterCapture) {
+        protected IEnumerator CaptureScreenshot(Action<Texture2D> onAfterCapture) {
             yield return frameEnd;
             //screenshot
             Texture2D screenshot = null;
