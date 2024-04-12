@@ -64,15 +64,34 @@ namespace Feedback {
         Length fullPercent = new Length(100, LengthUnit.Percent);
 
         public void Toggle() {
-            var before = ActiveWindow;
+            WindowType cache = ActiveWindow;
 
             if (ActiveWindow != WindowType.None) {
                 ActiveWindow = WindowType.None;
                 SetWindowTypes();
-                currentWindowType = before;
+                currentWindowType = cache;
             } else {
                 ActiveWindow = currentWindowType;
             }
+        }
+
+        public void Open() {
+            ActiveWindow = currentWindowType;
+        }
+
+        public void Close() {
+            WindowType cache = ActiveWindow;
+
+            ActiveWindow = WindowType.None;
+            SetWindowTypes();
+
+            if (cache != WindowType.None) {
+                currentWindowType = cache;
+            }
+        }
+
+        public bool IsOpen() {
+            return ActiveWindow != WindowType.None;
         }
 
         private void Awake() {
