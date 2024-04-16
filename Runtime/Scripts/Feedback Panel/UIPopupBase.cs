@@ -12,8 +12,8 @@ namespace Feedback {
             Api.RequestHandler.GetData(force);
         }
 
-        protected bool PostData(RequestData data) {
-            return Api.RequestHandler.PostNewData(data);
+        protected void PostData(RequestData data) {
+            Api.RequestHandler.PostNewData(data);
         }
 
         protected void LogIn() {
@@ -65,19 +65,16 @@ namespace Feedback {
             }
         }
 
-
         /// <summary>
         /// called when the window was hidden
         /// </summary>
         protected abstract void OnHideWindow();
-
 
         /// <summary>
         /// Called when a screenshot was captured
         /// </summary>
         /// <param name="screenshot">the captured screenshot</param>
         protected abstract void OnAfterScreenshotCapture(Texture2D screenshot);
-
 
         /// <summary>
         /// Do a fullscreen capture

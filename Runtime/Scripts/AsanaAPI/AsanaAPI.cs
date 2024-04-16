@@ -18,6 +18,9 @@ namespace Feedback {
         public delegate void AvatarLoaded();
         public static event AvatarLoaded AvatarLoadedEvent;
 
+        public delegate void FeedbackSend(bool success);
+        public static event FeedbackSend FeedbackSendEvent;
+
         public BaseRequestHandler RequestHandler;
         public AsanaAPISettings AsanaSpecificSettings;
         public List<TaskModels.AsanaTaskModel> PlayerTicketModelsBackup = new List<TaskModels.AsanaTaskModel>();
@@ -47,6 +50,10 @@ namespace Feedback {
 
         public void FireAvatarLoaded() {
             AvatarLoadedEvent.Invoke();
+        }
+
+        public void FireFeedbackSend(bool success) {
+            FeedbackSendEvent.Invoke(success);
         }
     }
 }

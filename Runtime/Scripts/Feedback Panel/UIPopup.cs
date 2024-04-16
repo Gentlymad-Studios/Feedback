@@ -527,9 +527,7 @@ namespace Feedback {
         }
 
         private void TaskSubmit_clicked(ClickEvent evt) {
-            if (SendData()) {
-                Reset();
-            }
+            SendData();
         }
 
         private void TaskTagDrpDwn_changed(ChangeEvent<string> evt) {
@@ -590,23 +588,23 @@ namespace Feedback {
             ShowReportPanel();
         }
 
-        private bool SendData() {
+        private void SendData() {
             AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
             bool loggedIn = Api.RequestHandler.User != null;
 
             if (loggedIn) {
                 if (!asanaProject.visibleForDev) {
-                    return false;
+                    DataSendEvent(false);
                 }
             } else {
                 if (!asanaProject.visibleForPlayer) {
-                    return false;
+                    DataSendEvent(false);
                 }
             }
 
             if (string.IsNullOrWhiteSpace(PanelComponents.taskTitleTxt.text)) {
                 PanelComponents.taskTitleTxt.Focus();
-                return false;
+                DataSendEvent(false);
             }
 
             if (Api is AsanaAPI) {
@@ -623,7 +621,17 @@ namespace Feedback {
 
             RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachments, asanaProject);
 
-            bool success = PostData(data);
+            SetLoadingStatus(true);
+            Loading.Show("send feedback...", false);
+
+            PostData(data);
+
+            FeedbackSendEvent -= DataSendEvent;
+            FeedbackSendEvent += DataSendEvent;
+        }
+
+        private void DataSendEvent(bool success) {
+            SetLoadingStatus(false);
 
             if (success) {
                 if (ErrorHandler.HasErrors) {
@@ -636,11 +644,11 @@ namespace Feedback {
                     ActiveWindow = WindowType.None;
                     SetWindowTypes();
                 });
+
+                Reset();
             } else {
                 Prompt.Show("Failure", "An error occurred while sending your feedback, please try again.");
             }
-
-            return success;
         }
         #endregion
 

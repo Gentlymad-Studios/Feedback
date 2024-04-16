@@ -137,7 +137,7 @@ namespace Feedback {
         /// Post the new data object to AsanaRequestManager.
         /// </summary>
         /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
-        public override bool PostNewData(RequestData data) {
+        public async override void PostNewData(RequestData data) {
             requestRunning = true;
 
             string userID = CheckForUserGid();
@@ -154,11 +154,11 @@ namespace Feedback {
             try {
                 byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
 
-                using (Stream postStream = request.GetRequestStream()) {
+                using (Stream postStream = await request.GetRequestStreamAsync()) {
                     postStream.Write(dataBytes11, 0, dataBytes11.Length);
                 }
 
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                WebResponse response = await request.GetResponseAsync();
                 Stream stream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(stream);
 
@@ -171,11 +171,11 @@ namespace Feedback {
             } catch (Exception e) {
                 Debug.LogError("An error occured while posting new task: " + e.Message);
                 requestRunning = false;
-                return false;
+                asanaAPI.FireFeedbackSend(false);
             }
 
             requestRunning = false;
-            return true;
+            asanaAPI.FireFeedbackSend(true);
         }
 
         /// <summary>
