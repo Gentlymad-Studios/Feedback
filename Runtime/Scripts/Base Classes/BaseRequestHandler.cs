@@ -3,6 +3,7 @@ using J2N.Collections.Generic;
 namespace Feedback {
     public abstract class BaseRequestHandler : IRequestHandler {
         public bool requestRunning = false;
+        public bool postRequestRunning = false;
         public bool logginChange = false;
         public AuthorizationUser User;
         public abstract string UniqueId { get; set; }

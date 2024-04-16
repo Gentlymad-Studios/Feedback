@@ -139,6 +139,7 @@ namespace Feedback {
         /// <param name="data">Request Data Object. Use @BuildTaskData() to create.</param>
         public async override void PostNewData(RequestData data) {
             requestRunning = true;
+            postRequestRunning = true;
 
             string userID = CheckForUserGid();
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
@@ -171,10 +172,12 @@ namespace Feedback {
             } catch (Exception e) {
                 Debug.LogError("An error occured while posting new task: " + e.Message);
                 requestRunning = false;
+                postRequestRunning = false;
                 asanaAPI.FireFeedbackSend(false);
             }
 
             requestRunning = false;
+            postRequestRunning = false;
             asanaAPI.FireFeedbackSend(true);
         }
 

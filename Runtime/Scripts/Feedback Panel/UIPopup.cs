@@ -547,7 +547,7 @@ namespace Feedback {
         }
 
         public void Click(MouseDownEvent evt) {
-            if (!PanelComponents.main.layout.Contains(evt.mousePosition)) {
+            if (!PanelComponents.main.layout.Contains(evt.mousePosition) && !Api.RequestHandler.postRequestRunning) {
                 ActiveWindow = WindowType.None;
                 SetWindowTypes();
             }
