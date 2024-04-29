@@ -228,20 +228,7 @@ namespace Feedback {
 
             if (File.Exists(path)) {
                 using (FileStream logFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                    byte[] bytes = StreamToByteArray(logFileStream);
-
-                    if (bytes.LongLength > settings.maxFileSize) {
-                        if (tryReduce) {
-                            Span<byte> span = bytes.AsSpan();
-                            Span<byte> slice = span.Slice((int)(bytes.LongLength - settings.maxFileSize));
-                            bytes = slice.ToArray();
-                            Debug.Log($"File is to large {attachment.filename} and was reduced.");
-                        } else {
-                            Debug.Log($"File is to large {attachment.filename} and was discarded.");
-                            return null;
-                        }
-                    }
-
+                    byte[] bytes = StreamToByteArray(logFileStream, attachment.filename, settings.maxFileSize, tryReduce);
                     attachment.content = Convert.ToBase64String(bytes);
 
                     return attachment;
@@ -253,10 +240,26 @@ namespace Feedback {
             return null;
         }
 
-        private static byte[] StreamToByteArray(Stream input) {
-            using (MemoryStream ms = new MemoryStream()) {
-                input.CopyTo(ms);
-                return ms.ToArray();
+        private static byte[] StreamToByteArray(Stream input, string filename, long maxSize, bool tryReduce) {
+            long fileSize = input.Length;
+
+            if (fileSize > maxSize) {
+                if (!tryReduce) {
+                    Debug.Log($"File is to large {filename} and was discarded.");
+                    return null;
+                }
+
+                byte[] bytes = new byte[maxSize];
+                input.Seek(-maxSize, SeekOrigin.End);
+                input.Read(bytes, 0, (int)maxSize);
+
+                Debug.Log($"File is to large {filename} and was reduced.");
+                return bytes;
+            } else {
+                using (MemoryStream ms = new MemoryStream()) {
+                    input.CopyTo(ms);
+                    return ms.ToArray();
+                }
             }
         }
     }
