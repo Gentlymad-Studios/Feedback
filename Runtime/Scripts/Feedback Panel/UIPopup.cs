@@ -323,12 +323,9 @@ namespace Feedback {
         }
 
         private void CheckDevLogin() {
-            devMode = false;
+            devMode = Debug.isDebugBuild || settings.Adapter.GetDevMode();
 
-            if (Debug.isDebugBuild || settings.Adapter.GetDevMode()) {
-                PanelComponents.loginSection.SetEnabled(true);
-                devMode = true;
-            }
+            PanelComponents.loginSection.SetEnabled(devMode);
         }
 
         private void OnLogInButtonClick() {
