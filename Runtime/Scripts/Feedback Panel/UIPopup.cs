@@ -328,6 +328,7 @@ namespace Feedback {
             devMode = Debug.isDebugBuild || settings.Adapter.GetDevMode();
 
             PanelComponents.loginSection.SetEnabled(devMode);
+            PanelComponents.loginSection.style.display = devMode ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void OnLogInButtonClick() {
