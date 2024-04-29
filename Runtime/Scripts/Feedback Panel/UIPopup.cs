@@ -238,7 +238,13 @@ namespace Feedback {
             Loading.Show("loading...");
             RegisterEvents();
             TicketBrowser?.InitEvents();
-            StartupLoginCheck();
+
+            if (devMode) {
+                StartupLoginCheck();
+            } else {
+                Loading.SetText("load tickets...");
+                base.GetData(false);
+            }
         }
 
         protected override void OnHideWindow() {
@@ -291,10 +297,6 @@ namespace Feedback {
 
         #region Auth and login
         private void StartupLoginCheck() {
-            if (!devMode) {
-                return;
-            }
-
             SetLoadingStatus(true);
             Loading.SetText("check login...");
 
@@ -324,7 +326,7 @@ namespace Feedback {
 
         private void CheckDevLogin() {
             devMode = Debug.isDebugBuild || settings.Adapter.GetDevMode();
-
+            devMode = false;
             PanelComponents.loginSection.SetEnabled(devMode);
         }
 
