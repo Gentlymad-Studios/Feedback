@@ -174,6 +174,7 @@ namespace Feedback {
                 requestRunning = false;
                 postRequestRunning = false;
                 asanaAPI.FireFeedbackSend(false);
+                return;
             }
 
             requestRunning = false;
