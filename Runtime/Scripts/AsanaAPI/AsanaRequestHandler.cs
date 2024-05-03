@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -76,52 +77,54 @@ namespace Feedback {
 
             string url = "";
             try {
-                if (asanaAPISettings.enablePlayerProjects) {
-                    url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
-                    request = (HttpWebRequest)WebRequest.Create(url);
-                    request.Method = RequestMethods.GET.ToString();
-                    request.Timeout = asanaAPISettings.recieveTimeout;
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (Stream stream = response.GetResponseStream())
-                    using (StreamReader reader = new StreamReader(stream)) {
-                        string result = await reader.ReadToEndAsync();
-                        playerTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
-                        asanaAPI.PlayerTicketModelsBackup.Clear();
-                        if (playerTicketModels != null) {
-                            asanaAPI.PlayerTicketModelsBackup.AddRange(playerTicketModels);
-                            asanaAPI.lastUpdateTime = DateTime.Now;
+                using (HttpClient client = new HttpClient()) {
+                    client.Timeout = TimeSpan.FromMilliseconds(asanaAPISettings.recieveTimeout);
+                    HttpResponseMessage response;
+
+                    //Player Tickets Request
+                    if (asanaAPISettings.enablePlayerProjects) {
+                        url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
+                        response = await client.GetAsync(url);
+                        if (response.IsSuccessStatusCode) {
+                            string result = await response.Content.ReadAsStringAsync();
+                            playerTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
+                            asanaAPI.PlayerTicketModelsBackup.Clear();
+                            if (playerTicketModels != null) {
+                                asanaAPI.PlayerTicketModelsBackup.AddRange(playerTicketModels);
+                                asanaAPI.lastUpdateTime = DateTime.Now;
+                            }
+                        } else {
+                            Debug.LogWarning($"Something went wrong while getting data, no tickets are loaded. New requests can still be sent. Status code: {response.StatusCode}");
                         }
                     }
-                }
 
-                if (base.User != null && asanaAPISettings.enableDevProjects) {
-                    url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
-                    request = (HttpWebRequest)WebRequest.Create(url);
-                    request.Method = RequestMethods.GET.ToString();
-                    request.Timeout = asanaAPISettings.recieveTimeout;
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (Stream stream = response.GetResponseStream())
-                    using (StreamReader reader = new StreamReader(stream)) {
-                        string result = await reader.ReadToEndAsync();
-                        devTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
-                        asanaAPI.DevTicketModelsBackup.Clear();
-                        if (devTicketModels != null) {
-                            asanaAPI.DevTicketModelsBackup.AddRange(devTicketModels);
-                            asanaAPI.lastUpdateTime = DateTime.Now;
+                    //Dev Tickets Request
+                    if (base.User != null && asanaAPISettings.enableDevProjects) {
+                        url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
+                        response = await client.GetAsync(url);
+                        if (response.IsSuccessStatusCode) {
+                            string result = await response.Content.ReadAsStringAsync();
+                            devTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
+                            asanaAPI.DevTicketModelsBackup.Clear();
+                            if (devTicketModels != null) {
+                                asanaAPI.DevTicketModelsBackup.AddRange(devTicketModels);
+                                asanaAPI.lastUpdateTime = DateTime.Now;
+                            }
+                        } else {
+                            Debug.LogWarning($"Something went wrong while getting data, no dev tickets are loaded. New requests can still be sent. Status code: {response.StatusCode}");
                         }
                     }
-                }
 
-                url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
-                request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = RequestMethods.GET.ToString();
-                request.Timeout = asanaAPISettings.recieveTimeout;
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream)) {
-                    string result = await reader.ReadToEndAsync();
-                    reportTags = JsonConvert.DeserializeObject<ReportTags>(result);
-                    asanaAPI.ReportTagsBackup = reportTags;
+                    //Report Tags Request
+                    url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
+                    response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode) {
+                        string result = await response.Content.ReadAsStringAsync();
+                        reportTags = JsonConvert.DeserializeObject<ReportTags>(result);
+                        asanaAPI.ReportTagsBackup = reportTags;
+                    } else {
+                        Debug.LogWarning($"Something went wrong while getting data, no tags are loaded. New requests can still be sent. Status code: {response.StatusCode}");
+                    }
                 }
 
             } catch (Exception e) {
@@ -145,30 +148,25 @@ namespace Feedback {
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.PostNewTaskDataEndpoint}{userID}";
 
             string requestData = BuildTaskData(data);
-            //Debug.Log(requestData);
-
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = RequestMethods.POST.ToString();
-            request.ContentType = "application/json";
-            request.Timeout = asanaAPISettings.sendTimeout;
 
             try {
-                byte[] dataBytes11 = Encoding.UTF8.GetBytes(requestData);
+                using (HttpClient client = new HttpClient()) {
+                    client.Timeout = TimeSpan.FromMilliseconds(asanaAPISettings.sendTimeout);
 
-                using (Stream postStream = await request.GetRequestStreamAsync()) {
-                    postStream.Write(dataBytes11, 0, dataBytes11.Length);
+                    StringContent content = new StringContent(requestData, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(url, content);
+
+                    if (response.IsSuccessStatusCode) {
+                        asanaAPI.CustomFields.Clear();
+                        Tags.Clear();
+                    } else {
+                        Debug.LogError("An error occured while posting new task: " + response.StatusCode);
+                        requestRunning = false;
+                        postRequestRunning = false;
+                        asanaAPI.FireFeedbackSend(false);
+                        return;
+                    }
                 }
-
-                WebResponse response = await request.GetResponseAsync();
-                Stream stream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(stream);
-
-                //Debug.Log(reader.ReadToEnd());
-                response.Close();
-
-                asanaAPI.CustomFields.Clear();
-                Tags.Clear();
-
             } catch (Exception e) {
                 Debug.LogError("An error occured while posting new task: " + e.Message);
                 requestRunning = false;
@@ -314,33 +312,6 @@ namespace Feedback {
         }
 
         /// <summary>
-        /// Search for uniqueId in AsanaRequestManager clientCollection and return the matching client object
-        /// set the returning object as user object.
-        /// </summary>
-        /// <returns></returns>
-        public override AuthorizationUser GetUser() {
-            requestRunning = true;
-
-            string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{UniqueId}";
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = RequestMethods.GET.ToString();
-            request.Timeout = asanaAPISettings.loginoutTimeout;
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream)) {
-                try {
-                    base.User = JsonConvert.DeserializeObject<AuthorizationUser>(reader.ReadToEnd());
-                    Debug.Log("<color=green> User: " + base.User.gid + "; " + base.User.name + " successfully logged in. </color>");
-                } catch (Exception e) {
-                    Debug.LogError("An error occured while logging in user: " + e);
-                }
-            }
-
-            requestRunning = false;
-            return base.User;
-        }
-
-        /// <summary>
         /// Get User Data Sync
         /// </summary>
         private async void TryGetUser() {
@@ -390,14 +361,13 @@ namespace Feedback {
             logginChange = false;
 
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = RequestMethods.GET.ToString();
-            request.Timeout = asanaAPISettings.loginoutTimeout;
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream)) {
-                    string result = await reader.ReadToEndAsync();
+
+            using (HttpClient client = new HttpClient()) {
+                client.Timeout = TimeSpan.FromMilliseconds(asanaAPISettings.loginoutTimeout);
+
+                HttpResponseMessage response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode) {
+                    string result = await response.Content.ReadAsStringAsync();
                     AuthorizationUser newUser = JsonConvert.DeserializeObject<AuthorizationUser>(result);
 
                     if (User == null && newUser != null) {
@@ -405,10 +375,11 @@ namespace Feedback {
                     }
 
                     User = newUser;
+                } else {
+                    logginChange = User != null;
+                    User = null;
+                    Debug.LogError("An error occured while logging in user.");
                 }
-            } catch {
-                logginChange = User != null;
-                User = null;
             }
 
             asanaAPI.FireGetUserResult();
