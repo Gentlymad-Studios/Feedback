@@ -362,24 +362,28 @@ namespace Feedback {
 
             string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetUserWithUniqueId}{uniqueId}";
 
-            using (HttpClient client = new HttpClient()) {
-                client.Timeout = TimeSpan.FromMilliseconds(asanaAPISettings.loginoutTimeout);
+            try {
+                using (HttpClient client = new HttpClient()) {
+                    client.Timeout = TimeSpan.FromMilliseconds(asanaAPISettings.loginoutTimeout);
 
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode) {
-                    string result = await response.Content.ReadAsStringAsync();
-                    AuthorizationUser newUser = JsonConvert.DeserializeObject<AuthorizationUser>(result);
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode) {
+                        string result = await response.Content.ReadAsStringAsync();
+                        AuthorizationUser newUser = JsonConvert.DeserializeObject<AuthorizationUser>(result);
 
-                    if (User == null && newUser != null) {
-                        logginChange = true;
+                        if (User == null && newUser != null) {
+                            logginChange = true;
+                        }
+
+                        User = newUser;
+                    } else {
+                        logginChange = User != null;
+                        User = null;
                     }
-
-                    User = newUser;
-                } else {
-                    logginChange = User != null;
-                    User = null;
-                    Debug.LogError("An error occured while logging in user.");
                 }
+            } catch {
+                logginChange = User != null;
+                User = null;
             }
 
             asanaAPI.FireGetUserResult();
