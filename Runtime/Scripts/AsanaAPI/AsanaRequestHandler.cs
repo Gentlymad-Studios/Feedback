@@ -50,7 +50,7 @@ namespace Feedback {
         /// </summary>
         public async override void GetData(bool force) {
             if (!force) {
-                if (asanaAPI.lastUpdateTime.AddMinutes(1) > DateTime.Now || requestRunning) {
+                if (asanaAPI.lastUpdateTime.AddSeconds(asanaAPISettings.dataFetchCooldown) > DateTime.Now || requestRunning) {
                     if (asanaAPI.PlayerTicketModelsBackup != null && asanaAPI.PlayerTicketModelsBackup.Count != 0 && asanaAPI.ReportTagsBackup != null) {
                         asanaAPI.FireDataCreated(asanaAPI.PlayerTicketModelsBackup, asanaAPI.DevTicketModelsBackup, asanaAPI.ReportTagsBackup);
                         return;

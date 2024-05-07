@@ -54,6 +54,7 @@ namespace Feedback {
         private WindowType activeWindow = WindowType.Search;
 
         private bool devMode = false;
+        private string ticketTypeKey = $"{Application.productName}_{nameof(Feedback)}_{nameof(ticketTypeKey)}";
 
         private bool initializedAfterLogin = false;
         private bool initializedAfterLoad = false;
@@ -436,6 +437,10 @@ namespace Feedback {
         public void SetDataType(ChangeEvent<string> changeEvent) {
             currentDataType = changeEvent.newValue;
 
+            if (!string.IsNullOrEmpty(currentDataType)) {
+                PlayerPrefs.SetString(ticketTypeKey, currentDataType);
+            }
+
             //cast label to INotifyValueChanged<string> to got the option to SetValueWithoutNotify
             INotifyValueChanged<string> titlePreviewLbl = PanelComponents.taskTitleTxt.Q("previewTxt") as INotifyValueChanged<string>;
             INotifyValueChanged<string> descPreviewLbl = PanelComponents.taskDescriptionTxt.Q("previewTxt") as INotifyValueChanged<string>;
@@ -482,9 +487,10 @@ namespace Feedback {
             PanelComponents.taskSubmitBtn.SetEnabled(true);
             PanelComponents.taskTypeDrpDwn.SetEnabled(true);
 
-            if ((string.IsNullOrEmpty(currentDataType) || !PanelComponents.taskTypeDrpDwn.choices.Contains(currentDataType))) {
-                PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
-                currentDataType = PanelComponents.taskTypeDrpDwn.choices[0];
+            currentDataType = PlayerPrefs.GetString(ticketTypeKey);
+
+            if (string.IsNullOrEmpty(currentDataType) || !PanelComponents.taskTypeDrpDwn.choices.Contains(currentDataType)) {
+                PanelComponents.taskTypeDrpDwn.value = string.Empty;
             }
         }
         #endregion

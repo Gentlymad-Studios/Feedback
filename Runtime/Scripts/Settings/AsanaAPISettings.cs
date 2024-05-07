@@ -62,6 +62,8 @@ namespace Feedback {
         public int sendTimeout = 10000;
         [Tooltip("The Timeout for the HTTP Request when login / logout / ... in ms.")]
         public int loginoutTimeout = 5000;
+        [Tooltip("The Cooldown between a fetch of tickets in s.")]
+        public int dataFetchCooldown = 60;
 
         [Header("Tab GUI Settings")]
         [Multiline]
