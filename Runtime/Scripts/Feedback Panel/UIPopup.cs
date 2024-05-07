@@ -155,6 +155,8 @@ namespace Feedback {
             }
 
             if (!currentlyLoading && !ActiveWindow.Equals(WindowType.None)) {
+                SetupTaskTypeDrowndown();
+
                 //Init Tags after loading
                 if (PanelComponents.taskTagDrpDwn.choices.Count == 0) {
                     PanelComponents.tagContainer.Clear();
