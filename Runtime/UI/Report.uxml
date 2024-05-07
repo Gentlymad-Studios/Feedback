@@ -27,10 +27,10 @@
         <ui:VisualElement name="RightContainer">
             <ui:DropdownField name="taskTypeDrpDwn" class="dropdown" />
             <ui:TextField picking-mode="Ignore" name="taskTitleTxt" max-length="1000" class="textField">
-                <ui:Label text="title..." picking-mode="Ignore" name="previewTxt" class="previewText" />
+                <ui:Label text="Title of your Concern..." picking-mode="Ignore" name="previewTxt" class="previewText" />
             </ui:TextField>
             <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" max-length="12000" class="textField">
-                <ui:Label text="description...&#10;" picking-mode="Ignore" name="previewTxt" class="previewText multiLinePreviewText" />
+                <ui:Label text="Describe your Concern...&#10;" picking-mode="Ignore" name="previewTxt" class="previewText multiLinePreviewText" />
             </ui:TextField>
             <ui:DropdownField name="taskTagDrpDwn" class="dropdown" />
             <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" class="tinyScroller" />
