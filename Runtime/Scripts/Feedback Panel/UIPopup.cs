@@ -392,7 +392,6 @@ namespace Feedback {
                 PanelComponents.loginBtn.text = "<u>Login</u>";
                 PanelComponents.userImg.style.backgroundImage = avatarPlaceholderIcon;
             }
-            SetupTaskTypeDrowndown();
         }
 
         protected override void OnLoginFail(string failMessage) {
@@ -457,7 +456,7 @@ namespace Feedback {
         #endregion
 
         #region UI helper
-        private void SetupTaskTypeDrowndown() {
+        public void SetupTaskTypeDrowndown() {
             bool loggedIn = Api.RequestHandler.User != null;
 
             PanelComponents.taskTypeDrpDwn.choices.Clear();

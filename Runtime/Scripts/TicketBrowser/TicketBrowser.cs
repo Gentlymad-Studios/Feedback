@@ -112,6 +112,8 @@ namespace Feedback {
 
             Debug.Log($"<color=cyan>{reportTags.enum_options.Count} ReportTags received.</color>");
 
+            uIPopup.SetupTaskTypeDrowndown();
+
             uIPopup.SetLoadingStatus(false);
         }
 
