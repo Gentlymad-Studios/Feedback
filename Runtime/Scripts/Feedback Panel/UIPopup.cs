@@ -493,6 +493,8 @@ namespace Feedback {
 
             if (string.IsNullOrEmpty(currentDataType) || !PanelComponents.taskTypeDrpDwn.choices.Contains(currentDataType)) {
                 PanelComponents.taskTypeDrpDwn.value = string.Empty;
+            } else {
+                PanelComponents.taskTypeDrpDwn.value = currentDataType;
             }
         }
         #endregion
