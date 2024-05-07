@@ -54,7 +54,7 @@ namespace Feedback {
         private WindowType activeWindow = WindowType.Search;
 
         private bool devMode = false;
-        private string ticketTypeKey = $"{Application.productName}_{nameof(Feedback)}_{nameof(ticketTypeKey)}";
+        private string ticketTypeKey;
 
         private bool initializedAfterLogin = false;
         private bool initializedAfterLoad = false;
@@ -97,6 +97,7 @@ namespace Feedback {
         }
 
         private void Awake() {
+            ticketTypeKey = $"{Application.productName}_{nameof(Feedback)}_{nameof(ticketTypeKey)}";
             settings = asanaSpecificSettings;
 
             if (errorHandler == null) {
@@ -111,7 +112,7 @@ namespace Feedback {
             PanelComponents.root.RegisterCallback<MouseDownEvent>(Click);
             PanelComponents.howToDescLbl.text = settings.howToDescription;
             PanelComponents.howToLbl.text = settings.howToName;
-                        
+
             //Setup Scrolling for the DescriptionField
             PanelComponents.taskDescriptionTxt.SetVerticalScrollerVisibility(ScrollerVisibility.AlwaysVisible);
             ScrollView descriptionScrollView = PanelComponents.taskDescriptionTxt.Q<ScrollView>();
