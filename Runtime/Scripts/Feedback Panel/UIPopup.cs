@@ -436,25 +436,6 @@ namespace Feedback {
         public void ConfigureAPI() {
             Api = new AsanaAPI(asanaSpecificSettings);
         }
-        public void SetDataType(ChangeEvent<string> changeEvent) {
-            currentDataType = changeEvent.newValue;
-
-            if (!string.IsNullOrEmpty(currentDataType)) {
-                PlayerPrefs.SetString(ticketTypeKey, currentDataType);
-            }
-
-            //cast label to INotifyValueChanged<string> to got the option to SetValueWithoutNotify
-            INotifyValueChanged<string> titlePreviewLbl = PanelComponents.taskTitleTxt.Q("previewTxt") as INotifyValueChanged<string>;
-            INotifyValueChanged<string> descPreviewLbl = PanelComponents.taskDescriptionTxt.Q("previewTxt") as INotifyValueChanged<string>;
-
-            for (int i = 0; i < settings.asanaProjects.Count; i++) {
-                if (settings.asanaProjects[i].name == currentDataType) {
-                    titlePreviewLbl.SetValueWithoutNotify(settings.asanaProjects[i].titlePlaceholder);
-                    descPreviewLbl.SetValueWithoutNotify(settings.asanaProjects[i].descriptionPlaceholder);
-                    break;
-                }
-            }
-        }
         #endregion
 
         #region UI helper
@@ -495,6 +476,12 @@ namespace Feedback {
                 PanelComponents.taskTypeDrpDwn.value = string.Empty;
             } else {
                 PanelComponents.taskTypeDrpDwn.value = currentDataType;
+            }
+
+            if (string.IsNullOrEmpty(currentDataType) || string.IsNullOrWhiteSpace(currentDataType)) {
+                PanelComponents.taskTypeDrpDwn.RemoveFromClassList("hidePreviewText");
+            } else {
+                PanelComponents.taskTypeDrpDwn.AddToClassList("hidePreviewText");
             }
         }
         #endregion
@@ -562,6 +549,33 @@ namespace Feedback {
                 SetWindowTypes();
             }
         }
+
+        public void SetDataType(ChangeEvent<string> evt) {
+            currentDataType = evt.newValue;
+
+            if (!string.IsNullOrEmpty(currentDataType)) {
+                PlayerPrefs.SetString(ticketTypeKey, currentDataType);
+            }
+
+            VisualElement visualElement = evt.currentTarget as VisualElement;
+            if (string.IsNullOrEmpty(currentDataType) || string.IsNullOrWhiteSpace(currentDataType)) {
+                visualElement.RemoveFromClassList("hidePreviewText");
+            } else {
+                visualElement.AddToClassList("hidePreviewText");
+            }
+
+            //cast label to INotifyValueChanged<string> to got the option to SetValueWithoutNotify
+            INotifyValueChanged<string> titlePreviewLbl = PanelComponents.taskTitleTxt.Q("previewTxt") as INotifyValueChanged<string>;
+            INotifyValueChanged<string> descPreviewLbl = PanelComponents.taskDescriptionTxt.Q("previewTxt") as INotifyValueChanged<string>;
+
+            for (int i = 0; i < settings.asanaProjects.Count; i++) {
+                if (settings.asanaProjects[i].name == currentDataType) {
+                    titlePreviewLbl.SetValueWithoutNotify(settings.asanaProjects[i].titlePlaceholder);
+                    descPreviewLbl.SetValueWithoutNotify(settings.asanaProjects[i].descriptionPlaceholder);
+                    break;
+                }
+            }
+        }
         #endregion
 
         #region Handle Send Data 
@@ -599,6 +613,11 @@ namespace Feedback {
         }
 
         private void SendData() {
+            if (string.IsNullOrEmpty(currentDataType)) {
+                Prompt.Show("Failure", "Please specify the type of your Concern.");
+                return;
+            }
+
             AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
             bool loggedIn = Api.RequestHandler.User != null;
 

@@ -25,7 +25,9 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="RightContainer">
-            <ui:DropdownField name="taskTypeDrpDwn" class="dropdown" />
+            <ui:DropdownField name="taskTypeDrpDwn" class="dropdown">
+                <ui:Label text="Type of your Concern..." picking-mode="Ignore" name="previewTxt" class="previewText" />
+            </ui:DropdownField>
             <ui:TextField picking-mode="Ignore" name="taskTitleTxt" max-length="1000" class="textField">
                 <ui:Label text="Title of your Concern..." picking-mode="Ignore" name="previewTxt" class="previewText" />
             </ui:TextField>
