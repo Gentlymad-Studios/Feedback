@@ -273,11 +273,6 @@ namespace Feedback {
             PanelComponents.searchTxtFld.value = string.Empty;
             PanelComponents.taskDescriptionTxt.value = string.Empty;
             PanelComponents.taskTitleTxt.value = string.Empty;
-            if (PanelComponents.taskTypeDrpDwn.choices.Count != 0) {
-                PanelComponents.taskTypeDrpDwn.value = PanelComponents.taskTypeDrpDwn.choices[0];
-            } else {
-                PanelComponents.taskTypeDrpDwn.value = "";
-            }
 
             MentionedTask.Clear();
 
