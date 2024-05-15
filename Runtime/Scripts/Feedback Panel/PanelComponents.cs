@@ -63,7 +63,7 @@ namespace Feedback {
 
             taskTypeDrpDwn = uiDocument.rootVisualElement.Q("taskTypeDrpDwn") as DropdownField;
             taskTagDrpDwn = uiDocument.rootVisualElement.Q("taskTagDrpDwn") as DropdownField;
-            taskTagDrpDwn.SetValueWithoutNotify("add tag");
+            taskTagDrpDwn.SetValueWithoutNotify("add tag (optional)");
             taskTitleTxt = uiDocument.rootVisualElement.Q("taskTitleTxt") as TextField;
             taskDescriptionTxt = uiDocument.rootVisualElement.Q("taskDescriptionTxt") as TextField;
             taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
