@@ -384,7 +384,7 @@ namespace Feedback {
             DataReceivedEvent -= OnDataReceived;
         }
         public void ConfigureAPI() {
-            Api = new AsanaAPI(asanaSpecificSettings);
+            Api = new AsanaAPI(settings);
         }
         #endregion
 
@@ -527,7 +527,7 @@ namespace Feedback {
                 return;
             }
 
-            AsanaProject asanaProject = asanaSpecificSettings.GetProjectByName(currentDataType);
+            AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
             bool loggedIn = Api.RequestHandler.User != null;
 
             if (loggedIn) {

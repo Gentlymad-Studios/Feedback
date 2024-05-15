@@ -110,9 +110,9 @@ namespace Feedback {
         public bool visibleForDev = false;
         [Tooltip("If this is set, the project is available players")]
         public bool visibleForPlayer = false;
-        [Tooltip("List of Files that should be attached to this Project, realtive to the Attachment Location")]
+        [Tooltip("List of Files that should be attached to this Project, realtive to the Application Data Location")]
         public List<string> Files;
-        [Tooltip("List of Files that should be attached to this Project, realtive to the Attachment Location, these files will bundled in one archive")]
+        [Tooltip("List of Files that should be attached to this Project, realtive to the Application Data Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
     }
 
