@@ -228,7 +228,7 @@ namespace Feedback {
 
             if (File.Exists(path)) {
                 using (FileStream logFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                    long maxFileSize = tryReduce ? settings.maxFileSizeReducable : settings.maxFileSize;
+                    long maxFileSize = tryReduce ? settings.maxFileSizeReducible : settings.maxFileSize;
 
                     byte[] bytes = StreamToByteArray(logFileStream, attachment.filename, maxFileSize, tryReduce);
                     attachment.content = Convert.ToBase64String(bytes);

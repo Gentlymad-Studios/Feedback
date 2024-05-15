@@ -48,7 +48,7 @@ namespace Feedback {
         [Tooltip("Maximum size for files that cant be reduced, in bytes")]
         public long maxFileSize = 10000000;
         [Tooltip("Maximum size for files that can be reduced, in bytes")]
-        public long maxFileSizeReducable = 10000000;
+        public long maxFileSizeReducible = 10000000;
         [Tooltip("List of Files that should be attached for any Project, realtive to the Application Data Location")]
         public List<string> Files;
         [Tooltip("List of Files that should be attached for any Project, realtive to the Application Data Location, these files will bundled in one archive")]
