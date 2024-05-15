@@ -19,10 +19,6 @@
                     <ui:VisualElement name="overpaintContainer" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="MentionedContainer">
-                <ui:Label text="Mentioned Tickets" parse-escape-sequences="true" name="MentionedHeader" />
-                <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="MentionedTickets" mode="Horizontal" mouse-wheel-scroll-size="1000" />
-            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="RightContainer">
             <ui:DropdownField name="taskTypeDrpDwn" class="dropdown">

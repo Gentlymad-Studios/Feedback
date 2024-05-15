@@ -1,4 +1,4 @@
-using J2N.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Feedback {
     public abstract class BaseRequestHandler : IRequestHandler {

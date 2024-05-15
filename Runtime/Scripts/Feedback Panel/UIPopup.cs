@@ -14,12 +14,9 @@ namespace Feedback {
         public DrawImage DrawImage;
         public PanelComponents PanelComponents;
         public UIDocument UIDocument;
-        public TicketBrowser TicketBrowser;
         public Prompt Prompt;
         public Loading Loading;
-        public VisualTreeAsset TaskCardUi;
         public VisualTreeAsset TagUi;
-        public VisualTreeAsset TaskDetailCardUi;
         public VisualTreeAsset PromptUi;
         public VisualTreeAsset LoadingUi;
         public Texture2D avatarPlaceholderIcon;
@@ -32,13 +29,12 @@ namespace Feedback {
         public static AsanaAPISettings settings;
         public AsanaAPISettings asanaSpecificSettings;
 
-        public Dictionary<string, AsanaTaskModel> MentionedTask = new Dictionary<string, AsanaTaskModel>();
         public WindowType ActiveWindow {
             get {
                 return activeWindow;
             }
             set {
-                if (activeWindow == WindowType.None && (value == WindowType.Search || value == WindowType.Report)) {
+                if (activeWindow == WindowType.None && value == WindowType.Report) {
                     OnShowWindow();
                     settings.Adapter.OnOpenWindow();
                 } else if (activeWindow != WindowType.None && value == WindowType.None) {
@@ -51,7 +47,7 @@ namespace Feedback {
 
         private string currentDataType;
         private WindowType currentWindowType;
-        private WindowType activeWindow = WindowType.Search;
+        private WindowType activeWindow = WindowType.Report;
 
         private bool devMode = false;
         private string ticketTypeKey;
@@ -121,7 +117,7 @@ namespace Feedback {
             CheckDevLogin();
 
             ActiveWindow = WindowType.None;
-            currentWindowType = WindowType.Search;
+            currentWindowType = WindowType.Report;
 
             SetWindowTypes();
 
@@ -129,7 +125,6 @@ namespace Feedback {
             RegisterEvents();
             SetupTaskTypeDrowndown();
 
-            TicketBrowser = new TicketBrowser(this);
             DrawImage = new DrawImage();
 
             if (Prompt == null) {
@@ -185,9 +180,6 @@ namespace Feedback {
                     initializedAfterLoad = true;
 
                     SetupTaskTypeDrowndown();
-
-                    //Initial search call 
-                    TicketBrowser.Search("");
                 }
 
                 Loading?.Hide();
@@ -197,7 +189,6 @@ namespace Feedback {
             if (Keyboard.current.escapeKey.wasPressedThisFrame) {
                 Prompt.callback?.Invoke();
                 Prompt.Hide();
-                TicketBrowser?.HideDetailCard();
             }
         }
 
@@ -209,23 +200,13 @@ namespace Feedback {
 
         #region Manage Windows
         private void SetWindowTypes() {
-            if (activeWindow == WindowType.Search) {
+            if (activeWindow == WindowType.Report) {
                 PanelComponents.root.style.display = DisplayStyle.Flex;
-                PanelComponents.searchTab.style.display = DisplayStyle.Flex;
-                PanelComponents.reportTab.style.display = DisplayStyle.None;
-                PanelComponents.searchBtn.AddToClassList("menuItemActive");
-                PanelComponents.reportBtn.RemoveFromClassList("menuItemActive");
-                PanelComponents.tabDescriptionLbl.text = settings.searchDescripton;
-            } else if (activeWindow == WindowType.Report) {
-                PanelComponents.root.style.display = DisplayStyle.Flex;
-                PanelComponents.searchTab.style.display = DisplayStyle.None;
                 PanelComponents.reportTab.style.display = DisplayStyle.Flex;
-                PanelComponents.searchBtn.RemoveFromClassList("menuItemActive");
                 PanelComponents.reportBtn.AddToClassList("menuItemActive");
                 PanelComponents.tabDescriptionLbl.text = settings.reportDescription;
             } else {
                 PanelComponents.root.style.display = DisplayStyle.None;
-                PanelComponents.searchTab.style.display = DisplayStyle.None;
                 PanelComponents.reportTab.style.display = DisplayStyle.None;
 
                 List<PopupPanel> popups = PanelComponents.root.Query<PopupPanel>().ToList();
@@ -241,12 +222,11 @@ namespace Feedback {
             SetLoadingStatus(true);
             Loading.Show("loading...");
             RegisterEvents();
-            TicketBrowser?.InitEvents();
 
             if (devMode) {
                 StartupLoginCheck();
             } else {
-                Loading.SetText("load tickets...");
+                Loading.SetText("load tags...");
                 base.GetData(false);
             }
         }
@@ -259,8 +239,6 @@ namespace Feedback {
 
             Destroy(screenshot);
             DrawImage?.Dispose();
-            TicketBrowser?.Dispose();
-            SearchWithLucene.Instance.Dispose();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -270,27 +248,14 @@ namespace Feedback {
         private void Reset() {
             initializedAfterLoad = false;
             DrawImage.drawingCanBeDestroyed = true;
-            PanelComponents.searchTxtFld.value = string.Empty;
             PanelComponents.taskDescriptionTxt.value = string.Empty;
+            PanelComponents.taskDescriptionTxt.RemoveFromClassList("hidePreviewText");
             PanelComponents.taskTitleTxt.value = string.Empty;
-
-            MentionedTask.Clear();
+            PanelComponents.taskTitleTxt.RemoveFromClassList("hidePreviewText");
 
             for (int i = 0; i < tagPreviewList.Count; i++) {
                 tagPreviewList[i].ToggleTag(false);
             }
-
-            TicketBrowser?.ResetPreview();
-        }
-
-        private void ShowReportPanel() {
-            ActiveWindow = WindowType.Report;
-            SetWindowTypes();
-        }
-
-        private void ShowSearchPanel() {
-            ActiveWindow = WindowType.Search;
-            SetWindowTypes();
         }
         #endregion
 
@@ -368,10 +333,6 @@ namespace Feedback {
 
             initializedAfterLoad = false;
             base.GetData(true);
-
-            MentionedTask.Clear();
-            PanelComponents.mentionedTickets.Clear();
-            PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.None;
         }
 
         private void AvatarLoaded() {
@@ -401,32 +362,26 @@ namespace Feedback {
             UnregisterEvents();
             PanelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
             PanelComponents.howToLbl.RegisterCallback<ClickEvent>(HowToLbl_clicked);
-            PanelComponents.reportBtn.RegisterCallback<ClickEvent>(ReportTab_clicked);
-            PanelComponents.searchBtn.RegisterCallback<ClickEvent>(SearchTab_clicked);
             PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
-            PanelComponents.searchSubmitBtn.RegisterCallback<ClickEvent>(SearchCreateTicket_clicked);
             PanelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
             PanelComponents.taskTagDrpDwn.RegisterValueChangedCallback(TaskTagDrpDwn_changed);
             PanelComponents.taskTitleTxt.RegisterValueChangedCallback(Text_changed);
             PanelComponents.taskDescriptionTxt.RegisterValueChangedCallback(Text_changed);
-            PanelComponents.searchTxtFld.RegisterValueChangedCallback(Text_changed);
-            PanelComponents.searchCancelBtn.clicked += CancelBtn_clicked;
             PanelComponents.taskCancelBtn.clicked += CancelBtn_clicked;
+
+            DataReceivedEvent += OnDataReceived;
         }
         private void UnregisterEvents() {
             PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
             PanelComponents.howToLbl.UnregisterCallback<ClickEvent>(HowToLbl_clicked);
-            PanelComponents.reportBtn.UnregisterCallback<ClickEvent>(ReportTab_clicked);
-            PanelComponents.searchBtn.UnregisterCallback<ClickEvent>(SearchTab_clicked);
             PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
-            PanelComponents.searchSubmitBtn.UnregisterCallback<ClickEvent>(SearchCreateTicket_clicked);
             PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
             PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
             PanelComponents.taskTitleTxt.UnregisterValueChangedCallback(Text_changed);
             PanelComponents.taskDescriptionTxt.UnregisterValueChangedCallback(Text_changed);
-            PanelComponents.searchTxtFld.UnregisterValueChangedCallback(Text_changed);
-            PanelComponents.searchCancelBtn.clicked -= CancelBtn_clicked;
             PanelComponents.taskCancelBtn.clicked -= CancelBtn_clicked;
+
+            DataReceivedEvent -= OnDataReceived;
         }
         public void ConfigureAPI() {
             Api = new AsanaAPI(asanaSpecificSettings);
@@ -492,15 +447,6 @@ namespace Feedback {
             SetWindowTypes();
         }
 
-        private void SearchTab_clicked(ClickEvent evt) {
-            ShowSearchPanel();
-        }
-
-        private void ReportTab_clicked(ClickEvent evt) {
-            ShowReportPanel();
-            CreateTicketFromSearch();
-        }
-
         private void LoginBtn_clicked(ClickEvent evt) {
             OnLogInButtonClick();
         }
@@ -514,10 +460,6 @@ namespace Feedback {
             }
         }
 
-        private void SearchCreateTicket_clicked(ClickEvent evt) {
-            CreateTicketFromSearch();
-        }
-
         private void TaskSubmit_clicked(ClickEvent evt) {
             SendData();
         }
@@ -527,7 +469,7 @@ namespace Feedback {
         }
 
         public void OnClickTagDrpDwn(string value) {
-            PanelComponents.taskTagDrpDwn.SetValueWithoutNotify("add tag");
+            PanelComponents.taskTagDrpDwn.SetValueWithoutNotify("add tag (optional)");
 
             for (int i = 0; i < tagPreviewList.Count; i++) {
                 TagPreview tag = tagPreviewList[i];
@@ -573,38 +515,10 @@ namespace Feedback {
         }
         #endregion
 
-        #region Handle Send Data 
-        /// <summary>
-        /// Called by clicking on "´Report Tab button". Transfer the data from search to report.
-        /// Fill the mention list with mentioned tasks
-        /// </summary>
-        private void CreateTicketFromSearch() {
-            string titleText = PanelComponents.searchTxtFld.text;
-
-            PanelComponents.mentionedTickets.Clear();
-            if (MentionedTask.Count > 0) {
-                PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.Flex;
-            } else {
-                PanelComponents.mentionedTicketsContainer.style.display = DisplayStyle.None;
-            }
-
-            foreach (var task in MentionedTask) {
-                VisualElement tagUi = TagUi.Instantiate();
-                PanelComponents.mentionedTickets.Add(tagUi);
-                new MentionedTag(tagUi, task.Value.name, task.Value.gid, () => TicketBrowser.OnClickTicketPreviewAction(task.Value.name, task.Value.notes), () => TicketBrowser.RemoveMentionFromList(task.Key, true));
-            }
-
-            //look for matching tags
-            foreach (TagPreview p in tagPreviewList) {
-                if (titleText.ToLower().Contains(p.title.ToLower())) {
-                    p.ToggleTag(true);
-                }
-            }
-
-            if (string.IsNullOrEmpty(PanelComponents.taskTitleTxt.value)) {
-                PanelComponents.taskTitleTxt.value = titleText;
-            }
-            ShowReportPanel();
+        #region Handle Data 
+        private void OnDataReceived(ReportTags reportTags) {
+            Debug.Log($"<color=cyan>{reportTags.enum_options.Count} ReportTags received.</color>");
+            SetLoadingStatus(false);
         }
 
         private void SendData() {
@@ -633,7 +547,6 @@ namespace Feedback {
 
             if (Api is AsanaAPI) {
                 var asanaAPI = (AsanaAPI)Api;
-                asanaAPI.Mentions.AddRange(MentionedTask.Keys);
             }
 
             List<Texture2D> textureList = new List<Texture2D> {
@@ -771,7 +684,6 @@ namespace Feedback {
 
     public enum WindowType {
         None = 0,
-        Search = 1,
-        Report = 2,
+        Report = 1,
     }
 }

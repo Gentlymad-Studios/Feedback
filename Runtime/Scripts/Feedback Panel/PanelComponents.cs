@@ -9,9 +9,7 @@ namespace Feedback {
         public VisualElement main;
 
         // Tab Buttons
-        public VisualElement searchTab;
         public VisualElement reportTab;
-        public Button searchBtn;
         public Button reportBtn;
         public Label tabDescriptionLbl;
         public Label howToDescLbl;
@@ -22,12 +20,6 @@ namespace Feedback {
         public Button loginBtn;
         public VisualElement userImg;
 
-        // Search Section
-        public TextField searchTxtFld;
-        public Button searchSubmitBtn;
-        public Button searchCancelBtn;
-        public ScrollView taskContainer;
-
         // Report Section
         public DropdownField taskTypeDrpDwn;
         public DropdownField taskTagDrpDwn;
@@ -36,8 +28,6 @@ namespace Feedback {
         public TextField taskDescriptionTxt;
         public Button taskSubmitBtn;
         public Button taskCancelBtn;
-        public VisualElement mentionedTicketsContainer;
-        public ScrollView mentionedTickets;
 
         // Screenshot Section
         public VisualElement imageContainer;
@@ -60,9 +50,7 @@ namespace Feedback {
 
             main = uiDocument.rootVisualElement.Q("Main");
 
-            searchTab = uiDocument.rootVisualElement.Q("SearchTab");
             reportTab = uiDocument.rootVisualElement.Q("ReportTab");
-            searchBtn = uiDocument.rootVisualElement.Q("searchBtn") as Button;
             reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
             tabDescriptionLbl = uiDocument.rootVisualElement.Q("tabDescriptionLbl") as Label;
             howToLbl = uiDocument.rootVisualElement.Q("howToLbl") as Label;
@@ -73,11 +61,6 @@ namespace Feedback {
             loginBtn = uiDocument.rootVisualElement.Q("loginBtn") as Button;
             userImg = uiDocument.rootVisualElement.Q("loginAvatar");
 
-            searchTxtFld = uiDocument.rootVisualElement.Q("searchTxt") as TextField;
-            searchSubmitBtn = uiDocument.rootVisualElement.Q("searchSubmitBtn") as Button;
-            searchCancelBtn = uiDocument.rootVisualElement.Q("searchCancelBtn") as Button;
-            taskContainer = uiDocument.rootVisualElement.Q("taskContainer") as ScrollView;
-
             taskTypeDrpDwn = uiDocument.rootVisualElement.Q("taskTypeDrpDwn") as DropdownField;
             taskTagDrpDwn = uiDocument.rootVisualElement.Q("taskTagDrpDwn") as DropdownField;
             taskTagDrpDwn.SetValueWithoutNotify("add tag");
@@ -86,8 +69,6 @@ namespace Feedback {
             taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
             taskCancelBtn = uiDocument.rootVisualElement.Q("taskCancelBtn") as Button;
             tagContainer = uiDocument.rootVisualElement.Q("tagHolder") as ScrollView;
-            mentionedTicketsContainer = uiDocument.rootVisualElement.Q("MentionedContainer");
-            mentionedTickets = uiDocument.rootVisualElement.Q("MentionedTickets") as ScrollView;
 
             imageContainer = uiDocument.rootVisualElement.Q("imageContainer");
             screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");

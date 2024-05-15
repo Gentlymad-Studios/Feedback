@@ -28,8 +28,6 @@ namespace Feedback {
         [Header("AsanaRequestManager Endpoints")]
         public string BaseUrl;
         public string GetReportTags = "/GetReportTags";
-        public string GetPlayerTaskDataEndpoint = "GetAllPlayer";
-        public string GetDevTaskDataEndpoint = "GetAllDev";
         public string LoginEndpoint = "Login/";
         public string LogoutEndpoint = "Logout/";
         public string PostNewTaskDataEndpoint = "PostNewTaskData/";
@@ -44,7 +42,6 @@ namespace Feedback {
         public List<AsanaProject> asanaProjects;
 
         [Header("Asana CustomField")]
-        public string upvoteField = "Upvotes";
         public string tagField = "Report Tags";
 
         [Header("Attachments")]
@@ -66,8 +63,6 @@ namespace Feedback {
         public int dataFetchCooldown = 60;
 
         [Header("Tab GUI Settings")]
-        [Multiline]
-        public string searchDescripton;
         [Multiline]
         public string reportDescription;
 

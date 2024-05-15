@@ -51,8 +51,8 @@ namespace Feedback {
         public async override void GetData(bool force) {
             if (!force) {
                 if (asanaAPI.lastUpdateTime.AddSeconds(asanaAPISettings.dataFetchCooldown) > DateTime.Now || requestRunning) {
-                    if (asanaAPI.PlayerTicketModelsBackup != null && asanaAPI.PlayerTicketModelsBackup.Count != 0 && asanaAPI.ReportTagsBackup != null) {
-                        asanaAPI.FireDataCreated(asanaAPI.PlayerTicketModelsBackup, asanaAPI.DevTicketModelsBackup, asanaAPI.ReportTagsBackup);
+                    if (asanaAPI.ReportTagsBackup != null) {
+                        asanaAPI.FireDataCreated(asanaAPI.ReportTagsBackup);
                         return;
                     }
                 }
@@ -70,54 +70,16 @@ namespace Feedback {
         private async void GetDataAsync() {
             requestRunning = true;
 
-            List<AsanaTaskModel> devTicketModels = new List<AsanaTaskModel>();
-            List<AsanaTaskModel> playerTicketModels = new List<AsanaTaskModel>();
             ReportTags reportTags = new ReportTags();
             reportTags.enum_options = new List<Tags>();
 
-            string url = "";
             try {
                 using (HttpClient client = new HttpClient()) {
                     client.Timeout = TimeSpan.FromMilliseconds(asanaAPISettings.recieveTimeout);
-                    HttpResponseMessage response;
-
-                    //Player Tickets Request
-                    if (asanaAPISettings.enablePlayerProjects) {
-                        url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetPlayerTaskDataEndpoint}";
-                        response = await client.GetAsync(url);
-                        if (response.IsSuccessStatusCode) {
-                            string result = await response.Content.ReadAsStringAsync();
-                            playerTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
-                            asanaAPI.PlayerTicketModelsBackup.Clear();
-                            if (playerTicketModels != null) {
-                                asanaAPI.PlayerTicketModelsBackup.AddRange(playerTicketModels);
-                                asanaAPI.lastUpdateTime = DateTime.Now;
-                            }
-                        } else {
-                            Debug.LogWarning($"Something went wrong while getting data, no tickets are loaded. New requests can still be sent. Status code: {response.StatusCode}");
-                        }
-                    }
-
-                    //Dev Tickets Request
-                    if (base.User != null && asanaAPISettings.enableDevProjects) {
-                        url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetDevTaskDataEndpoint}";
-                        response = await client.GetAsync(url);
-                        if (response.IsSuccessStatusCode) {
-                            string result = await response.Content.ReadAsStringAsync();
-                            devTicketModels = JsonConvert.DeserializeObject<List<AsanaTaskModel>>(result);
-                            asanaAPI.DevTicketModelsBackup.Clear();
-                            if (devTicketModels != null) {
-                                asanaAPI.DevTicketModelsBackup.AddRange(devTicketModels);
-                                asanaAPI.lastUpdateTime = DateTime.Now;
-                            }
-                        } else {
-                            Debug.LogWarning($"Something went wrong while getting data, no dev tickets are loaded. New requests can still be sent. Status code: {response.StatusCode}");
-                        }
-                    }
 
                     //Report Tags Request
-                    url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
-                    response = await client.GetAsync(url);
+                    string url = $"{asanaAPISettings.BaseUrl}{asanaAPISettings.GetReportTags}";
+                    HttpResponseMessage response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode) {
                         string result = await response.Content.ReadAsStringAsync();
                         reportTags = JsonConvert.DeserializeObject<ReportTags>(result);
@@ -128,11 +90,11 @@ namespace Feedback {
                 }
 
             } catch (Exception e) {
-                Debug.LogWarning("Something went wrong while getting data, no tickets or tags are loaded. New requests can still be sent.");
+                Debug.LogWarning("Something went wrong while getting data, no tags are loaded. New requests can still be sent.");
                 Debug.LogException(e);
             }
 
-            asanaAPI.FireDataCreated(playerTicketModels, devTicketModels, reportTags);
+            asanaAPI.FireDataCreated(reportTags);
             requestRunning = false;
         }
 
@@ -229,22 +191,7 @@ namespace Feedback {
         }
 
         private string BuildRichText(string notes) {
-            string front = "<body>";
-            string middle = "";
-            string back = "</body>";
-
-            notes = EscapeCharacters(notes);
-
-            if (asanaAPI.Mentions.Count != 0) {
-                front += "<strong>Mentions</strong><ul>";
-
-                foreach (string id in asanaAPI.Mentions) {
-                    middle += $"<li><a data-asana-gid=\"{id}\"/></li>";
-                }
-                middle += "</ul>";
-            }
-            middle += notes;
-            return front + middle + back;
+            return $"<body>{EscapeCharacters(notes)}</body>";
         }
 
         private string EscapeCharacters(string notes) {
