@@ -46,7 +46,6 @@ namespace Feedback {
 
         /// <summary>
         /// Get all tasks from AsanaRequestManager, 
-        /// fire TicketsRecievedEvent to create lucene index with tickets.
         /// </summary>
         public async override void GetData(bool force) {
             if (!force) {
@@ -89,6 +88,7 @@ namespace Feedback {
                     }
                 }
 
+                asanaAPI.lastUpdateTime = DateTime.Now;
             } catch (Exception e) {
                 Debug.LogWarning("Something went wrong while getting data, no tags are loaded. New requests can still be sent.");
                 Debug.LogException(e);

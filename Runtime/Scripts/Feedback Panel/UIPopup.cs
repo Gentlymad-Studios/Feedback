@@ -281,7 +281,7 @@ namespace Feedback {
 
             SetLoginUI(loggedIn);
 
-            Loading.SetText("load tickets...");
+            Loading.SetText("load tags...");
             base.GetData(false);
 
             initializedAfterLogin = false;
@@ -329,7 +329,7 @@ namespace Feedback {
         private void UpdateTasksAfterLogInOut() {
             SetLoadingStatus(true);
             Loading.ToggleAbort(false);
-            Loading.SetText("update tickets...");
+            Loading.SetText("update data...");
 
             initializedAfterLoad = false;
             base.GetData(true);
