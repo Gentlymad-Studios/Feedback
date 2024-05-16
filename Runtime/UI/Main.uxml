@@ -11,20 +11,17 @@
     <ui:VisualElement name="Background">
         <ui:VisualElement name="Main">
             <ui:VisualElement name="TopBar" class="base01">
-                <ui:VisualElement name="TopBarButtons">
-                    <ui:Button text="Report" name="reportBtn" class="menuItem menuItemActive" />
-                </ui:VisualElement>
-                <ui:VisualElement name="loginSection">
+                <ui:Label tabindex="-1" name="Title" />
+                <ui:VisualElement name="loginSection" style="display: flex;">
                     <ui:Button name="loginBtn" text="&lt;u&gt;Login&lt;/u&gt;" class="loginButton" />
-                    <ui:VisualElement name="loginAvatar" style="background-image: resource(&apos;question-mark&apos;);" />
+                    <ui:VisualElement name="loginAvatar" style="background-image: resource(&apos;user&apos;);" />
                 </ui:VisualElement>
+                <ui:Button name="OverviewButton" text="Feedback Tickets" class="HeaderButton" />
+                <ui:Button name="HelpButton" class="HeaderIconButton" style="background-image: resource(&apos;question-mark&apos;);" />
+                <ui:Button name="XButton" class="HeaderXButton" style="background-image: resource(&apos;x&apos;);" />
             </ui:VisualElement>
             <ui:VisualElement name="Description" class="base04">
                 <ui:Label text="description...." name="tabDescriptionLbl" />
-                <ui:VisualElement name="howToContainer">
-                    <ui:Label text="For a detailed instruction on how to use this tool, follow this" name="howTo" />
-                    <ui:Label text="&lt;u&gt;link&lt;/u&gt;." name="howToLbl" class="clickableLabel" />
-                </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="ContentContainer">
                 <ui:VisualElement name="ReportTab">

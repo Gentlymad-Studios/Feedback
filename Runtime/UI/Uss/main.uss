@@ -16,28 +16,16 @@
     flex-direction: row;
     max-height: 40px;
     min-height: 40px;
-    border-radius: 10px;
+    border-radius: 10px 10px 0 0;
+}
+
+#tabDescriptionLbl {
+    white-space: normal;
+    -unity-paragraph-spacing: -30px;
 }
 
 #Description {
-    padding: 0 15px 15px 15px;
-}
-
-#howToContainer {
-    flex-direction: row;
-}
-
-#howTo {
-    padding-right: 0;
-    padding-top: 0;
-    margin-top: 0;
-}
-
-#howToLbl {
-    margin-left: 0;
-    padding-left: 0;
-    margin-top: 0;
-    padding-top: 0;
+    padding: 0 11px 0 11px;
 }
 
 #ContentContainer {
@@ -77,42 +65,20 @@
     -unity-background-image-tint-color: rgb(255, 255, 255);
     min-height: 100%;
     min-width: 43px;
-    border-top-right-radius: 10px;
-}
-
-#TopBarButtons {
-    flex-grow: 1;
-    flex-direction: row;
-}
-
-.menuItem {
-    margin: 0;
-    padding: 0;
-    border-width: 0;
-    background-color: var(--base02color);
-    color: var(--fontDarkcolor);
-    min-width: 150px;
-    max-width: 150px;
-    max-height: 100%;
-    min-height: 100%;
-    height: 10%;
-    width: 150px;
-    -unity-font-style: bold;
-}
-
-#searchBtn {
-    border-top-left-radius: 10px;
-}
-
-.menuItem:hover {
-    color: var(--fontDefaultcolor);
-}
-
-.menuItemActive {
-    background-color: var(--base04color);
-    color: var(--fontDefaultcolor);
+    -unity-slice-left: 8;
+    -unity-slice-right: 8;
+    -unity-slice-top: 8;
+    -unity-slice-bottom: 8;
 }
 
 #taskDescriptionTxt {
     white-space: normal;
+}
+
+#Title {
+    flex-grow: 1;
+    margin: 0;
+    padding-left: 11px;
+    -unity-text-align: middle-left;
+    -unity-font-style: bold;
 }

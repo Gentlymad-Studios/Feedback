@@ -8,12 +8,12 @@ namespace Feedback {
 
         public VisualElement main;
 
-        // Tab Buttons
-        public VisualElement reportTab;
-        public Button reportBtn;
+        // Header Section
+        public Label titleLbl;
         public Label tabDescriptionLbl;
-        public Label howToDescLbl;
-        public Label howToLbl;
+        public Button helpButton;
+        public Button xButton;
+        public Button overviewButton;
 
         // Login Section
         public VisualElement loginSection;
@@ -23,11 +23,14 @@ namespace Feedback {
         // Report Section
         public DropdownField taskTypeDrpDwn;
         public DropdownField taskTagDrpDwn;
-        public ScrollView tagContainer;
         public TextField taskTitleTxt;
         public TextField taskDescriptionTxt;
         public Button taskSubmitBtn;
         public Button taskCancelBtn;
+        public VisualElement tagContainer;
+        public ScrollView tagHolder;
+        public TextField attachmentTxt;
+        public VisualElement attachmentContainer;
 
         // Screenshot Section
         public VisualElement imageContainer;
@@ -50,11 +53,11 @@ namespace Feedback {
 
             main = uiDocument.rootVisualElement.Q("Main");
 
-            reportTab = uiDocument.rootVisualElement.Q("ReportTab");
-            reportBtn = uiDocument.rootVisualElement.Q("reportBtn") as Button;
+            titleLbl = uiDocument.rootVisualElement.Q("Title") as Label;
             tabDescriptionLbl = uiDocument.rootVisualElement.Q("tabDescriptionLbl") as Label;
-            howToLbl = uiDocument.rootVisualElement.Q("howToLbl") as Label;
-            howToDescLbl = uiDocument.rootVisualElement.Q("howTo") as Label;
+            helpButton = uiDocument.rootVisualElement.Q("HelpButton") as Button;
+            xButton = uiDocument.rootVisualElement.Q("XButton") as Button;
+            overviewButton = uiDocument.rootVisualElement.Q("OverviewButton") as Button;
 
             loginSection = uiDocument.rootVisualElement.Q("loginSection");
             loginSection.SetEnabled(false);
@@ -68,7 +71,11 @@ namespace Feedback {
             taskDescriptionTxt = uiDocument.rootVisualElement.Q("taskDescriptionTxt") as TextField;
             taskSubmitBtn = uiDocument.rootVisualElement.Q("taskSubmitBtn") as Button;
             taskCancelBtn = uiDocument.rootVisualElement.Q("taskCancelBtn") as Button;
-            tagContainer = uiDocument.rootVisualElement.Q("tagHolder") as ScrollView;
+            tagContainer = uiDocument.rootVisualElement.Q("TagContainer");
+            tagHolder = uiDocument.rootVisualElement.Q("tagHolder") as ScrollView;
+            attachmentContainer = uiDocument.rootVisualElement.Q("AttachmentContainer");
+            attachmentTxt = uiDocument.rootVisualElement.Q("AttachmentTxt") as TextField;
+            attachmentTxt.focusable = false;
 
             imageContainer = uiDocument.rootVisualElement.Q("imageContainer");
             screenshotContainer = uiDocument.rootVisualElement.Q("screenshotContainer");

@@ -48,10 +48,56 @@ namespace Feedback {
             return attachments;
         }
 
+        public List<string> LoadAttachmentsDummy(AsanaProject project, ErrorHandler errorHandler) {
+            List<string> data = new List<string>();
+
+            //Sreenshot
+            data.Add("screenshot.jpg");
+
+            //ErrorLog
+            if (project.includeErrorLog && errorHandler != null && errorHandler.ErrorList.Count != 0) {
+                data.Add("firstErrors.log");
+            }
+
+            //Player Log
+            if (project.includePlayerLog) {
+                data.Add("Player.log");
+            }
+
+            //Custom Log
+            if (project.includeCustomLog) {
+                data.AddRange(LoadLog(true));
+            }
+
+            //Savegame
+            if (project.includeSavegame) {
+                data.AddRange(LoadSavegame(true));
+            }
+
+            //Global Files
+            if (project.includeGlobalFiles) {
+                data.AddRange(settings.Files);
+                for (int i = 0; i < settings.ArchivedFiles.Count; i++) {
+                    data.Add(settings.ArchivedFiles[i].name + ".zip");
+                }
+            }
+
+            //Project Files
+            if (project.includeProjectFiles) {
+                data.AddRange(project.Files);
+
+                for (int i = 0; i < project.ArchivedFiles.Count; i++) {
+                    data.Add(project.ArchivedFiles[i].name + ".zip");
+                }
+            }
+
+            return data;
+        }
+
         private void LoadImages(List<Texture2D> images) {
             for (int i = 0; i < images.Count; i++) {
                 AsanaTicketRequest.Attachment attachment = new AsanaTicketRequest.Attachment();
-                attachment.filename = "image.jpg";
+                attachment.filename = "screenshot.jpg";
                 attachment.contentType = AsanaTicketRequest.ContentTypes.Image;
 
                 byte[] jpg = images[i].EncodeToJPG();
@@ -91,7 +137,7 @@ namespace Feedback {
         private void LoadFirstErrors(ErrorHandler errorHandler, int errorCount) {
             if (errorHandler.ErrorList.Count == 0) {
                 return;
-            }  
+            }
 
             if (!Directory.Exists(tempPath)) {
                 Directory.CreateDirectory(tempPath);
@@ -118,48 +164,71 @@ namespace Feedback {
             }
         }
 
-        private void LoadLog() {
+        private List<string> LoadLog(bool dummy = false) {
             List<string> logDataPaths = settings.Adapter.GetLog(out bool archive, out string archiveName);
+            List<string> dummyList = new List<string>();
 
             if (logDataPaths == null) {
-                return;
+                return dummyList;
             }
 
             if (archive) {
-                AsanaTicketRequest.Attachment attachment = CreateZipArchive(archiveName, logDataPaths);
-                if (attachment != null) {
-                    attachments.Add(attachment);
+                if (dummy) {
+                    dummyList.Add(archiveName + ".zip");
+                } else {
+                    AsanaTicketRequest.Attachment attachment = CreateZipArchive(archiveName, logDataPaths);
+                    if (attachment != null) {
+                        attachments.Add(attachment);
+
+                    }
                 }
             } else {
                 for (int i = 0; i < logDataPaths.Count; i++) {
-                    AsanaTicketRequest.Attachment attachment = LoadAttachment(logDataPaths[i], AsanaTicketRequest.ContentTypes.Text, true);
-                    if (attachment != null) {
-                        attachments.Add(attachment);
+                    if (dummy) {
+                        dummyList.Add(logDataPaths[i]);
+                    } else {
+                        AsanaTicketRequest.Attachment attachment = LoadAttachment(logDataPaths[i], AsanaTicketRequest.ContentTypes.Text, true);
+                        if (attachment != null) {
+                            attachments.Add(attachment);
+                        }
                     }
                 }
             }
+
+            return dummyList;
         }
 
-        private void LoadSavegame() {
+        private List<string> LoadSavegame(bool dummy = false) {
             List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive, out string archiveName);
+            List<string> dummyList = new List<string>();
 
             if (savegameDataPaths == null) {
-                return;
+                return dummyList;
             }
 
             if (archive) {
-                AsanaTicketRequest.Attachment attachment = CreateZipArchive(archiveName, savegameDataPaths);
-                if (attachment != null) {
-                    attachments.Add(attachment);
-                }
-            } else {
-                for (int i = 0; i < savegameDataPaths.Count; i++) {
-                    AsanaTicketRequest.Attachment attachment = LoadAttachment(savegameDataPaths[i], AsanaTicketRequest.ContentTypes.Text, false);
+                if (dummy) {
+                    dummyList.Add(archiveName + ".zip");
+                } else {
+                    AsanaTicketRequest.Attachment attachment = CreateZipArchive(archiveName, savegameDataPaths);
                     if (attachment != null) {
                         attachments.Add(attachment);
                     }
                 }
+            } else {
+                for (int i = 0; i < savegameDataPaths.Count; i++) {
+                    if (dummy) {
+                        dummyList.Add(savegameDataPaths[i]);
+                    } else {
+                        AsanaTicketRequest.Attachment attachment = LoadAttachment(savegameDataPaths[i], AsanaTicketRequest.ContentTypes.Text, false);
+                        if (attachment != null) {
+                            attachments.Add(attachment);
+                        }
+                    }
+                }
             }
+
+            return dummyList;
         }
 
         //Todo: to send zip files, the content type application/zip is required for Http requests. To use it, adjust the buildAttachment method

@@ -41,9 +41,6 @@ namespace Feedback {
         public bool enableDevProjects = true;
         public List<AsanaProject> asanaProjects;
 
-        [Header("Asana CustomField")]
-        public string tagField = "Report Tags";
-
         [Header("Attachments")]
         [Tooltip("Maximum size for files that cant be reduced, in bytes")]
         public long maxFileSize = 10000000;
@@ -64,16 +61,13 @@ namespace Feedback {
         [Tooltip("The Cooldown between a fetch of tickets in s.")]
         public int dataFetchCooldown = 60;
 
-        [Header("Tab GUI Settings")]
+        [Header("GUI Settings")]
+        public string headerTitle;
         [Multiline]
         public string reportDescription;
-
-        [Header("HowTo")]
-        [Multiline]
-        [Tooltip("Link will placed at the end of the Description")]
-        public string howToDescription;
-        public string howToName;
-        public string howToUrl;
+        public string helpLink;
+        public string overviewText;
+        public string overviewLink;
 
         [Header("Painter")]
         [ColorUsage(false)]
@@ -126,6 +120,8 @@ namespace Feedback {
 
     public class CustomData {
         public string gid;
+        public string friendly_name;
         public List<string> values;
+        public List<string> friendly_values;
     }
 }

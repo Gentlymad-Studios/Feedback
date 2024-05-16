@@ -117,6 +117,66 @@
     -unity-slice-bottom: 0;
 }
 
+.HeaderXButton {
+    border-width: 0;
+    margin: 0 0 0 1px;
+    padding: 0;
+    background-color: var(--buttonRedcolor);
+    -unity-background-image-tint-color: var(--fontDefaultcolor);
+    -unity-slice-left: 8;
+    -unity-slice-right: 8;
+    -unity-slice-top: 8;
+    -unity-slice-bottom: 8;
+    border-top-right-radius: 10px;
+    width: 40px;
+    height: 40px;
+}
+
+.HeaderXButton:hover {
+    background-color: var(--buttonRedhovercolor);
+    -unity-background-image-tint-color: var(--fontLightcolor);
+    -unity-slice-left: 7;
+    -unity-slice-right: 7;
+    -unity-slice-top: 7;
+    -unity-slice-bottom: 7;
+}
+
+.HeaderIconButton {
+    border-width: 0;
+    margin: 0 0 0 1px;
+    padding: 0;
+    background-color: var(--base02color);
+    -unity-background-image-tint-color: var(--fontDefaultcolor);
+    -unity-slice-left: 8;
+    -unity-slice-right: 8;
+    -unity-slice-top: 8;
+    -unity-slice-bottom: 8;
+    width: 40px;
+    height: 40px;
+}
+
+.HeaderIconButton:hover {
+    background-color: var(--base03color);
+    -unity-background-image-tint-color: var(--fontLightcolor);
+    -unity-slice-left: 7;
+    -unity-slice-right: 7;
+    -unity-slice-top: 7;
+    -unity-slice-bottom: 7;
+}
+
+.HeaderButton {
+    border-width: 0;
+    margin: 0 0 0 1px;
+    padding: 0 8px;
+    background-color: var(--base02color);
+
+}
+
+.HeaderButton:hover {
+    background-color: var(--base03color);
+    color: var(--fontLightcolor);
+}
+
 .base01 {
     background-color: var(--base01color);
     color: var(--fontDefaultcolor);
@@ -355,8 +415,8 @@
 }
 
 .iconbutton {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     margin: 2px;
     padding: 0;
     -unity-slice-left: 2;
@@ -379,13 +439,17 @@
     scale: 0.9;
 }
 
+.spacer {
+    min-height: 10px;
+}
+
 .customcolorfield {
     margin: 0;
 }
 
 .customcolorfield .color-field__input {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     margin: 2px;
     border-width: 0.1px;
     border-color: var(--base01color);

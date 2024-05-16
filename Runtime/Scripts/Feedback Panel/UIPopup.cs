@@ -100,19 +100,24 @@ namespace Feedback {
                 errorHandler = new ErrorHandler(settings);
             }
 
+            fileLoader = new LoadAsanaAttachmentFiles(settings);
+
             if (PanelComponents == null) {
                 PanelComponents = new PanelComponents();
                 PanelComponents.Initialize(UIDocument);
             }
 
             PanelComponents.root.RegisterCallback<MouseDownEvent>(Click);
-            PanelComponents.howToDescLbl.text = settings.howToDescription;
-            PanelComponents.howToLbl.text = settings.howToName;
 
             //Setup Scrolling for the DescriptionField
             PanelComponents.taskDescriptionTxt.SetVerticalScrollerVisibility(ScrollerVisibility.AlwaysVisible);
             ScrollView descriptionScrollView = PanelComponents.taskDescriptionTxt.Q<ScrollView>();
-            descriptionScrollView.mouseWheelScrollSize = 1000;
+            descriptionScrollView.mouseWheelScrollSize = 100;
+
+            //... and AttachmentField
+            PanelComponents.attachmentTxt.SetVerticalScrollerVisibility(ScrollerVisibility.AlwaysVisible);
+            ScrollView attachmentScrollView = PanelComponents.attachmentTxt.Q<ScrollView>();
+            attachmentScrollView.mouseWheelScrollSize = 20;
 
             CheckDevLogin();
 
@@ -120,6 +125,8 @@ namespace Feedback {
             currentWindowType = WindowType.Report;
 
             SetWindowTypes();
+
+            FillUI();
 
             ConfigureAPI();
             RegisterEvents();
@@ -136,8 +143,6 @@ namespace Feedback {
                 Loading = new Loading(LoadingUi);
                 PanelComponents.root.Add(Loading);
             }
-
-            fileLoader = new LoadAsanaAttachmentFiles(settings);
         }
 
         private void Update() {
@@ -152,16 +157,16 @@ namespace Feedback {
             if (!currentlyLoading && !ActiveWindow.Equals(WindowType.None)) {
                 //Init Tags after loading
                 if (PanelComponents.taskTagDrpDwn.choices.Count == 0) {
-                    PanelComponents.tagContainer.Clear();
+                    PanelComponents.tagHolder.Clear();
                     PanelComponents.taskTagDrpDwn.choices.Clear();
 
                     AsanaAPI asanaAPI = Api as AsanaAPI;
 
                     //Init Tag DropDown
-                    if (asanaAPI.ReportTagsBackup.enum_options != null) {
+                    if (asanaAPI.ReportTagsBackup.enum_options != null && asanaAPI.ReportTagsBackup.enum_options.Count > 0) {
                         foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
                             VisualElement tagUi = TagUi.Instantiate();
-                            PanelComponents.tagContainer.Add(tagUi);
+                            PanelComponents.tagHolder.Add(tagUi);
 
                             TagPreview tagPreview = new TagPreview(tagUi, tag.name, tag.gid);
                             tagPreviewList.Add(tagPreview);
@@ -173,6 +178,9 @@ namespace Feedback {
 
                             PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
                         }
+                        PanelComponents.tagContainer.style.display = DisplayStyle.Flex;
+                    } else {
+                        PanelComponents.tagContainer.style.display = DisplayStyle.None;
                     }
                 }
 
@@ -202,12 +210,8 @@ namespace Feedback {
         private void SetWindowTypes() {
             if (activeWindow == WindowType.Report) {
                 PanelComponents.root.style.display = DisplayStyle.Flex;
-                PanelComponents.reportTab.style.display = DisplayStyle.Flex;
-                PanelComponents.reportBtn.AddToClassList("menuItemActive");
-                PanelComponents.tabDescriptionLbl.text = settings.reportDescription;
             } else {
                 PanelComponents.root.style.display = DisplayStyle.None;
-                PanelComponents.reportTab.style.display = DisplayStyle.None;
 
                 List<PopupPanel> popups = PanelComponents.root.Query<PopupPanel>().ToList();
                 for (int i = 0; i < popups.Count; i++) {
@@ -361,28 +365,34 @@ namespace Feedback {
         private void RegisterEvents() {
             UnregisterEvents();
             PanelComponents.taskTypeDrpDwn.RegisterValueChangedCallback(SetDataType);
-            PanelComponents.howToLbl.RegisterCallback<ClickEvent>(HowToLbl_clicked);
             PanelComponents.loginBtn.RegisterCallback<ClickEvent>(LoginBtn_clicked);
             PanelComponents.taskSubmitBtn.RegisterCallback<ClickEvent>(TaskSubmit_clicked);
             PanelComponents.taskTagDrpDwn.RegisterValueChangedCallback(TaskTagDrpDwn_changed);
             PanelComponents.taskTitleTxt.RegisterValueChangedCallback(Text_changed);
             PanelComponents.taskDescriptionTxt.RegisterValueChangedCallback(Text_changed);
             PanelComponents.taskCancelBtn.clicked += CancelBtn_clicked;
+            PanelComponents.xButton.clicked += CancelBtn_clicked;
+            PanelComponents.helpButton.RegisterCallback<ClickEvent>(HelpBtn_clicked);
+            PanelComponents.overviewButton.RegisterCallback<ClickEvent>(OverviewBtn_clicked);
 
             DataReceivedEvent += OnDataReceived;
         }
+
         private void UnregisterEvents() {
             PanelComponents.taskTypeDrpDwn.UnregisterValueChangedCallback(SetDataType);
-            PanelComponents.howToLbl.UnregisterCallback<ClickEvent>(HowToLbl_clicked);
             PanelComponents.loginBtn.UnregisterCallback<ClickEvent>(LoginBtn_clicked);
             PanelComponents.taskSubmitBtn.UnregisterCallback<ClickEvent>(TaskSubmit_clicked);
             PanelComponents.imageContainer.UnregisterCallback<GeometryChangedEvent>(UpdateScreenshotUiScale);
             PanelComponents.taskTitleTxt.UnregisterValueChangedCallback(Text_changed);
             PanelComponents.taskDescriptionTxt.UnregisterValueChangedCallback(Text_changed);
             PanelComponents.taskCancelBtn.clicked -= CancelBtn_clicked;
+            PanelComponents.xButton.clicked -= CancelBtn_clicked;
+            PanelComponents.helpButton.UnregisterCallback<ClickEvent>(HelpBtn_clicked);
+            PanelComponents.overviewButton.UnregisterCallback<ClickEvent>(OverviewBtn_clicked);
 
             DataReceivedEvent -= OnDataReceived;
         }
+
         public void ConfigureAPI() {
             Api = new AsanaAPI(settings);
         }
@@ -434,13 +444,39 @@ namespace Feedback {
                 PanelComponents.taskTypeDrpDwn.AddToClassList("hidePreviewText");
             }
         }
+
+        private void FillUI() {
+            PanelComponents.titleLbl.text = settings.headerTitle;
+            PanelComponents.tabDescriptionLbl.text = settings.reportDescription;
+
+            PanelComponents.helpButton.style.display = string.IsNullOrEmpty(settings.helpLink) ? DisplayStyle.None : DisplayStyle.Flex;
+
+            PanelComponents.overviewButton.style.display = (string.IsNullOrEmpty(settings.overviewLink) || string.IsNullOrEmpty(settings.overviewText)) ? DisplayStyle.None : DisplayStyle.Flex;
+            PanelComponents.overviewButton.text = settings.overviewText;
+        }
+
+        private void SetupAttachmentUI() {
+            List<string> attachments = new List<string>();
+
+            if (!string.IsNullOrEmpty(currentDataType)) {
+                AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
+                attachments.AddRange(fileLoader.LoadAttachmentsDummy(asanaProject, errorHandler));
+
+                List<CustomData> customFields = settings.adapter.GetCustomFields(asanaProject);
+
+                if (customFields != null) {
+                    for (int i = 0; i < customFields.Count; i++) {
+                        attachments.Add($"{customFields[i].friendly_name} - {string.Join(",", customFields[i].friendly_values)}");
+                    }
+                }
+            }
+
+            //PanelComponents.attachmentContainer.style.display = attachments.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            PanelComponents.attachmentTxt.value = string.Join("\n", attachments);
+        }
         #endregion
 
         #region UI Events
-        private void HowToLbl_clicked(ClickEvent evt) {
-            Application.OpenURL(settings.howToUrl);
-        }
-
         private void CancelBtn_clicked() {
             Reset();
             ActiveWindow = WindowType.None;
@@ -512,6 +548,16 @@ namespace Feedback {
                     break;
                 }
             }
+
+            SetupAttachmentUI();
+        }
+
+        public void HelpBtn_clicked(ClickEvent evt) {
+            settings.Adapter.OpenUrl(settings.helpLink);
+        }
+
+        public void OverviewBtn_clicked(ClickEvent evt) {
+            settings.Adapter.OpenUrl(settings.overviewLink);
         }
         #endregion
 
