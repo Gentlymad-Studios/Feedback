@@ -107,7 +107,7 @@ namespace Feedback {
 
                 byte[] jpg = images[i].EncodeToJPG();
                 if (jpg.LongLength > settings.maxFileSize) {
-                    Debug.Log($"File is to large {attachment.filename}.");
+                    Debug.Log($"[FeedbackTool] File is to large {attachment.filename}.");
                 } else {
                     attachment.content = Convert.ToBase64String(jpg);
                     attachments.Add(attachment);
@@ -249,7 +249,7 @@ namespace Feedback {
                 if (fileInfo.Exists) {
                     sources.Add(fileInfo);
                 } else {
-                    Debug.LogWarning($"[FeedbackService] File not found ({files[i]}).");
+                    Debug.LogWarning($"[FeedbackTool] File not found ({files[i]}).");
                 }
             }
 
@@ -277,13 +277,13 @@ namespace Feedback {
                 attachment.contentType = AsanaTicketRequest.ContentTypes.Zip;
                 byte[] bytes = File.ReadAllBytes(file);
                 if (bytes.LongLength > settings.maxFileSize) {
-                    Debug.Log($"File is to large {attachment.filename}.");
+                    Debug.Log($"[FeedbackTool] File is to large {attachment.filename}.");
                 } else {
                     attachment.content = Convert.ToBase64String(bytes);
                     return attachment;
                 }
             } catch (Exception e) {
-                Debug.LogError(e);
+                Debug.LogError($"[FeedbackTool] {e}");
             }
 
             return null;
@@ -310,7 +310,7 @@ namespace Feedback {
                     return attachment;
                 }
             } else {
-                Debug.LogWarning($"[FeedbackService] File not found ({path}).");
+                Debug.LogWarning($"[FeedbackTool] File not found ({path}).");
             }
 
             return null;
@@ -321,7 +321,7 @@ namespace Feedback {
 
             if (fileSize > maxSize) {
                 if (!tryReduce) {
-                    Debug.Log($"File is to large {filename} and was discarded.");
+                    Debug.Log($"[FeedbackTool] File is to large {filename} and was discarded.");
                     return null;
                 }
 
@@ -329,7 +329,7 @@ namespace Feedback {
                 input.Seek(-maxSize, SeekOrigin.End);
                 input.Read(bytes, 0, (int)maxSize);
 
-                Debug.Log($"File is to large {filename} and was reduced.");
+                Debug.Log($"[FeedbackTool] File is to large {filename} and was reduced.");
                 return bytes;
             } else {
                 using (MemoryStream ms = new MemoryStream()) {

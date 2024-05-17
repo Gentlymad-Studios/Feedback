@@ -93,7 +93,7 @@ namespace Feedback {
         }
 
         private void Awake() {
-            ticketTypeKey = $"{Application.productName}_{nameof(Feedback)}_{nameof(ticketTypeKey)}";
+            ticketTypeKey = $"{nameof(Feedback)}_{nameof(ticketTypeKey)}";
             settings = asanaSpecificSettings;
 
             if (errorHandler == null) {
@@ -371,7 +371,7 @@ namespace Feedback {
         }
 
         protected override void OnLoginFail(string failMessage) {
-            Debug.LogWarning(failMessage);
+            Debug.LogWarning($"[FeedbackTool] {failMessage}");
         }
         #endregion
 
@@ -597,7 +597,7 @@ namespace Feedback {
 
         #region Handle Data 
         private void OnDataReceived(ReportTags reportTags) {
-            Debug.Log($"<color=cyan>{reportTags.enum_options.Count} ReportTags received.</color>");
+            Debug.Log($"[FeedbackTool] {reportTags.enum_options.Count} ReportTags received.");
             SetLoadingStatus(false);
         }
 

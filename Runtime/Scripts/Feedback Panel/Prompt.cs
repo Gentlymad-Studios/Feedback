@@ -15,10 +15,10 @@ namespace Feedback {
 
         public bool DontShowAgain {
             get {
-                return PlayerPrefs.GetInt($"{Application.productName}_{nameof(Feedback)}_{nameof(DontShowAgain)}") == 1 ? true : false;
+                return PlayerPrefs.GetInt($"{nameof(Feedback)}_{nameof(DontShowAgain)}") == 1 ? true : false;
             }
             set {
-                PlayerPrefs.SetInt($"{Application.productName}_{nameof(Feedback)}_{nameof(DontShowAgain)}", value ? 1 : 0);
+                PlayerPrefs.SetInt($"{nameof(Feedback)}_{nameof(DontShowAgain)}", value ? 1 : 0);
             }
         }
 

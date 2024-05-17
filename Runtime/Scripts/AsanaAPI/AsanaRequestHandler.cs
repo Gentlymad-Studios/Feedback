@@ -62,7 +62,7 @@ namespace Feedback {
                 task.Start();
                 await task;
             } catch (Exception e) {
-                Debug.LogWarning(e.Message);
+                Debug.LogWarning($"[FeedbackTool] {e.Message}");
             }
         }
 
@@ -84,13 +84,13 @@ namespace Feedback {
                         reportTags = JsonConvert.DeserializeObject<ReportTags>(result);
                         asanaAPI.ReportTagsBackup = reportTags;
                     } else {
-                        Debug.LogWarning($"Something went wrong while getting data, no tags are loaded. New requests can still be sent. Status code: {response.StatusCode}");
+                        Debug.LogWarning($"[FeedbackTool] Something went wrong while getting data, no tags are loaded. New requests can still be sent. Status code: {response.StatusCode}");
                     }
                 }
 
                 asanaAPI.lastUpdateTime = DateTime.Now;
             } catch (Exception e) {
-                Debug.LogWarning("Something went wrong while getting data, no tags are loaded. New requests can still be sent.");
+                Debug.LogWarning("[FeedbackTool] Something went wrong while getting data, no tags are loaded. New requests can still be sent.");
                 Debug.LogException(e);
             }
 
@@ -122,7 +122,7 @@ namespace Feedback {
                         asanaAPI.CustomFields.Clear();
                         Tags.Clear();
                     } else {
-                        Debug.LogError("An error occured while posting new task: " + response.StatusCode);
+                        Debug.LogError("[FeedbackTool] An error occured while posting new task: " + response.StatusCode);
                         requestRunning = false;
                         postRequestRunning = false;
                         asanaAPI.FireFeedbackSend(false);
@@ -130,7 +130,7 @@ namespace Feedback {
                     }
                 }
             } catch (Exception e) {
-                Debug.LogError("An error occured while posting new task: " + e.Message);
+                Debug.LogError("[FeedbackTool] An error occured while posting new task: " + e.Message);
                 requestRunning = false;
                 postRequestRunning = false;
                 asanaAPI.FireFeedbackSend(false);
@@ -250,7 +250,7 @@ namespace Feedback {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream)) {
-                Debug.Log(reader.ReadToEnd());
+                Debug.Log($"[FeedbackTool] {reader.ReadToEnd()}");
             }
             base.User = null;
             UniqueId = "";
@@ -374,8 +374,8 @@ namespace Feedback {
                     User.avatar = loadedTexture;
                     asanaAPI.FireAvatarLoaded();
                 } catch (Exception e) {
-                    Debug.LogWarning($"tried to fetch avatar picture @ url: {User.picture} and failed!");
-                    Debug.LogWarning(e.Message);
+                    Debug.LogWarning($"[FeedbackTool] tried to fetch avatar picture @ url: {User.picture} and failed!");
+                    Debug.LogWarning($"[FeedbackTool] {e.Message}");
                 }
             }
 
