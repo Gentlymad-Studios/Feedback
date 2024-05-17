@@ -198,6 +198,7 @@ namespace Feedback {
                     initializedAfterLoad = true;
 
                     SetupTaskTypeDrowndown();
+                    SetupAttachmentUI();
                 }
 
                 Loading?.Hide();
