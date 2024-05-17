@@ -93,6 +93,8 @@ namespace Feedback {
         }
 
         private void Awake() {
+            DataReceivedEvent += OnDataReceived;
+
             ticketTypeKey = $"{nameof(Feedback)}_{nameof(ticketTypeKey)}";
             settings = asanaSpecificSettings;
 
@@ -388,8 +390,6 @@ namespace Feedback {
             PanelComponents.xButton.clicked += CancelBtn_clicked;
             PanelComponents.helpButton.RegisterCallback<ClickEvent>(HelpBtn_clicked);
             PanelComponents.overviewButton.RegisterCallback<ClickEvent>(OverviewBtn_clicked);
-
-            DataReceivedEvent += OnDataReceived;
         }
 
         private void UnregisterEvents() {
@@ -403,8 +403,6 @@ namespace Feedback {
             PanelComponents.xButton.clicked -= CancelBtn_clicked;
             PanelComponents.helpButton.UnregisterCallback<ClickEvent>(HelpBtn_clicked);
             PanelComponents.overviewButton.UnregisterCallback<ClickEvent>(OverviewBtn_clicked);
-
-            DataReceivedEvent -= OnDataReceived;
         }
 
         public void ConfigureAPI() {
