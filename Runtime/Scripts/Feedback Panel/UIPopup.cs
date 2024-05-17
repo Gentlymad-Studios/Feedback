@@ -477,6 +477,10 @@ namespace Feedback {
 
                 if (customFields != null) {
                     for (int i = 0; i < customFields.Count; i++) {
+                        if (string.IsNullOrEmpty(customFields[i].friendly_name) || customFields[i].friendly_values == null || customFields[i].friendly_values.Count == 0) {
+                            continue;
+                        }
+
                         attachments.Add($"{customFields[i].friendly_name} - {string.Join(",", customFields[i].friendly_values)}");
                     }
                 }

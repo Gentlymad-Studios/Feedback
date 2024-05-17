@@ -123,5 +123,21 @@ namespace Feedback {
         public string friendly_name;
         public List<string> values;
         public List<string> friendly_values;
+
+        public CustomData() {
+
+        }
+
+        public CustomData(string gid, string friendly_name) {
+            this.gid = gid;
+            this.friendly_name = friendly_name;
+        }
+
+        public CustomData(string gid, string friendly_name, string value, string friendly_value) {
+            this.gid = gid;
+            this.friendly_name = friendly_name;
+            values = new List<string> { value };
+            friendly_values = new List<string> { friendly_value };
+        }
     }
 }

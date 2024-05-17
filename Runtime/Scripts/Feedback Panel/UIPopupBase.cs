@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Feedback {
     public abstract class UIPopUpBase : MonoBehaviour {
         public AsanaAPI Api = null;
+        [HideInInspector]
         public Texture2D externalScreenshot;
         private WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
 
