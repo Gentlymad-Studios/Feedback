@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="../Uss/main.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#main" />
+    <Style src="../Uss/base.uss?fileID=7433441132597879392&amp;guid=3539808a7a4db3a4294eb02639a008d1&amp;type=3#base" />
     <Style src="../Uss/prompt.uss?fileID=7433441132597879392&amp;guid=f996b5ed92e4d3641873475b9a086523&amp;type=3#prompt" />
     <ui:VisualElement name="background">
         <ui:VisualElement name="prompt" class="base04">
@@ -7,6 +7,8 @@
                 <ui:Label text="Login / Feedback" name="promptTitleLbl" />
             </ui:VisualElement>
             <ui:Label text="Login erfolgreich / Feedback gesendet" name="promptDescriptionLbl" />
+            <ui:Button name="additionalButton" text="Feedback Tickets" class="defaultAccentButton" />
+            <ui:Toggle name="dontShowAgainToggle" label="dont show again" />
             <ui:Button text="OK" name="okButton" class="defaultButton" />
         </ui:VisualElement>
     </ui:VisualElement>

@@ -66,8 +66,12 @@ namespace Feedback {
         [Multiline]
         public string reportDescription;
         public string helpLink;
+        [Tooltip("Open the given Help Link with an Fallback Method, defined in the Adapter.")]
+        public bool openHelpLinkWithFallback = false;
         public string overviewText;
         public string overviewLink;
+        [Tooltip("Open the given Overview Link with an Fallback Method, defined in the Adapter.")]
+        public bool openOverviewLinkWithFallback = false;
 
         [Header("Painter")]
         [ColorUsage(false)]
@@ -110,6 +114,10 @@ namespace Feedback {
         public List<string> Files;
         [Tooltip("List of Files that should be attached to this Project, realtive to the Application Data Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
+        public string successButtonText;
+        public string successButtonLink;
+        [Tooltip("Open the given Success Link with an Fallback Method, defined in the Adapter.")]
+        public bool openSuccessButtonLinkWithFallback = false;
     }
 
     [Serializable]

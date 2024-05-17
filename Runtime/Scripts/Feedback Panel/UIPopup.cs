@@ -587,11 +587,11 @@ namespace Feedback {
         }
 
         public void HelpBtn_clicked(ClickEvent evt) {
-            settings.Adapter.OpenUrl(settings.helpLink);
+            settings.Adapter.OpenUrl(settings.helpLink, settings.openHelpLinkWithFallback);
         }
 
         public void OverviewBtn_clicked(ClickEvent evt) {
-            settings.Adapter.OpenUrl(settings.overviewLink);
+            settings.Adapter.OpenUrl(settings.overviewLink, settings.openOverviewLinkWithFallback);
         }
         #endregion
 
@@ -603,7 +603,7 @@ namespace Feedback {
 
         private void SendData() {
             if (string.IsNullOrEmpty(currentDataType)) {
-                Prompt.Show("Failure", "Please specify the type of your Concern.");
+                Prompt.Show("Failure", "Please specify the type.");
                 return;
             }
 
@@ -657,9 +657,16 @@ namespace Feedback {
 
                 fileLoader.ClearTemp();
 
+                AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
+
+
                 Prompt.Show("Feedback", "Feedback sent", () => {
                     ActiveWindow = WindowType.None;
                     SetWindowTypes();
+                }, dontShowAgainFlag: true, extraButtonText: asanaProject.successButtonText, extraCallback: () => {
+                    if (string.IsNullOrEmpty(asanaProject.successButtonLink)) {
+                        settings.Adapter.OpenUrl(asanaProject.successButtonLink, asanaProject.openSuccessButtonLinkWithFallback);
+                    }
                 });
 
                 Reset();

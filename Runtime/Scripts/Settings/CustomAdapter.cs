@@ -11,7 +11,7 @@ namespace Feedback {
         public abstract void OnAfterScreenshot();
         public abstract void OnErrorThrown(Error error);
         public abstract void OnFirstErrorThrown(Error error);
-        public abstract void OpenUrl(string url);
+        public abstract void OpenUrl(string url, bool useFallback = false);
         public abstract bool GetDevMode();
         public abstract List<string> GetSavegame(out bool archive, out string archiveName);
         public abstract List<string> GetLog(out bool archive, out string archiveName);

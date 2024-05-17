@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Feedback {
     public interface IAdapter {
-        void OpenUrl(string url);
+        void OpenUrl(string url, bool useFallback = false);
 
         void OnOpenWindow();
 

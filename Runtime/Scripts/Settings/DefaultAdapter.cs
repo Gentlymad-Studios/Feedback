@@ -15,7 +15,7 @@ namespace Feedback {
 
         public void OnFirstErrorThrown(Error error) {}
 
-        public void OpenUrl(string url) {
+        public void OpenUrl(string url, bool useFallback = false) {
             Application.OpenURL(url);
         }
 

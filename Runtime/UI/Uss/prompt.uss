@@ -40,10 +40,52 @@
     text-overflow: ellipsis;
 }
 
-Button {
+#okButton {
     margin: 0;
     max-height: 25px;
     min-height: 25px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+
+#additionalButton {
+    max-height: 25px;
+    border-radius: 13px;
+    align-self: center;
+    padding: 10px 20px;
+}
+
+#dontShowAgainToggle {
+    color: var(--fontDarkcolor);
+    font-size: 10px;
+    align-self: center;
+    margin: 3px;
+}
+
+#dontShowAgainToggle > Label {
+    margin: 0;
+    padding: 0;
+    min-width: 85px;
+}
+
+#dontShowAgainToggle:focus > Label {
+    color: var(--fontDarkcolor);
+}
+
+#dontShowAgainToggle > VisualElement {
+    max-width: 12px;
+}
+
+#dontShowAgainToggle > VisualElement > #unity-checkmark {
+    max-height: 12px;
+    max-width: 12px;
+    border-color:var(--base02color);
+    background-color: var(--base03color);
+    border-width: 0.5px;
+    border-radius: 2px;
+    -unity-background-image-tint-color: var(--fontDefaultcolor);
+}
+
+#dontShowAgainToggle:hover > VisualElement > #unity-checkmark {
+    border-color:var(--base05color);
 }
