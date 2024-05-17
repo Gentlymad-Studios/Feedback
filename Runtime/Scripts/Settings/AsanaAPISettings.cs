@@ -114,6 +114,7 @@ namespace Feedback {
         public List<string> Files;
         [Tooltip("List of Files that should be attached to this Project, realtive to the Application Data Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
+        public string successTitle;
         public string successMessageText;
         public string successButtonText;
         public string successButtonLink;

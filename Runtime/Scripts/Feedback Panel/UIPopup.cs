@@ -658,9 +658,9 @@ namespace Feedback {
                 fileLoader.ClearTemp();
 
                 AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
-                string message = string.IsNullOrEmpty(asanaProject.successMessageText) ? "Report sent" : asanaProject.successMessageText;
+                string title = string.IsNullOrEmpty(asanaProject.successTitle) ? "Success" : asanaProject.successTitle;
 
-                Prompt.Show("Report", message, () => {
+                Prompt.Show(title, asanaProject.successMessageText, () => {
                     ActiveWindow = WindowType.None;
                     SetWindowTypes();
                 }, dontShowAgainFlag: true, extraButtonText: asanaProject.successButtonText, extraCallback: () => {
