@@ -62,14 +62,17 @@ namespace Feedback {
             }
 
             this.title.text = title;
-            this.description.text = description;
-            okButton.text = buttonText;
 
+            this.description.text = description;
+            this.description.style.display = string.IsNullOrEmpty(description) ? DisplayStyle.None : DisplayStyle.Flex;
+
+            okButton.text = buttonText;
             okButton.Focus();
 
-            dontShowAgainToggle.style.display = dontShowAgainFlag ? DisplayStyle.Flex : DisplayStyle.None;
             extraButton.style.display = string.IsNullOrEmpty(extraButtonText) ? DisplayStyle.None : DisplayStyle.Flex;
             extraButton.text = extraButtonText;
+
+            dontShowAgainToggle.style.display = dontShowAgainFlag ? DisplayStyle.Flex : DisplayStyle.None;
 
             this.callback = callback;
             this.extraCallback = extraCallback;
