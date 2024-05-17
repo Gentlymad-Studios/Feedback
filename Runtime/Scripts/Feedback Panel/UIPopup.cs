@@ -157,7 +157,11 @@ namespace Feedback {
             if (!currentlyLoading && !ActiveWindow.Equals(WindowType.None)) {
                 //Init Tags after loading
                 if (PanelComponents.taskTagDrpDwn.choices.Count == 0) {
-                    PanelComponents.tagHolder.Clear();
+                    foreach (VisualElement child in PanelComponents.tagHolder.Children()) {
+                        if (!child.ClassListContains("previewText")) {
+                            PanelComponents.tagHolder.Remove(child);
+                        }
+                    }
                     PanelComponents.taskTagDrpDwn.choices.Clear();
 
                     AsanaAPI asanaAPI = Api as AsanaAPI;
@@ -171,16 +175,22 @@ namespace Feedback {
                             TagPreview tagPreview = new TagPreview(tagUi, tag.name, tag.gid);
                             tagPreviewList.Add(tagPreview);
 
-                            tagPreview.addTagToTagList = () => SetTag(tagPreview);
-                            tagPreview.removeFromTagList = () => RemoveTag(tagPreview);
+                            tagPreview.addTagToTagList = () => {
+                                SetTag(tagPreview);
+                                UpdateTagHolderPreview();
+                            };
+                            tagPreview.removeFromTagList = () => {
+                                RemoveTag(tagPreview);
+                                UpdateTagHolderPreview();
+                            };
 
                             tagPreview.ToggleTag(false);
 
                             PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
                         }
-                        PanelComponents.tagContainer.style.display = DisplayStyle.Flex;
+                        //PanelComponents.tagContainer.style.display = DisplayStyle.Flex;
                     } else {
-                        PanelComponents.tagContainer.style.display = DisplayStyle.None;
+                        //PanelComponents.tagContainer.style.display = DisplayStyle.None;
                     }
                 }
 
@@ -259,6 +269,7 @@ namespace Feedback {
 
             for (int i = 0; i < tagPreviewList.Count; i++) {
                 tagPreviewList[i].ToggleTag(false);
+                PanelComponents.tagHolder.RemoveFromClassList("hidePreviewText");
             }
         }
         #endregion
@@ -473,6 +484,22 @@ namespace Feedback {
 
             //PanelComponents.attachmentContainer.style.display = attachments.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             PanelComponents.attachmentTxt.value = string.Join("\n", attachments);
+        }
+
+        private void UpdateTagHolderPreview() {
+            bool nothingSelected = true;
+            for (int i = 0; i < tagPreviewList.Count; i++) {
+                if (tagPreviewList[i].selected) {
+                    nothingSelected = false;
+                    break;
+                }
+            }
+
+            if (nothingSelected) {
+                PanelComponents.tagHolder.RemoveFromClassList("hidePreviewText");
+            } else {
+                PanelComponents.tagHolder.AddToClassList("hidePreviewText");
+            }
         }
         #endregion
 

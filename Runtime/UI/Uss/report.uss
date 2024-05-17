@@ -57,6 +57,14 @@
 
 #tagHolder {
     min-height: 53px;
+    margin: 2px;
+    background-color: var(--base01color);
+    border-radius: 10px;
+}
+
+#tagHolderPreview {
+    min-width: 100%;
+    -unity-text-align: middle-center;
 }
 
 #ButtonContainer {

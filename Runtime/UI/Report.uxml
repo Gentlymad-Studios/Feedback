@@ -33,9 +33,11 @@
                 <ui:Label text="Describe your Concern...&#10;" picking-mode="Ignore" name="previewTxt" class="previewText multiLinePreviewText" />
             </ui:TextField>
             <ui:VisualElement name="TagContainer">
-                <ui:Label text="Tags" class="subHeadline" />
+                <ui:Label text="Tags" class="subHeadline" style="display: none;" />
                 <ui:DropdownField name="taskTagDrpDwn" class="dropdown" />
-                <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" class="tinyScroller" />
+                <ui:ScrollView name="tagHolder" vertical-scroller-visibility="Hidden" mode="Horizontal" mouse-wheel-scroll-size="100" class="tinyScroller">
+                    <ui:Label text="No Tags added" name="tagHolderPreview" class="previewText" />
+                </ui:ScrollView>
             </ui:VisualElement>
             <ui:VisualElement name="AttachmentContainer">
                 <ui:Label text="Attached Data" class="subHeadline" />

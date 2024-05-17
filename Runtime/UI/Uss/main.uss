@@ -65,10 +65,6 @@
     -unity-background-image-tint-color: rgb(255, 255, 255);
     min-height: 100%;
     min-width: 43px;
-    -unity-slice-left: 8;
-    -unity-slice-right: 8;
-    -unity-slice-top: 8;
-    -unity-slice-bottom: 8;
 }
 
 #taskDescriptionTxt {
