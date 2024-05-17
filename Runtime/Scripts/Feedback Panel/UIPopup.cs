@@ -481,7 +481,7 @@ namespace Feedback {
                             continue;
                         }
 
-                        attachments.Add($"{customFields[i].friendly_name} - {string.Join(",", customFields[i].friendly_values)}");
+                        attachments.Add($"[Attribute] {customFields[i].friendly_name} - {string.Join(",", customFields[i].friendly_values)}");
                     }
                 }
             }

@@ -91,6 +91,11 @@ namespace Feedback {
                 }
             }
 
+            //Strip down to Filename and add type
+            for (int i = 0; i < data.Count; i ++) {
+                data[i] = "[File] " + Path.GetFileName(data[i]);
+            }
+
             return data;
         }
 
