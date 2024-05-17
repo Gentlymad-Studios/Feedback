@@ -244,6 +244,8 @@ namespace Feedback {
                 Loading.SetText("load tags...");
                 base.GetData(false);
             }
+
+            SetupAttachmentUI();
         }
 
         protected override void OnHideWindow() {
