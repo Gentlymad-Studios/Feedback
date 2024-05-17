@@ -6,9 +6,13 @@
             <ui:VisualElement name="header" class="base02">
                 <ui:Label text="Login / Feedback" name="promptTitleLbl" />
             </ui:VisualElement>
-            <ui:Label text="Login erfolgreich / Feedback gesendet" name="promptDescriptionLbl" />
-            <ui:Button name="additionalButton" text="Feedback Tickets" class="defaultAccentButton" />
-            <ui:Toggle name="dontShowAgainToggle" label="dont show again" />
+            <ui:VisualElement name="Mid">
+                <ui:Label text="Login erfolgreich / Feedback gesendet" name="promptDescriptionLbl" />
+                <ui:VisualElement name="ButtonContainer">
+                    <ui:Button name="additionalButton" text="Feedback Tickets" class="defaultAccentButton" />
+                </ui:VisualElement>
+                <ui:Toggle name="dontShowAgainToggle" label="dont show again" />
+            </ui:VisualElement>
             <ui:Button text="OK" name="okButton" class="defaultButton" />
         </ui:VisualElement>
     </ui:VisualElement>

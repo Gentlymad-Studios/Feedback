@@ -48,11 +48,20 @@
     border-bottom-right-radius: 10px;
 }
 
+#Mid {
+    flex-grow: 1;
+}
+
+#ButtonContainer {
+    flex-grow: 1;
+    justify-content: center;
+}
+
 #additionalButton {
     max-height: 25px;
-    border-radius: 13px;
+    border-radius: 12px;
     align-self: center;
-    padding: 10px 20px;
+    padding: 5px 10px;
 }
 
 #dontShowAgainToggle {
