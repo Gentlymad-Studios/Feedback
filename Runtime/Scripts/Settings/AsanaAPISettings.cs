@@ -114,6 +114,7 @@ namespace Feedback {
         public List<string> Files;
         [Tooltip("List of Files that should be attached to this Project, realtive to the Application Data Location, these files will bundled in one archive")]
         public List<ArchivedFiles> ArchivedFiles;
+        public string successMessageText;
         public string successButtonText;
         public string successButtonLink;
         [Tooltip("Open the given Success Link with an Fallback Method, defined in the Adapter.")]

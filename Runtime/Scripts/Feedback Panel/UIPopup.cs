@@ -658,20 +658,20 @@ namespace Feedback {
                 fileLoader.ClearTemp();
 
                 AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
+                string message = string.IsNullOrEmpty(asanaProject.successMessageText) ? "Report sent" : asanaProject.successMessageText;
 
-
-                Prompt.Show("Feedback", "Feedback sent", () => {
+                Prompt.Show("Report", message, () => {
                     ActiveWindow = WindowType.None;
                     SetWindowTypes();
                 }, dontShowAgainFlag: true, extraButtonText: asanaProject.successButtonText, extraCallback: () => {
-                    if (string.IsNullOrEmpty(asanaProject.successButtonLink)) {
+                    if (!string.IsNullOrEmpty(asanaProject.successButtonLink)) {
                         settings.Adapter.OpenUrl(asanaProject.successButtonLink, asanaProject.openSuccessButtonLinkWithFallback);
                     }
                 });
 
                 Reset();
             } else {
-                Prompt.Show("Failure", "An error occurred while sending your feedback, please try again.");
+                Prompt.Show("Failure", "An error occurred while sending your report, please try again.");
             }
         }
         #endregion

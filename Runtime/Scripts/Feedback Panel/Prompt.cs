@@ -54,12 +54,12 @@ namespace Feedback {
         }
 
         public void Show(string title, string description, Action callback = null, string buttonText = "Ok", bool dontShowAgainFlag = false, Action extraCallback = null, string extraButtonText = "") {
-            if (DontShowAgain && dontShowAgainFlag) {
-                if (callback != null) {
-                    callback.Invoke();
-                }
-                return;
-            }
+            //if (DontShowAgain && dontShowAgainFlag) {
+            //    if (callback != null) {
+            //        callback.Invoke();
+            //    }
+            //    return;
+            //}
 
             this.title.text = title;
             this.description.text = description;
@@ -69,6 +69,7 @@ namespace Feedback {
 
             dontShowAgainToggle.style.display = dontShowAgainFlag ? DisplayStyle.Flex : DisplayStyle.None;
             extraButton.style.display = string.IsNullOrEmpty(extraButtonText) ? DisplayStyle.None : DisplayStyle.Flex;
+            extraButton.text = extraButtonText;
 
             this.callback = callback;
             this.extraCallback = extraCallback;
