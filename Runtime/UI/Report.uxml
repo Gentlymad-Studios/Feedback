@@ -41,7 +41,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="AttachmentContainer">
                 <ui:Label text="Attached Data" class="subHeadline" />
-                <ui:TextField picking-mode="Ignore" name="AttachmentTxt" multiline="true" max-length="10" readonly="true" class="textField" />
+                <ui:TextField picking-mode="Ignore" name="AttachmentTxt" multiline="true" readonly="true" class="textField" />
             </ui:VisualElement>
             <ui:VisualElement name="ButtonContainer">
                 <ui:Button text="Submit" name="taskSubmitBtn" class="defaultAccentButton" />
