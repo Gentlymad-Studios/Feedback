@@ -48,7 +48,6 @@
 
 #taskDescriptionTxt {
     flex-grow: 1;
-    max-height: 52%;
 }
 
 #taskDescriptionTxt > TextInput {

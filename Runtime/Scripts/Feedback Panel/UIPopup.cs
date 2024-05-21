@@ -459,6 +459,8 @@ namespace Feedback {
 
         private void FillUI() {
             PanelComponents.titleLbl.text = settings.headerTitle;
+
+            PanelComponents.tabDescriptionLbl.style.display = string.IsNullOrEmpty(settings.reportDescription) ? DisplayStyle.None : DisplayStyle.Flex;
             PanelComponents.tabDescriptionLbl.text = settings.reportDescription;
 
             PanelComponents.helpButton.style.display = string.IsNullOrEmpty(settings.helpLink) ? DisplayStyle.None : DisplayStyle.Flex;

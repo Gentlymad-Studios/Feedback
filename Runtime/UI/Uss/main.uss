@@ -30,6 +30,7 @@
 
 #ContentContainer {
     flex-grow: 1;
+    max-height: 775px;
 }
 
 #ContentContainer > VisualElement {
