@@ -190,9 +190,14 @@ namespace Feedback {
 
                             PanelComponents.taskTagDrpDwn.choices.Add(tag.name);
                         }
-                        //PanelComponents.tagContainer.style.display = DisplayStyle.Flex;
+
+                        PanelComponents.tagContainer.style.display = DisplayStyle.Flex;
+                        //PanelComponents.taskTagDrpDwn.SetValueWithoutNotify("add tag (optional)");
+                        //PanelComponents.taskTagDrpDwn.SetEnabled(true);
                     } else {
-                        //PanelComponents.tagContainer.style.display = DisplayStyle.None;
+                        PanelComponents.tagContainer.style.display = DisplayStyle.None;
+                        //PanelComponents.taskTagDrpDwn.SetValueWithoutNotify("no tags loaded");
+                        //PanelComponents.taskTagDrpDwn.SetEnabled(false);
                     }
                 }
 
@@ -597,8 +602,13 @@ namespace Feedback {
 
         #region Handle Data 
         private void OnDataReceived(ReportTags reportTags) {
-            Debug.Log($"[FeedbackTool] {reportTags.enum_options.Count} ReportTags received.");
             SetLoadingStatus(false);
+
+            if (reportTags.enum_options == null || reportTags.enum_options.Count == 0) {
+                Debug.Log($"[FeedbackTool] No ReportTags received.");
+            } else {
+                Debug.Log($"[FeedbackTool] {reportTags.enum_options.Count} ReportTags received.");
+            }
         }
 
         private void SendData() {
@@ -641,10 +651,10 @@ namespace Feedback {
             SetLoadingStatus(true);
             Loading.Show("send feedback...", false);
 
-            PostData(data);
-
             FeedbackSendEvent -= DataSendEvent;
             FeedbackSendEvent += DataSendEvent;
+
+            PostData(data);
         }
 
         private void DataSendEvent(bool success) {

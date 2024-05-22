@@ -9,6 +9,7 @@ namespace Feedback {
         public VisualElement popup;
         public Button okButton;
         public Action callback;
+        public VisualElement extraButtonContainer;
         public Button extraButton;
         public Action extraCallback;
         public Toggle dontShowAgainToggle;
@@ -38,6 +39,7 @@ namespace Feedback {
             title = this.Q("promptTitleLbl") as Label;
             description = this.Q("promptDescriptionLbl") as Label;
             okButton = this.Q("okButton") as Button;
+            extraButtonContainer = this.Q("ButtonContainer");
             extraButton = this.Q("additionalButton") as Button;
             dontShowAgainToggle = this.Q("dontShowAgainToggle") as Toggle;
 
@@ -69,7 +71,7 @@ namespace Feedback {
             okButton.text = buttonText;
             okButton.Focus();
 
-            extraButton.style.display = string.IsNullOrEmpty(extraButtonText) ? DisplayStyle.None : DisplayStyle.Flex;
+            extraButtonContainer.style.display = string.IsNullOrEmpty(extraButtonText) ? DisplayStyle.None : DisplayStyle.Flex;
             extraButton.text = extraButtonText;
 
             dontShowAgainToggle.style.display = dontShowAgainFlag ? DisplayStyle.Flex : DisplayStyle.None;

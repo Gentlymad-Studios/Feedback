@@ -84,14 +84,16 @@ namespace Feedback {
                         reportTags = JsonConvert.DeserializeObject<ReportTags>(result);
                         asanaAPI.ReportTagsBackup = reportTags;
                     } else {
-                        Debug.LogWarning($"[FeedbackTool] Something went wrong while getting data, no tags are loaded. New requests can still be sent. Status code: {response.StatusCode}");
+                        Debug.LogWarning($"[FeedbackTool] Something went wrong while getting data, no tags are loaded. Status code: {response.StatusCode}");
                     }
                 }
-
                 asanaAPI.lastUpdateTime = DateTime.Now;
+            } catch (HttpRequestException e) {
+                Debug.LogWarning($"[FeedbackTool] Something went wrong while getting data, no tags are loaded. ({e.GetType()} - {e.Message})");
+            } catch (WebException e) {
+                Debug.LogWarning($"[FeedbackTool] Something went wrong while getting data, no tags are loaded. ({e.GetType()} - {e.Message})");
             } catch (Exception e) {
-                Debug.LogWarning("[FeedbackTool] Something went wrong while getting data, no tags are loaded. New requests can still be sent.");
-                Debug.LogException(e);
+                Debug.LogWarning($"[FeedbackTool] Something went wrong while getting data, no tags are loaded. ({e.GetType()} - {e.Message})");
             }
 
             asanaAPI.FireDataCreated(reportTags);
@@ -122,7 +124,7 @@ namespace Feedback {
                         asanaAPI.CustomFields.Clear();
                         Tags.Clear();
                     } else {
-                        Debug.LogError("[FeedbackTool] An error occured while posting new task: " + response.StatusCode);
+                        Debug.LogWarning("[FeedbackTool] An error occured while posting new task: " + response.StatusCode);
                         requestRunning = false;
                         postRequestRunning = false;
                         asanaAPI.FireFeedbackSend(false);
@@ -130,7 +132,7 @@ namespace Feedback {
                     }
                 }
             } catch (Exception e) {
-                Debug.LogError("[FeedbackTool] An error occured while posting new task: " + e.Message);
+                Debug.LogWarning($"[FeedbackTool] An error occured while posting new task. ({e.GetType()} - {e.Message})");
                 requestRunning = false;
                 postRequestRunning = false;
                 asanaAPI.FireFeedbackSend(false);
@@ -167,15 +169,17 @@ namespace Feedback {
         private Dictionary<string, List<string>> BuildCustomFields(AsanaProject projectType) {
             Dictionary<string, List<string>> customFields = new Dictionary<string, List<string>>();
             //Build ReportTags CustomField
-            List<string> tags = new List<string>();
-            foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
-                foreach (TagPreview stag in Tags) {
-                    if (stag.title.ToLower().Equals(tag.name.ToLower())) {
-                        tags.Add(tag.gid);
+            if (asanaAPI.ReportTagsBackup.enum_options != null) {
+                List<string> tags = new List<string>();
+                foreach (Tags tag in asanaAPI.ReportTagsBackup.enum_options) {
+                    foreach (TagPreview stag in Tags) {
+                        if (stag.title.ToLower().Equals(tag.name.ToLower())) {
+                            tags.Add(tag.gid);
+                        }
                     }
                 }
+                customFields.Add(asanaAPI.ReportTagsBackup.gid, tags);
             }
-            customFields.Add(asanaAPI.ReportTagsBackup.gid, tags);
 
             //Build Custom CustomFields
             List<CustomData> customData = asanaAPISettings.Adapter.GetCustomFields(projectType);
