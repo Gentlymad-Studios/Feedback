@@ -428,7 +428,7 @@ namespace Feedback {
                         continue;
                     }
                 } else {
-                    if (!project.visibleForPlayer || !settings.enablePlayerProjects) {
+                    if (devMode || !project.visibleForPlayer || !settings.enablePlayerProjects) {
                         continue;
                     }
                 }
