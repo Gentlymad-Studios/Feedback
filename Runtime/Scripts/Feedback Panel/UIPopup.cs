@@ -588,7 +588,9 @@ namespace Feedback {
                 }
             }
 
-            SetupAttachmentUI();
+            if (IsOpen()) {
+                SetupAttachmentUI();
+            }
         }
 
         public void HelpBtn_clicked(ClickEvent evt) {
