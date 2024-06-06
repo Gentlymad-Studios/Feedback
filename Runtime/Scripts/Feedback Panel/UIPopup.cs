@@ -619,6 +619,11 @@ namespace Feedback {
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(PanelComponents.taskTitleTxt.text)) {
+                PanelComponents.taskTitleTxt.Focus();
+                return;
+            }
+
             AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
             bool loggedIn = Api.RequestHandler.User != null;
 
@@ -630,11 +635,6 @@ namespace Feedback {
                 if (!asanaProject.visibleForPlayer) {
                     DataSendEvent(false);
                 }
-            }
-
-            if (string.IsNullOrWhiteSpace(PanelComponents.taskTitleTxt.text)) {
-                PanelComponents.taskTitleTxt.Focus();
-                DataSendEvent(false);
             }
 
             if (Api is AsanaAPI) {
