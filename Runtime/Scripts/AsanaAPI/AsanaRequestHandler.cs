@@ -357,7 +357,7 @@ namespace Feedback {
         public override void LoadAvatar() {
             requestRunning = true;
 
-            if (!string.IsNullOrWhiteSpace(User.picture)) {
+            if (User != null && !string.IsNullOrWhiteSpace(User.picture)) {
                 try {
                     byte[] imageData = new byte[0];
 
@@ -378,7 +378,9 @@ namespace Feedback {
                     User.avatar = loadedTexture;
                     asanaAPI.FireAvatarLoaded();
                 } catch (Exception e) {
-                    Debug.LogWarning($"[FeedbackTool] tried to fetch avatar picture @ url: {User.picture} and failed!");
+                    if (User != null) {
+                        Debug.LogWarning($"[FeedbackTool] tried to fetch avatar picture @ url: {User.picture} and failed!");
+                    }
                     Debug.LogWarning($"[FeedbackTool] {e.Message}");
                 }
             }
