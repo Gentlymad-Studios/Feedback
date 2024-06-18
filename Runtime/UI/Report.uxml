@@ -29,7 +29,7 @@
             <ui:TextField picking-mode="Ignore" name="taskTitleTxt" max-length="1000" class="textField">
                 <ui:Label text="Title" picking-mode="Ignore" name="previewTxt" class="previewText" />
             </ui:TextField>
-            <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" max-length="12000" class="textField">
+            <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" max-length="4000" class="textField">
                 <ui:Label text="Description" picking-mode="Ignore" name="previewTxt" class="previewText multiLinePreviewText" />
             </ui:TextField>
             <ui:VisualElement name="TagContainer">
