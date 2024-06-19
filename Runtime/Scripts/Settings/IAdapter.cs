@@ -12,6 +12,8 @@ namespace Feedback {
 
         void OnAfterScreenshot();
 
+        void OnBeforeSend();
+
         void OnErrorThrown(Error error);
 
         void OnFirstErrorThrown(Error error);

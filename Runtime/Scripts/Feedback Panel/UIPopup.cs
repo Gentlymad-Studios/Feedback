@@ -624,6 +624,8 @@ namespace Feedback {
                 return;
             }
 
+            settings.adapter.OnBeforeSend();
+
             AsanaProject asanaProject = settings.GetProjectByName(currentDataType);
             bool loggedIn = Api.RequestHandler.User != null;
 

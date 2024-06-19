@@ -9,6 +9,7 @@ namespace Feedback {
         public abstract void OnOpenWindow();
         public abstract void OnBeforeScreenshot();
         public abstract void OnAfterScreenshot();
+        public abstract void OnBeforeSend();
         public abstract void OnErrorThrown(Error error);
         public abstract void OnFirstErrorThrown(Error error);
         public abstract void OpenUrl(string url, bool useFallback = false);
