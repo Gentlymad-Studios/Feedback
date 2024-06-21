@@ -11,6 +11,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Feedback {
     public class UIPopup : UIPopUpBase {
+        public string text;
         public DrawImage DrawImage;
         public PanelComponents PanelComponents;
         public UIDocument UIDocument;
