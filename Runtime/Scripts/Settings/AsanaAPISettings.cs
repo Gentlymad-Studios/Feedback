@@ -100,6 +100,7 @@ namespace Feedback {
         [Tooltip("The Amount of Errors we add to special Error Log. 0 = unlimited")]
         public int errorLogCount = 5;
         public bool includePlayerLog = true;
+        public bool includePlayerPrevLog = true;
         public bool includeCustomLog = true;
         public bool includeSavegame = true;
         [Tooltip("Enable this if you want to include global files")]

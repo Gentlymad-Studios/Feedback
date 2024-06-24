@@ -30,6 +30,9 @@ namespace Feedback {
             if (project.includePlayerLog) {
                 LoadFileList(new List<string> { "Player.log" });
             }
+            if (project.includePlayerPrevLog) {
+                LoadFileList(new List<string> { "Player-prev.log" });
+            }
             if (project.includeCustomLog) {
                 LoadLog();
             }
@@ -62,6 +65,11 @@ namespace Feedback {
             //Player Log
             if (project.includePlayerLog) {
                 data.Add("Player.log");
+            }
+
+            //Player prev Log
+            if (project.includePlayerPrevLog) {
+                data.Add("Player-prev.log");
             }
 
             //Custom Log
