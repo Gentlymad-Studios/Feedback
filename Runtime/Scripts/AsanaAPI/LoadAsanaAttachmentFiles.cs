@@ -181,7 +181,7 @@ namespace Feedback {
             List<string> logDataPaths = settings.Adapter.GetLog(out bool archive, out string archiveName);
             List<string> dummyList = new List<string>();
 
-            if (logDataPaths == null) {
+            if (logDataPaths == null && logDataPaths.Count > 0) {
                 return dummyList;
             }
 
@@ -215,7 +215,7 @@ namespace Feedback {
             List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive, out string archiveName);
             List<string> dummyList = new List<string>();
 
-            if (savegameDataPaths == null) {
+            if (savegameDataPaths == null && savegameDataPaths.Count > 0) {
                 return dummyList;
             }
 
