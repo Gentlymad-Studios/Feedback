@@ -48,6 +48,7 @@
 
 #taskDescriptionTxt {
     flex-grow: 1;
+    flex-shrink: 1;
 }
 
 #taskDescriptionTxt > TextInput {
@@ -71,6 +72,7 @@
     justify-content: space-between;
     height: 40px;
     margin: 2px;
+    flex-shrink: 0;
 }
 
 #taskSubmitBtn {
@@ -104,4 +106,12 @@
 
 #AttachmentTxt > TextInput {
     padding-right: 0;
+}
+
+#TagContainer {
+    flex-shrink: 0;
+}
+
+#AttachmentContainer {
+    flex-shrink: 0;
 }
