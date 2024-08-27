@@ -649,7 +649,7 @@ namespace Feedback {
             };
             DrawImage.drawingCanBeDestroyed = true;
 
-            List<AsanaTicketRequest.Attachment> attachments = fileLoader.LoadAttachments(asanaProject, textureList, errorHandler);
+            List<AsanaTicketRequest.Attachment> attachments = fileLoader.LoadAttachments(asanaProject, textureList, PanelComponents.taskTitleTxt.text, errorHandler);
 
             RequestData data = new RequestData(PanelComponents.taskTitleTxt.text, PanelComponents.taskDescriptionTxt.text, attachments, asanaProject);
 

@@ -24,12 +24,12 @@ namespace Feedback {
         public bool GetDevMode() {
             return true;
         }
-        public List<string> GetSavegame(out bool archive, out string archiveName) {
+        public List<string> GetSavegame(out bool archive, out string archiveName, bool dummyCall, string tempPath, string ticketTitle) {
             archive = false;
             archiveName = "savegame";
             return null;
         }
-        public List<string> GetLog(out bool archive, out string archiveName) {
+        public List<string> GetLog(out bool archive, out string archiveName, bool dummyCall, string tempPath, string ticketTitle) {
             archive = false;
             archiveName = "log";
             return null;

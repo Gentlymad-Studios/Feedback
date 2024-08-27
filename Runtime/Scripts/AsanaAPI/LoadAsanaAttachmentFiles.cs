@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Net.NetworkInformation;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = System.Random;
@@ -19,7 +20,7 @@ namespace Feedback {
             tempPath = Path.Combine(attachmentPath, "Temp");
         }
 
-        public List<AsanaTicketRequest.Attachment> LoadAttachments(AsanaProject project, List<Texture2D> images, ErrorHandler errorHandler) {
+        public List<AsanaTicketRequest.Attachment> LoadAttachments(AsanaProject project, List<Texture2D> images, string taskTitle, ErrorHandler errorHandler) {
             attachments.Clear();
 
             LoadImages(images);
@@ -34,10 +35,10 @@ namespace Feedback {
                 LoadFileList(new List<string> { "Player-prev.log" });
             }
             if (project.includeCustomLog) {
-                LoadLog();
+                LoadLog(taskTitle);
             }
             if (project.includeSavegame) {
-                LoadSavegame();
+                LoadSavegame(taskTitle);
             }
             if (project.includeGlobalFiles) {
                 LoadFileList(settings.Files);
@@ -74,12 +75,12 @@ namespace Feedback {
 
             //Custom Log
             if (project.includeCustomLog) {
-                data.AddRange(LoadLog(true));
+                data.AddRange(LoadLog(string.Empty, true));
             }
 
             //Savegame
             if (project.includeSavegame) {
-                data.AddRange(LoadSavegame(true));
+                data.AddRange(LoadSavegame(string.Empty, true));
             }
 
             //Global Files
@@ -177,8 +178,8 @@ namespace Feedback {
             }
         }
 
-        private List<string> LoadLog(bool dummy = false) {
-            List<string> logDataPaths = settings.Adapter.GetLog(out bool archive, out string archiveName);
+        private List<string> LoadLog(string taskTitle = "", bool dummy = false) {
+            List<string> logDataPaths = settings.Adapter.GetLog(out bool archive, out string archiveName, dummy, tempPath, taskTitle);
             List<string> dummyList = new List<string>();
 
             if (logDataPaths == null || logDataPaths.Count == 0) {
@@ -211,8 +212,8 @@ namespace Feedback {
             return dummyList;
         }
 
-        private List<string> LoadSavegame(bool dummy = false) {
-            List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive, out string archiveName);
+        private List<string> LoadSavegame(string taskTitle = "", bool dummy = false) {
+            List<string> savegameDataPaths = settings.Adapter.GetSavegame(out bool archive, out string archiveName, dummy, tempPath, taskTitle);
             List<string> dummyList = new List<string>();
 
             if (savegameDataPaths == null || savegameDataPaths.Count == 0) {
