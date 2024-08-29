@@ -14,6 +14,9 @@ namespace Feedback {
         private static bool hasErrors = false;
         public static bool HasErrors => hasErrors;
 
+        private static int errorCount = 0;
+        public static int ErrorCount => errorCount;
+
         private List<Error> errorList = new List<Error>();
         public List<Error> ErrorList => errorList;
 
@@ -43,7 +46,7 @@ namespace Feedback {
                 settings.Adapter.OnErrorThrown(error);
 
                 errorList.Add(error);
-
+                errorCount++;
             }
         }
     }
