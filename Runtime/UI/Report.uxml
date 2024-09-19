@@ -26,7 +26,7 @@
             <ui:DropdownField name="taskTypeDrpDwn" class="dropdown">
                 <ui:Label text="Type" picking-mode="Ignore" name="previewTxt" class="previewText" />
             </ui:DropdownField>
-            <ui:TextField picking-mode="Ignore" name="taskTitleTxt" max-length="1000" class="textField">
+            <ui:TextField picking-mode="Ignore" name="taskTitleTxt" max-length="256" class="textField">
                 <ui:Label text="Title" picking-mode="Ignore" name="previewTxt" class="previewText" />
             </ui:TextField>
             <ui:TextField picking-mode="Ignore" name="taskDescriptionTxt" multiline="true" max-length="4000" class="textField">
